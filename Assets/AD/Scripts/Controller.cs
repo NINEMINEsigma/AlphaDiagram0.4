@@ -86,6 +86,10 @@ namespace AD
     {
         void PrepareToOtherScene();
     }
+    public interface IViewController
+    {
+        void PrepareToOtherScene();
+    }
 
     [Serializable]
     public abstract class SceneBaseController : BaseController, ISceneSingleController
@@ -142,6 +146,7 @@ namespace AD
     {
         public static ISceneSingleController instence = null;
         public static List<IAudioSourceController> audioSourceControllers = new List<IAudioSourceController>();
+        public static List<IViewController> viewControllers = new List<IViewController>();
         public static object infomation = null;
         public static MonoBehaviour CoroutineWorker = null;
 
@@ -149,6 +154,7 @@ namespace AD
         {
             instence = null;
             audioSourceControllers = new List<IAudioSourceController>();
+            viewControllers = new List<IViewController>();
             if (CoroutineWorker == null && instence == null)
             {
                 CoroutineWorker = new GameObject().AddComponent<CoroutineWorkerMono>();

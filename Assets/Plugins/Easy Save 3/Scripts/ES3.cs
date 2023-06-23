@@ -311,7 +311,7 @@ public class ES3
     /// <param name="settings">The settings we want to use to override the default settings.</param>
     public static void SaveImage(Texture2D texture, int quality, ES3Settings settings)
     {
-        // Get the file extension to determine what format we want to save the image as.
+        // Get the file extension to determine what format we want to save the ViewImage as.
         string extension = ES3IO.GetExtension(settings.path).ToLower();
         if (string.IsNullOrEmpty(extension))
             throw new System.ArgumentException("File path must have a file extension when using ES3.SaveImage.");

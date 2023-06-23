@@ -6,10 +6,10 @@ namespace AD.UI
 {
     [RequireComponent(typeof(Camera))]
     public class Projection : MonoBehaviour
-    { 
+    {
         [Header("Projection")]
         [SerializeField] private Shader ADOriginatedShader;
-        public List<Image> Options = new List<Image>(); 
+        public List<Image> Options = new List<Image>();
 
         private Material AD__OriginatedMaterial;
 
@@ -36,7 +36,7 @@ namespace AD.UI
             {
                 foreach (var image in Options)
                 {
-                    image.material=AD__OriginatedMaterial;
+                    image.material = AD__OriginatedMaterial;
                 }
             }
         }

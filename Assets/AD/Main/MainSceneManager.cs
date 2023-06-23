@@ -10,8 +10,7 @@ namespace AD.MainScene
     public class MainSceneManager : AD.SceneBaseController
     {
         [Header("Assets")]
-        [SerializeField] Image A;
-        [SerializeField] Image B;
+        [SerializeField] List<Image> Images = new List<Image>();
 
         private void Start()
         { 
@@ -27,14 +26,13 @@ namespace AD.MainScene
 
         private IEnumerator BGInit()
         {
+            foreach (var image in Images) image.gameObject.SetActive(true); 
             for (float t = 0; t < 1; t+=UnityEngine.Time.deltaTime)
-            {
-                if (A != null) A.color=new Color(A.color.r, A.color.g, A.color.b,1 - t);
-                if (B != null) B.color = new Color(B.color.r, B.color.g, B.color.b, 1 - t);
+            { 
+                foreach (var image in Images) image.color = new Color(image.color.r, image.color.g, image.color.b, 1 - t);
                 yield return new WaitForEndOfFrame();
             }
-            A.gameObject.SetActive(false);
-            B.gameObject.SetActive(false) ;
+            foreach (var image in Images) image.gameObject.SetActive(false);
         }
     } 
 }

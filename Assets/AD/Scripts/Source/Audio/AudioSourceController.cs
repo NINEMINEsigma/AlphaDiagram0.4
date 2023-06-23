@@ -109,6 +109,7 @@ namespace AD.Utility
 
         public AudioSourceController NextPair()
         {
+            if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex < SourcePairs.Count) CurrentPairIndex++;
             else CurrentPairIndex = 0;
             if (Source.isPlaying) Source.clip = CurrentClip;
@@ -116,6 +117,7 @@ namespace AD.Utility
         }
         public AudioSourceController PreviousPair()
         {
+            if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex > 0) CurrentPairIndex--;
             else CurrentPairIndex = SourcePairs.Count;
             if (Source.isPlaying) Source.clip = CurrentClip;
@@ -123,6 +125,7 @@ namespace AD.Utility
         }
         public AudioSourceController RandomPair()
         {
+            if (SourcePairs.Count == 0) return this;
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
             if (Source.isPlaying) Source.clip = CurrentClip;
             return this;

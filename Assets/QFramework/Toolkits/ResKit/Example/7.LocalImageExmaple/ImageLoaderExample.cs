@@ -14,7 +14,7 @@
 			
 			mResLoader = ResLoader.Allocate();
 
-			// local image
+			// local ViewImage
 			var localImageUrl = "file://" + Application.persistentDataPath + "/Workspaces/lM1wmsLQtfzRQc6fsdEU.jpg";
 
 			mResLoader.Add2Load(localImageUrl.ToLocalImageResName(),
