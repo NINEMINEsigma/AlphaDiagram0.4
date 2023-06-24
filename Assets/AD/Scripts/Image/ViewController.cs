@@ -154,5 +154,13 @@ namespace AD.UI
             ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, blue, ViewImage.color.a);
             return this;
         }
+
+        public ViewController BakeAudioWaveformFormAudioCilp(AudioClip clip)
+        {
+            ViewImage.color = new Color();
+            ViewImage.sprite = null;
+            ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
+            return this;
+        }
     }
 }
