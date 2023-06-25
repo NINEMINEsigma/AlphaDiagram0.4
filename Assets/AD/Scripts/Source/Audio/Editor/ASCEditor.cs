@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
-using AD.Utility;
+using System.Collections.Generic; 
 using UnityEditor;
 using UnityEngine;
+using AD.UI;
 
 [CustomEditor(typeof(AudioSourceController)), CanEditMultipleObjects]
 public class ASCEditor : Editor
@@ -20,6 +20,7 @@ public class ASCEditor : Editor
     private /*AudioPostMixer*/SerializedProperty _Mixer;
 
     private /*bool*/SerializedProperty LoopAtAll;
+    private /*bool*/SerializedProperty DrawingLine;
     private /*bool*/SerializedProperty Sampling;
 
 
@@ -41,6 +42,7 @@ public class ASCEditor : Editor
         _Mixer = serializedObject.FindProperty("_Mixer");
 
         LoopAtAll = serializedObject.FindProperty("LoopAtAll");
+        DrawingLine = serializedObject.FindProperty("DrawingLine");
         Sampling = serializedObject.FindProperty("Sampling");
 
         SpectrumCount = serializedObject.FindProperty("SpectrumCount");
@@ -61,14 +63,14 @@ public class ASCEditor : Editor
 
         EditorGUILayout.PropertyField(SourcePairs);
 
-        GUI.enabled = false;
-
-        EditorGUILayout.IntSlider("CurrentIndex", that.CurrentIndex, 0, that.SourcePairs.Count - 1, null);
-
-        GUI.enabled = true;
-
         if (Application.isPlaying)
         {
+            GUI.enabled = false;
+
+            EditorGUILayout.IntSlider("CurrentIndex", that.CurrentIndex, 0, that.SourcePairs.Count - 1, null);
+            EditorGUILayout.Slider("CurrentTime", that.CurrentTime, 0, that.CurrentClip.length + 0.2f, null);
+
+            GUI.enabled = true;
             if (GUILayout.Button("Next", new GUILayoutOption[] { })) that.NextPair();
             if (GUILayout.Button("Previous", new GUILayoutOption[] { })) that.PreviousPair();
             if (GUILayout.Button("Random", new GUILayoutOption[] { })) that.RandomPair();
@@ -80,8 +82,10 @@ public class ASCEditor : Editor
         EditorGUILayout.PropertyField(_Mixer);
         EditorGUILayout.PropertyField(LoopAtAll);
         EditorGUILayout.PropertyField(Sampling);
+
         if (Sampling.boolValue)
         {
+            EditorGUILayout.PropertyField(DrawingLine);
             EditorGUILayout.PropertyField(SpectrumCount);
             EditorGUILayout.PropertyField(samples);
             EditorGUILayout.PropertyField(BandCount);

@@ -2,12 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using AD.Utility;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Profiling;
 
-namespace AD.Utility
+namespace AD.UI
 {
+    public interface ICanDrawLine
+    {
+        void DrawLine(LineRenderer renderer,AudioSourceController source);
+    }
+
     [Serializable]
     public class SourcePair
     {
@@ -19,6 +26,8 @@ namespace AD.Utility
         }
         public string Name = "New Pair";
         public string CilpName = "New Clip";
+         
+        public ICanDrawLine LineDrawer = null;
 
         public bool IsLoaded
         {
@@ -32,6 +41,7 @@ namespace AD.Utility
     }
 
     [RequireComponent(typeof(AudioSource))]
+    [AddComponentMenu("UI/AD/AudioSourceController", 100)]
     public sealed class AudioSourceController : MonoBehaviour, IAudioSourceController
     {
         #region Attribute
@@ -39,6 +49,7 @@ namespace AD.Utility
         public AudioSource Source { get; private set; }
         public List<SourcePair> SourcePairs = new List<SourcePair>();
         private int CurrentPairIndex = 0;
+        private float CurrentClock = 0;
 
         public SourcePair CurrentSourcePair
         {
@@ -85,8 +96,8 @@ namespace AD.Utility
         }
         public float CurrentTime
         {
-            get { return Source.time; }
-            set { Source.time = value; }
+            get { return CurrentClock; }
+            set { CurrentClock = Source.time = value; }
         }
 
         [SerializeField] private AudioPostMixer _Mixer = null;
@@ -98,7 +109,10 @@ namespace AD.Utility
         public bool IsHaveMixer { get { return Mixer.Package.audioMixer != null; } }
 
         public bool LoopAtAll = true;
-        public bool Sampling = true;
+        public bool Sampling = false;
+
+        private LineRenderer _m_LineRenderer = null;
+        [SerializeField] LineRenderer LineRendererPrefab = null;
 
         #endregion
 
@@ -134,7 +148,52 @@ namespace AD.Utility
                 GetNormalizedBands();
                 GetBandBuffers(increasingType, decreasingType);
                 BandNegativeCheck();
+                if (DrawingLine)
+                {
+                    if (CurrentSourcePair.LineDrawer == null)
+                    {
+                        if (_m_LineRenderer == null)
+                        {
+                            _m_LineRenderer = GameObject.Instantiate(LineRendererPrefab, transform).gameObject.GetComponent<LineRenderer>();
+                            _m_LineRenderer.name = "New LineRenderer(AudioiSourceController)";
+                        }
+                        else _m_LineRenderer.gameObject.SetActive(true);
+                        int vextcount = normalizedBands.Length;
+                        Keyframe[] keyframes = new Keyframe[vextcount * 2];
+                        Vector3[] vexts = new Vector3[vextcount];
+                        vextcount = (int)BandCount;
+                        for (int i = 0; i < vextcount; i++)
+                            vexts[i] = transform.position +
+                                10 * new Vector3(Mathf.Cos(i / (float)vextcount * 2 * Mathf.PI), Mathf.Sin(i / (float)vextcount * 2 * Mathf.PI));
+                        _m_LineRenderer.positionCount = vextcount;
+                        _m_LineRenderer.SetPositions(vexts);
+                        AnimationCurve m_curve = AnimationCurve.Linear(0, 1, 1, 1);
+                        for (int i = 0; i < vextcount; i++)
+                        {
+                            keyframes[i].time = i / (float)(vextcount * 2);
+                            keyframes[i].value = Mathf.Clamp(bands[i], 0.01f, 100);
+                            keyframes[^(i + 1)].time = 1 - i / (float)(vextcount * 2);
+                            keyframes[^(i + 1)].value = Mathf.Clamp(bands[i], 0.01f, 100);
+                        }
+                        m_curve.keys = keyframes;
+                        _m_LineRenderer.widthCurve = m_curve;
+                    }
+                    else CurrentSourcePair.LineDrawer.DrawLine(_m_LineRenderer, this);
+                }
             }
+            if (_m_LineRenderer != null)
+                if (!Sampling || !DrawingLine)
+                    _m_LineRenderer.gameObject.SetActive(false);
+        }
+
+        [MenuItem("GameObject/AD/AudioSource", false, 10)]
+        private static void ADD(MenuCommand menuCommand)
+        {
+            GameObject obj = new GameObject("New Text");//创建新物体
+            obj.AddComponent<AD.UI.AudioSourceController>();
+            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
+            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
+            Selection.activeObject = obj;//将新建物体设为当前选中物体c
         }
 
         public AudioSourceController NextPair()
@@ -142,7 +201,10 @@ namespace AD.Utility
             if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
             else CurrentPairIndex = 0;
-            if (Source.isPlaying) Source.clip = CurrentClip;
+            bool curPlaying = Source.isPlaying;
+            Stop();
+            Source.clip = CurrentClip;
+            if (curPlaying) Play();
             return this;
         }
         public AudioSourceController PreviousPair()
@@ -150,14 +212,20 @@ namespace AD.Utility
             if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex > 0) CurrentPairIndex--;
             else CurrentPairIndex = SourcePairs.Count - 1;
-            if (Source.isPlaying) Source.clip = CurrentClip;
+            bool curPlaying = Source.isPlaying;
+            Stop();
+            Source.clip = CurrentClip;
+            if (curPlaying) Play();
             return this;
         }
         public AudioSourceController RandomPair()
         {
             if (SourcePairs.Count == 0) return this;
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
-            if (Source.isPlaying) Source.clip = CurrentClip;
+            bool curPlaying = Source.isPlaying;
+            Stop();
+            Source.clip = CurrentClip;
+            if (curPlaying) Play();
             return this;
         }
 
@@ -281,12 +349,15 @@ namespace AD.Utility
 
         private IEnumerator ClockWithCilp(AudioClip clip, float current)
         {
-            for (float duration = clip.length + 0.2f, clock = current; clock < duration; clock += UnityEngine.Time.deltaTime)
+            CurrentClock = current;
+            for (float duration = clip.length + 0.2f; CurrentClock < duration; CurrentClock += UnityEngine.Time.deltaTime)
                 yield return new WaitForEndOfFrame();
+            if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
+            else CurrentPairIndex = 0;
             Source.Stop();
-            NextPair();
             if (LoopAtAll)
             {
+                Source.clip = CurrentClip;
                 Source.Play();
                 StartCoroutine(ClockWithCilp(CurrentClip, 0));
             }
@@ -306,6 +377,7 @@ namespace AD.Utility
 
         #region Inspector
         [Header("MusicSampler")]
+        public bool DrawingLine = false;
         /// <summary>
         /// 这个参数用于设置进行采样的精度
         /// </summary>
