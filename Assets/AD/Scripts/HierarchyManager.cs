@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Lean.Pool;
+using System.Collections.Generic; 
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -51,9 +50,9 @@ namespace AD
 
         public void GenerateTab(BaseElement targetElement, HierarchyTab parentTab = null, bool isMainConnect = true)
         {
-            HierarchyTab tab = LeanPool.Spawn(hierarchyTab, hierarchyListContainer).GetComponent<HierarchyTab>();
+            /*HierarchyTab tab = LeanPool.Spawn(hierarchyTab, hierarchyListContainer).GetComponent<HierarchyTab>();
             tab.SetTab(targetElement, parentTab, isMainConnect);
-            tabList.Add(tab);
+            tabList.Add(tab);*/
         }
 
         /// <summary>

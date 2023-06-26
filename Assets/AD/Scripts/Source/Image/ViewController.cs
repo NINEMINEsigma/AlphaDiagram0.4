@@ -5,7 +5,9 @@ using AD.ADbase;
 using AD.Utility;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static Codice.Client.BaseCommands.Import.Commit;
 
 namespace AD.UI
 {
@@ -37,11 +39,13 @@ namespace AD.UI
         public string SpriteName = "New Sprite";
     }
 
+    [Serializable]
     [RequireComponent(typeof(Image))]
     [AddComponentMenu("UI/AD/ViewController", 100)]
-    public sealed class ViewController : BaseController, IViewController
+    public sealed class ViewController : ADUI, IViewController,IADController
     {
         #region Attribute 
+
         private Image _ViewImage;
         public Image ViewImage
         {
@@ -93,13 +97,23 @@ namespace AD.UI
         [HideInInspector] public ICanPrepareToOtherScenee canPrepareToOtherScenee = null;
         [HideInInspector] public ICanTransformSprite canTransformSprite = null;
 
-        #endregion 
+        #endregion
 
-        private void Awake()
+        #region Function
+
+        private void Start()
         {
+            ElementArea = "Image";
+            AD.UI.ADUI.Initialize(this);
+            AD.SceneSingleAssets.viewControllers.Add(this);
+
             ViewImage = GetComponent<Image>();
-            ViewImage.sprite = CurrentImage;
-            this.Init();
+            ViewImage.sprite = CurrentImage; 
+        }
+        private void OnDestroy()
+        { 
+            AD.UI.ADUI.Destory(this);
+            AD.SceneSingleAssets.viewControllers.Remove(this); 
         }
 
         [MenuItem("GameObject/AD/Image", false, 10)]
@@ -112,7 +126,15 @@ namespace AD.UI
             Selection.activeObject = obj;//将新建物体设为当前选中物体c
         }
 
-        public override IADArchitecture ADinstance()
+        public static ViewController Generate(string name = "New Image", Transform parent = null, params System.Type[] components)
+        {
+            ViewController source = new GameObject(name, components).AddComponent<ViewController>();
+            source.transform.parent = parent; 
+
+            return source;
+        }
+
+        public IADArchitecture ADinstance()
         {
             if (architectureObtainer == null) return null;
             else return architectureObtainer.ADinstance();
@@ -195,12 +217,9 @@ namespace AD.UI
             ViewImage.sprite = null;
             ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
             return this;
-        }
+        }  
 
-        public ViewController CanvasInitialize()
-        {
-            this.Init();
-            return this;
-        }
+        #endregion
+
     }
 }

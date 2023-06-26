@@ -40,11 +40,15 @@ namespace AD.UI
         }
     }
 
+    [Serializable]
     [RequireComponent(typeof(AudioSource))]
     [AddComponentMenu("UI/AD/AudioSourceController", 100)]
     public sealed class AudioSourceController : MonoBehaviour, IAudioSourceController
     {
         #region Attribute
+
+        public string ElementName { get; set; } = "null";
+        public int SerialNumber { get; set; } = 0;
 
         public AudioSource Source { get; private set; }
         public List<SourcePair> SourcePairs = new List<SourcePair>();
@@ -118,12 +122,23 @@ namespace AD.UI
 
         #region Function
 
+        private void Awake()
+        { 
+            Source = GetComponent<AudioSource>(); 
+
+            GetSampleCount(); 
+        }
+
         private void Start()
         {
-            Source = GetComponent<AudioSource>();
-            AD.SceneSingleAssets.audioSourceControllers.Add(this);
+            AD.SceneSingleAssets.audioSourceControllers.Add(this);  
+            AD.UI.ADUI.Initialize(this);
+        }
 
-            GetSampleCount();
+        private void OnDestroy()
+        {
+            AD.SceneSingleAssets.audioSourceControllers.Remove(this);
+            AD.UI.ADUI.Destory(this);
         }
 
         private void OnValidate()
@@ -141,6 +156,7 @@ namespace AD.UI
 
         private void Update()
         {
+            if (SourcePairs.Count == 0) return;
             if (Sampling)
             {
                 GetSpectrums();
@@ -158,25 +174,7 @@ namespace AD.UI
                             _m_LineRenderer.name = "New LineRenderer(AudioiSourceController)";
                         }
                         else _m_LineRenderer.gameObject.SetActive(true);
-                        int vextcount = normalizedBands.Length;
-                        Keyframe[] keyframes = new Keyframe[vextcount * 2];
-                        Vector3[] vexts = new Vector3[vextcount];
-                        vextcount = (int)BandCount;
-                        for (int i = 0; i < vextcount; i++)
-                            vexts[i] = transform.position +
-                                10 * new Vector3(Mathf.Cos(i / (float)vextcount * 2 * Mathf.PI), Mathf.Sin(i / (float)vextcount * 2 * Mathf.PI));
-                        _m_LineRenderer.positionCount = vextcount;
-                        _m_LineRenderer.SetPositions(vexts);
-                        AnimationCurve m_curve = AnimationCurve.Linear(0, 1, 1, 1);
-                        for (int i = 0; i < vextcount; i++)
-                        {
-                            keyframes[i].time = i / (float)(vextcount * 2);
-                            keyframes[i].value = Mathf.Clamp(bands[i], 0.01f, 100);
-                            keyframes[^(i + 1)].time = 1 - i / (float)(vextcount * 2);
-                            keyframes[^(i + 1)].value = Mathf.Clamp(bands[i], 0.01f, 100);
-                        }
-                        m_curve.keys = keyframes;
-                        _m_LineRenderer.widthCurve = m_curve;
+                        DrawLineOnDefault();
                     }
                     else CurrentSourcePair.LineDrawer.DrawLine(_m_LineRenderer, this);
                 }
@@ -184,6 +182,30 @@ namespace AD.UI
             if (_m_LineRenderer != null)
                 if (!Sampling || !DrawingLine)
                     _m_LineRenderer.gameObject.SetActive(false);
+
+        }
+
+        public void DrawLineOnDefault()
+        {
+            int vextcount = normalizedBands.Length;
+            Keyframe[] keyframes = new Keyframe[vextcount * 2];
+            Vector3[] vexts = new Vector3[vextcount];
+            vextcount = (int)BandCount;
+            for (int i = 0; i < vextcount; i++)
+                vexts[i] = transform.position +
+                    10 * new Vector3(Mathf.Cos(i / (float)vextcount * 2 * Mathf.PI), Mathf.Sin(i / (float)vextcount * 2 * Mathf.PI));
+            _m_LineRenderer.positionCount = vextcount;
+            _m_LineRenderer.SetPositions(vexts);
+            AnimationCurve m_curve = AnimationCurve.Linear(0, 1, 1, 1);
+            for (int i = 0; i < vextcount; i++)
+            {
+                keyframes[i].time = i / (float)(vextcount * 2);
+                keyframes[i].value = Mathf.Clamp(bands[i], 0.01f, 100);
+                keyframes[^(i + 1)].time = 1 - i / (float)(vextcount * 2);
+                keyframes[^(i + 1)].value = Mathf.Clamp(bands[i], 0.01f, 100);
+            }
+            m_curve.keys = keyframes;
+            _m_LineRenderer.widthCurve = m_curve;
         }
 
         [MenuItem("GameObject/AD/AudioSource", false, 10)]
@@ -194,6 +216,14 @@ namespace AD.UI
             GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
             Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
             Selection.activeObject = obj;//将新建物体设为当前选中物体c
+        }
+
+        public static AudioSourceController Generate(string name = "New AudioSource", Transform parent = null, params System.Type[] components)
+        {
+            AudioSourceController source = new GameObject(name, components).AddComponent<AudioSourceController>();
+            source.transform.parent = parent; 
+
+            return source;
         }
 
         public AudioSourceController NextPair()
@@ -694,6 +724,16 @@ namespace AD.UI
             return texture;
         }
 
+
+        public IADUI Obtain(int serialNumber)
+        {
+            return ADUI.Items.Find((P) => P.SerialNumber == serialNumber);
+        }
+
+        public IADUI Obtain(string elementName)
+        {
+            return ADUI.Items.Find((P) => P.ElementName == elementName);
+        }
     }
 
     public enum SpectrumLength

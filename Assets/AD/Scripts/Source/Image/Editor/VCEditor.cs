@@ -10,9 +10,7 @@ public class VCEditor : Editor
 {
     private ViewController that = null;
 
-    private /*List<SourcePair>*/SerializedProperty SourcePairs;
-
-    private SerializedProperty mCanvasInitializer;
+    private /*List<SourcePair>*/SerializedProperty SourcePairs; 
 
     /*private SourcePair CurrentSourcePair = null;
     private AudioClip CurrentClip = null;
@@ -25,8 +23,7 @@ public class VCEditor : Editor
     {
         that = target as ViewController; 
 
-        SourcePairs = serializedObject.FindProperty("SourcePairs");
-        mCanvasInitializer = serializedObject.FindProperty("mCanvasInitializer");
+        SourcePairs = serializedObject.FindProperty("SourcePairs"); 
     }
 
     public override void OnInspectorGUI()
@@ -34,12 +31,7 @@ public class VCEditor : Editor
         //base.OnInspectorGUI();
         bool IsSourcePairsChange = false;
 
-        serializedObject.Update();
-
-        if (!Application.isPlaying)
-        {
-            EditorGUILayout.PropertyField(mCanvasInitializer);
-        }
+        serializedObject.Update(); 
 
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(SourcePairs);
@@ -55,6 +47,13 @@ public class VCEditor : Editor
             if (GUILayout.Button("Next", new GUILayoutOption[] { })) that.NextPair();
             if (GUILayout.Button("Previous", new GUILayoutOption[] { })) that.PreviousPair();
             if (GUILayout.Button("Random", new GUILayoutOption[] { })) that.RandomPair();
+
+            GUI.enabled = false;
+
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+
+            GUI.enabled = true;
         }
 
         serializedObject.ApplyModifiedProperties();

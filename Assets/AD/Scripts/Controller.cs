@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AD.ADbase;
+using AD.UI;
 using AD.Utility;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -82,13 +83,17 @@ namespace AD
     {
 
     }
-    public interface IAudioSourceController
+    public interface IAudioSourceController : IADUI
     {
         void PrepareToOtherScene();
     }
-    public interface IViewController
+    public interface IViewController : IADUI
     {
         void PrepareToOtherScene();
+    }
+    public interface IADInputSystem
+    {
+
     }
 
     [Serializable]
@@ -147,6 +152,7 @@ namespace AD
         public static ISceneSingleController instence = null;
         public static List<IAudioSourceController> audioSourceControllers = new List<IAudioSourceController>();
         public static List<IViewController> viewControllers = new List<IViewController>();
+        public static List<IADInputSystem> inputSystems = new List<IADInputSystem>();
         public static object infomation = null;
         public static MonoBehaviour CoroutineWorker = null;
 
@@ -155,6 +161,7 @@ namespace AD
             instence = null;
             audioSourceControllers = new List<IAudioSourceController>();
             viewControllers = new List<IViewController>();
+            inputSystems = new List<IADInputSystem>();
             if (CoroutineWorker == null && instence == null)
             {
                 CoroutineWorker = new GameObject().AddComponent<CoroutineWorkerMono>();

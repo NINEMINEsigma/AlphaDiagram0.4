@@ -68,7 +68,7 @@ public class ASCEditor : Editor
             GUI.enabled = false;
 
             EditorGUILayout.IntSlider("CurrentIndex", that.CurrentIndex, 0, that.SourcePairs.Count - 1, null);
-            EditorGUILayout.Slider("CurrentTime", that.CurrentTime, 0, that.CurrentClip.length + 0.2f, null);
+            if (that.CurrentClip != null) EditorGUILayout.Slider("CurrentTime", that.CurrentTime, 0, that.CurrentClip.length + 0.2f, null);
 
             GUI.enabled = true;
             if (GUILayout.Button("Next", new GUILayoutOption[] { })) that.NextPair();
@@ -95,6 +95,16 @@ public class ASCEditor : Editor
             EditorGUILayout.PropertyField(increasingType);
             EditorGUILayout.PropertyField(increasing);
         }
+
+        GUI.enabled = false;
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+        }
+
+        GUI.enabled = true;
 
         serializedObject.ApplyModifiedProperties();
     }

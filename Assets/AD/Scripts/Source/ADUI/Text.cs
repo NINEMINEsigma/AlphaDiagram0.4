@@ -1,21 +1,52 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
-    [AddComponentMenu("UI/AD/Text", 100)]
-    public class Text:UnityEngine.UI.Text
-	{
-        [MenuItem("GameObject/AD/Text", false, 10)]
-        private static void ADD(MenuCommand menuCommand) 
+    [Serializable]
+    [AddComponentMenu("UI/AD/Text", 100)] 
+    public class Text : ADUI
+    {
+        protected void Start()
         {
-            GameObject obj = new GameObject("New Text");//创建新物体
-            obj.AddComponent<AD.UI.Text>();
-            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = obj;//将新建物体设为当前选中物体c
+            ElementArea = "Text";
+            AD.UI.ADUI.Initialize(this); 
         }
-	}  
+        protected void OnDestory()
+        { 
+            AD.UI.ADUI.Destory(this);
+        }
+
+        private TMP_Text _m_text = null;
+        public string text { get { return _m_text.text; } }
+        public TMP_Text textObject { get { return _m_text; } }
+
+
+        [MenuItem("GameObject/AD/Text", false, 10)]
+        private static void ADD(MenuCommand menuCommand)
+        {
+            AD.UI.Text text = new GameObject("New Text").AddComponent<AD.UI.Text>();
+            text._m_text = text.gameObject.AddComponent<TextMeshProUGUI>();
+            GameObjectUtility.SetParentAndAlign(text.gameObject, menuCommand.context as GameObject);//璁剧疆鐖惰妭鐐逛负褰撳墠閫変腑鐗╀綋
+            Undo.RegisterCreatedObjectUndo(text.gameObject, "Create " + text.name);//娉ㄥ唽鍒癠ndo绯荤粺,鍏佽鎾ら攢
+            Selection.activeObject = text.gameObject;//灏嗘柊寤虹墿浣撹涓哄綋鍓嶉�変腑鐗╀綋
+        }
+
+        public static AD.UI.Text Generate(string name = "New Text", Transform parent = null, params System.Type[] components)
+        {
+            AD.UI.Text text = new GameObject(name, components).AddComponent<AD.UI.Text>();
+            text._m_text = text.gameObject.AddComponent<TextMeshProUGUI>();
+            text.transform.parent = parent; 
+
+            return text;
+        }
+
+
+
+    }
 }
