@@ -101,9 +101,13 @@ namespace AD.UI
 
         #region Function
 
+        public ViewController()
+        {
+            ElementArea = "Image"; 
+        }
+
         private void Start()
         {
-            ElementArea = "Image";
             AD.UI.ADUI.Initialize(this);
             AD.SceneSingleAssets.viewControllers.Add(this);
 

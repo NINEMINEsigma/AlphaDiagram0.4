@@ -61,6 +61,16 @@ public class ASCEditor : Editor
 
         serializedObject.Update();
 
+        GUI.enabled = false;
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+        }
+
+        GUI.enabled = true;
+
         EditorGUILayout.PropertyField(SourcePairs);
 
         if (Application.isPlaying)
@@ -96,15 +106,6 @@ public class ASCEditor : Editor
             EditorGUILayout.PropertyField(increasing);
         }
 
-        GUI.enabled = false;
-
-        if (Application.isPlaying)
-        {
-            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
-            EditorGUILayout.TextField("ElementName", that.ElementName);
-        }
-
-        GUI.enabled = true;
 
         serializedObject.ApplyModifiedProperties();
     }

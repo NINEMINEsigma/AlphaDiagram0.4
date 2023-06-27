@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.Controls;
 
 namespace AD.UI
 {
+    [ExecuteAlways]
     public class ADInputSystem : MonoBehaviour, AD.IADInputSystem
     {
         #region Attribute
@@ -25,7 +26,7 @@ namespace AD.UI
         #endregion
 
 
-        private void Awake()
+        private void Start()
         {
             instance = this;
 

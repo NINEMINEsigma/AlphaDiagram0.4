@@ -31,7 +31,19 @@ public class VCEditor : Editor
         //base.OnInspectorGUI();
         bool IsSourcePairsChange = false;
 
-        serializedObject.Update(); 
+        serializedObject.Update();
+
+        if (Application.isPlaying)
+        {
+            GUI.enabled = false;
+
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+            EditorGUILayout.TextField("ElementArea", that.ElementArea);
+
+            GUI.enabled = true;
+        }
+
 
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(SourcePairs);
@@ -46,14 +58,7 @@ public class VCEditor : Editor
             GUI.enabled = true;
             if (GUILayout.Button("Next", new GUILayoutOption[] { })) that.NextPair();
             if (GUILayout.Button("Previous", new GUILayoutOption[] { })) that.PreviousPair();
-            if (GUILayout.Button("Random", new GUILayoutOption[] { })) that.RandomPair();
-
-            GUI.enabled = false;
-
-            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
-            EditorGUILayout.TextField("ElementName", that.ElementName);
-
-            GUI.enabled = true;
+            if (GUILayout.Button("Random", new GUILayoutOption[] { })) that.RandomPair(); 
         }
 
         serializedObject.ApplyModifiedProperties();
