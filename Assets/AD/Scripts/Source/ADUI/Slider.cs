@@ -15,19 +15,7 @@ namespace AD.UI
     [AddComponentMenu("UI/AD/Slider", 100)]
     public class Slider : ADUI
     {
-        public Slider()
-        {
-            ElementArea = "Slider"; 
-        }
-
-        protected void Start()
-        {
-            AD.UI.ADUI.Initialize(this);
-        }
-        protected void OnDestory()
-        {
-            AD.UI.ADUI.Destory(this);
-        }
+        #region Attribute
 
         public UnityEngine.UI.Slider source = null;
 
@@ -35,7 +23,7 @@ namespace AD.UI
         [SerializeField] private UnityEngine.UI.Image handle = null;
         [SerializeField] private UnityEngine.UI.Image fill = null;
 
-        public float value { get { return source.value; } } 
+        public float value { get { return transformer(source.value); } } 
 
         public Sprite backgroundView 
         { 
@@ -53,13 +41,34 @@ namespace AD.UI
             set { if (fill != null) fill.sprite = value; }
         }
 
+        public delegate float Transformer(float value);
+        public Transformer transformer = (T) => { return T; };
+
+        #endregion
+
+        public Slider()
+        {
+            ElementArea = "Slider"; 
+        }
+
+        protected void Start()
+        {
+            AD.UI.ADUI.Initialize(this);
+        }
+        protected void OnDestory()
+        {
+            AD.UI.ADUI.Destory(this);
+        }
+
+        #region Function
+
         [MenuItem("GameObject/AD/Slider", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
             AD.UI.Slider slider;
-            if (ADInputSystem.instance != null && ADInputSystem.instance._Text != null)
+            if (ADInputSystem.instance != null && ADInputSystem.instance._Slider != null)
             {
-                slider = GameObject.Instantiate(ADInputSystem.instance._Text).GetComponent<AD.UI.Slider>();
+                slider = GameObject.Instantiate(ADInputSystem.instance._Slider) as AD.UI.Slider;
             }
             else
             {
@@ -74,9 +83,9 @@ namespace AD.UI
                 slider.fill = slider_sl.fillRect.gameObject.GetComponent<UnityEngine.UI.Image>();
                 slider.handle = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
             }
-            GameObjectUtility.SetParentAndAlign(slider.gameObject, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(slider.gameObject, "Create " + slider.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = slider.gameObject;//将新建物体设为当前选中物体
+            GameObjectUtility.SetParentAndAlign(slider.gameObject, menuCommand.context as GameObject);
+            Undo.RegisterCreatedObjectUndo(slider.gameObject, "Create " + slider.name);
+            Selection.activeObject = slider.gameObject;
 
 
         }
@@ -155,20 +164,31 @@ namespace AD.UI
 
         public static AD.UI.Slider Generate(string name = "New Slider", Transform parent = null, params System.Type[] components)
         {
-            AD.UI.Slider slider = new GameObject(name, components).AddComponent<AD.UI.Slider>();
-            RectTransform sliderR = slider.gameObject.AddComponent<RectTransform>();
-            sliderR.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 160);
-            sliderR.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
-            GameObjectUtility.SetParentAndAlign(slider.gameObject, parent.gameObject);//设置父节点为当前选中物体
-            UnityEngine.UI.Slider slider_sl = slider.gameObject.AddComponent<UnityEngine.UI.Slider>();
+            AD.UI.Slider slider = null;
+            if (ADInputSystem.instance._Slider != null)
+            {
+                slider = GameObject.Instantiate(ADInputSystem.instance._Slider) as AD.UI.Slider; 
+            }
+            else
+            {
+                slider = new GameObject(name, components).AddComponent<AD.UI.Slider>();
+                RectTransform sliderR = slider.gameObject.AddComponent<RectTransform>();
+                sliderR.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 160);
+                sliderR.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
+                UnityEngine.UI.Slider slider_sl = slider.gameObject.AddComponent<UnityEngine.UI.Slider>();
 
-            slider.background = GenerateBackground(slider).gameObject.GetComponent<UnityEngine.UI.Image>();
-            slider_sl.fillRect = GenerateFillArea(slider);
-            slider_sl.handleRect = GenerateHandleSlideArea(slider);
-            slider_sl.targetGraphic = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
+                slider.background = GenerateBackground(slider).gameObject.GetComponent<UnityEngine.UI.Image>();
+                slider_sl.fillRect = GenerateFillArea(slider);
+                slider_sl.handleRect = GenerateHandleSlideArea(slider);
+                slider_sl.targetGraphic = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
 
-            slider.fill= slider_sl.fillRect.gameObject.GetComponent<UnityEngine.UI.Image>();
-            slider.handle = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
+                slider.fill = slider_sl.fillRect.gameObject.GetComponent<UnityEngine.UI.Image>();
+                slider.handle = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
+            }
+
+            GameObjectUtility.SetParentAndAlign(slider.gameObject, parent.gameObject);
+            slider.name = name;
+            foreach (var component in components) slider.gameObject.AddComponent(component);
 
             return slider;
         }
@@ -177,7 +197,9 @@ namespace AD.UI
         {
             source.onValueChanged.AddListener(call);
             return this;
-        } 
+        }
+
+        #endregion
 
     }
 }

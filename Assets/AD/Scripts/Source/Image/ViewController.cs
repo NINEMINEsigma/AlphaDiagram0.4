@@ -123,11 +123,10 @@ namespace AD.UI
         [MenuItem("GameObject/AD/Image", false, 10)]
         private static void ADD(MenuCommand menuCommand)
         {
-            GameObject obj = new GameObject("New Image");//创建新物体
-            obj.AddComponent<AD.UI.ViewController>();
-            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = obj;//将新建物体设为当前选中物体c
+            AD.UI.ViewController obj = new GameObject("New Image").AddComponent<AD.UI.ViewController>();
+            GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);
+            Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
+            Selection.activeObject = obj.gameObject;
         }
 
         public static ViewController Generate(string name = "New Image", Transform parent = null, params System.Type[] components)

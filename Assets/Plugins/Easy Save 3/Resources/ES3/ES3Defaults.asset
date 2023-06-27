@@ -35,7 +35,6 @@ MonoBehaviour:
     - Assembly-CSharp-firstpass
     - AudioKit
     - CW.Common
-    - IngameDebugConsole.Runtime
     - LeanCommon
     - LeanPool
     - QFramework

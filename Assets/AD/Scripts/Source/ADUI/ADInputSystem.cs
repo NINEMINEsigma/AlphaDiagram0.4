@@ -13,33 +13,54 @@ namespace AD.UI
     {
         #region Attribute
 
-        public static ADInputSystem instance = null;
+        private static ADInputSystem _m_instance = null;
+        public static ADInputSystem instance
+        {
+            get
+            {
+                if (_m_instance == null) _m_instance = new GameObject("InputSystem").AddComponent<ADInputSystem>();
+                return _m_instance;
+            }
+            private set
+            {
+                _m_instance = value;
+            }
+        }
 
-        public ADUI _Text; 
+        public ADUI _Text,_Slider,_Toggle; 
         public AudioSourceController _AudioSource;
         public ViewController _Image;
 
-        private Dictionary<KeyControl, ADEvent> OnKeyDown = new Dictionary<KeyControl, ADEvent>();
-        private Dictionary<ButtonControl, ADEvent> OnMouseDown = new Dictionary<ButtonControl, ADEvent>();
+        public delegate bool Detecter();
+
+        private Dictionary<Detecter, ADEvent> OnKeyDown = new Dictionary<Detecter, ADEvent>();
+        private Dictionary<Detecter, ADEvent> OnMouseDown = new Dictionary<Detecter, ADEvent>();
         public bool DetectKey = true, DetectMouse = true;
+
+        public string CurrentArea = "";
 
         #endregion
 
+        private void Awake()
+        {
+            instance = this; 
+        }
 
         private void Start()
-        {
-            instance = this;
-
+        { 
             AD.SceneSingleAssets.inputSystems.Add(this);
         }
 
         private void Update()
         {
-            if (DetectKey)  foreach (var pair in OnKeyDown) if (pair.Key.wasPressedThisFrame) pair.Value.Invoke();
-            if (DetectMouse) foreach (var pair in OnMouseDown) if (pair.Key.wasPressedThisFrame) pair.Value.Invoke();
+            CurrentArea = AD.UI.ADUI.UIArea;
+            if (DetectKey) foreach (var pair in OnKeyDown) if (pair.Key()) pair.Value.Invoke();
+            if (DetectMouse) foreach (var pair in OnMouseDown) if (pair.Key()) pair.Value.Invoke();
         }
 
-        public static ADInputSystem AddListener(KeyControl key, UnityAction oe)
+        #region Function
+
+        public static ADInputSystem AddKeyListener(Detecter key, UnityAction oe)
         {
             if (!instance.OnKeyDown.ContainsKey(key))
             {
@@ -48,9 +69,23 @@ namespace AD.UI
             instance.OnKeyDown[key].AddListener(oe);
             return instance;
         }
-        public static ADInputSystem RemoveLinstener(KeyControl key, UnityAction oe)
+        public static ADInputSystem RemoveKeyLinstener(Detecter key, UnityAction oe)
         {
             if (instance.OnKeyDown.ContainsKey(key)) instance.OnKeyDown[key].RemoveListener(oe);
+            return instance;
+        }
+        public static ADInputSystem AddMouseListener(Detecter key, UnityAction oe)
+        {
+            if (!instance.OnMouseDown.ContainsKey(key))
+            {
+                instance.OnMouseDown.TryAdd(key, new ADEvent());
+            }
+            instance.OnMouseDown[key].AddListener(oe);
+            return instance;
+        }
+        public static ADInputSystem RemoveMouseLinstener(Detecter key, UnityAction oe)
+        {
+            if (instance.OnMouseDown.ContainsKey(key)) instance.OnMouseDown[key].RemoveListener(oe);
             return instance;
         }
         /*public static ADInputSystem RemoveAllListeners(KeyControl key) = delete;
@@ -63,12 +98,13 @@ namespace AD.UI
         public static void ADD(MenuCommand menuCommand)
         {
             if (instance != null) return;
-            GameObject obj = new GameObject("InputSystem");//创建新物体
-            obj.AddComponent<AD.UI.ADInputSystem>();
-            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = obj;//将新建物体设为当前选中物体c
+            AD.UI.ADInputSystem  obj = new GameObject("InputSystem").AddComponent<AD.UI.ADInputSystem>();
+            GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);//设置父节点为当前选中物体
+            Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);//注册到Undo系统,允许撤销
+            Selection.activeObject = obj.gameObject;//将新建物体设为当前选中物体c
         }
+
+        #endregion
 
     }
 

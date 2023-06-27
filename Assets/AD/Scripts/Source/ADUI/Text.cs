@@ -44,9 +44,9 @@ namespace AD.UI
                 text = new GameObject("New Text").AddComponent<AD.UI.Text>();
                 text.source = text.gameObject.AddComponent<TextMeshProUGUI>(); 
             }
-            GameObjectUtility.SetParentAndAlign(text.gameObject, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(text.gameObject, "Create " + text.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = text.gameObject;//将新建物体设为当前选中物体
+            GameObjectUtility.SetParentAndAlign(text.gameObject, menuCommand.context as GameObject);
+            Undo.RegisterCreatedObjectUndo(text.gameObject, "Create " + text.name);
+            Selection.activeObject = text.gameObject;
         }
 
         public static AD.UI.Text Generate(string name = "New Text", string defaultText = "", Transform parent = null, params System.Type[] components)
@@ -62,7 +62,7 @@ namespace AD.UI
                 text = new GameObject(name, components).AddComponent<AD.UI.Text>();
                 text.source = text.gameObject.AddComponent<TextMeshProUGUI>(); 
             }
-            GameObjectUtility.SetParentAndAlign(text.gameObject, parent.gameObject);//设置父节点为当前选中物体 
+            GameObjectUtility.SetParentAndAlign(text.gameObject, parent.gameObject);
             text.text = defaultText;
 
             return text;

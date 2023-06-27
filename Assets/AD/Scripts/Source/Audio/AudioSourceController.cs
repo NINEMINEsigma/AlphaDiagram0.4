@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using AD.Utility;
 using UnityEditor;
@@ -209,19 +210,18 @@ namespace AD.UI
         }
 
         [MenuItem("GameObject/AD/AudioSource", false, 10)]
-        private static void ADD(MenuCommand menuCommand)
+        private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
-            GameObject obj = new GameObject("New Text");//创建新物体
-            obj.AddComponent<AD.UI.AudioSourceController>();
-            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);//设置父节点为当前选中物体
-            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);//注册到Undo系统,允许撤销
-            Selection.activeObject = obj;//将新建物体设为当前选中物体c
+            AD.UI.AudioSourceController obj = new GameObject("New Text").AddComponent<AD.UI.AudioSourceController>();
+            GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);
+            Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
+            Selection.activeObject = obj.gameObject;
         }
 
         public static AudioSourceController Generate(string name = "New AudioSource", Transform parent = null, params System.Type[] components)
         {
             AudioSourceController source = new GameObject(name, components).AddComponent<AudioSourceController>();
-            source.transform.parent = parent; 
+            GameObjectUtility.SetParentAndAlign(source.gameObject, parent.gameObject);
 
             return source;
         }
