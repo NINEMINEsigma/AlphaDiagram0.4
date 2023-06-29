@@ -35,9 +35,10 @@ namespace AD.UI
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
             AD.UI.Text text;
-            if (ADInputSystem.instance != null && ADInputSystem.instance._Text != null)
+            if (ADGlobalSystem.instance != null && ADGlobalSystem.instance._Text != null)
             {
-                text = GameObject.Instantiate(ADInputSystem.instance._Text).GetComponent<AD.UI.Text>();
+                text = GameObject.Instantiate(ADGlobalSystem.instance._Text).GetComponent<AD.UI.Text>();
+                text.name = "New Text";
             }
             else
             {
@@ -53,9 +54,10 @@ namespace AD.UI
         {
 
             AD.UI.Text text;
-            if (ADInputSystem.instance != null && ADInputSystem.instance._Text != null)
+            if (ADGlobalSystem.instance != null && ADGlobalSystem.instance._Text != null)
             {
-                text = GameObject.Instantiate(ADInputSystem.instance._Text).GetComponent<AD.UI.Text>();
+                text = GameObject.Instantiate(ADGlobalSystem.instance._Text).GetComponent<AD.UI.Text>();
+                text.name = "New Text";
             }
             else
             {
@@ -66,7 +68,7 @@ namespace AD.UI
             text.text = defaultText;
 
             return text;
-        }
+        } 
 
     }
 }

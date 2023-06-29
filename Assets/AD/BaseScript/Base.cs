@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
@@ -385,7 +386,7 @@ namespace AD.ADbase
 
         public ADArchitecture()
         {
-            AD__Objects = new Dictionary<Type, object>();  
+            AD__Objects = new Dictionary<Type, object>();
             AD__MessageRecord = new ADMessageRecord();
             AD__Instance = this;
 
@@ -524,7 +525,7 @@ namespace AD.ADbase
         }
 
         public IADArchitecture RegisterController<_Controller>() where _Controller : IADController, new()
-        { 
+        {
             RegisterController(new _Controller());
             return ADinstance;
         }
@@ -591,6 +592,43 @@ namespace AD.ADbase
     public class ADEvent<T1, T2, T3, T4> : UnityEvent<T1, T2, T3, T4>
     {
 
+    }
+
+    #endregion
+
+}
+
+namespace AD
+{
+    #region Exp 
+
+    public static class ADUtility
+    {
+        static ADUR _instance = null;
+        static ADUR instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GameObject().AddComponent<ADUR>();
+                    _instance.name = nameof(ADUtility);
+                }
+                return _instance;
+            }
+        }
+
+        public static void Record(string message, bool isClock = true)
+        {
+            if (isClock) instance.messages.Add(System.DateTime.Now.ToString());
+            instance.messages.Add(message);
+            if (instance.messages.Count >= 256) instance.messages.RemoveAt(0);
+        }
+
+        public static void _Destory()
+        {
+            _instance = null;
+        }
     }
 
     #endregion

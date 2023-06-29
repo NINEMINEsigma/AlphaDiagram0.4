@@ -123,7 +123,16 @@ namespace AD.UI
         [MenuItem("GameObject/AD/Image", false, 10)]
         private static void ADD(MenuCommand menuCommand)
         {
-            AD.UI.ViewController obj = new GameObject("New Image").AddComponent<AD.UI.ViewController>();
+            AD.UI.ViewController obj = null;
+            if(ADGlobalSystem.instance._Image!=null)
+            {
+                obj = GameObject.Instantiate(ADGlobalSystem.instance._Image);
+                obj.name = "New Image";
+            }
+            else
+            {
+                obj = new GameObject("New Image").AddComponent<AD.UI.ViewController>();
+            }
             GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
             Selection.activeObject = obj.gameObject;
@@ -220,7 +229,7 @@ namespace AD.UI
             ViewImage.sprite = null;
             ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
             return this;
-        }  
+        } 
 
         #endregion
 

@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 
 namespace AD.UI
 {
@@ -27,26 +24,26 @@ namespace AD.UI
 
         public string ElementName { get; set; } = "null";
         public int SerialNumber { get; set; } = 0;
-        public string ElementArea = "null";
-
-        public void OnPointerEnter(PointerEventData eventData)
+        public string ElementArea  = "null";
+         
+        public virtual void OnPointerEnter(PointerEventData eventData)
         {
             Selected = true;
             UIArea = ElementArea;
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        public virtual void OnPointerExit(PointerEventData eventData)
         {
             Selected = false;
             UIArea = "null";
         }
 
-        public IADUI Obtain(int serialNumber)
+        public virtual IADUI Obtain(int serialNumber)
         {
             return Items.Find((P) => P.SerialNumber == serialNumber);
         }
 
-        public IADUI Obtain(string elementName)
+        public virtual IADUI Obtain(string elementName)
         {
             return Items.Find((P) => P.ElementName == elementName);
         } 

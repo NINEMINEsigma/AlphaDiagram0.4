@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic; 
+
+using System.Threading;
 using UnityEditor;
 using UnityEngine; 
 
@@ -88,6 +88,87 @@ public class SliderEdior : Editor
         sprite = EditorGUILayout.ObjectField(hUIContent, that.handleView as Object, typeof(Sprite), @object) as Sprite;
         if (EditorGUI.EndChangeCheck()) that.handleView = sprite;
 
+
+        serializedObject.ApplyModifiedProperties();
+    }
+}
+
+
+[CustomEditor(typeof(AD.UI.Toggle)), CanEditMultipleObjects]
+public class ToggleEdior : Editor
+{
+    private AD.UI.Toggle that = null;
+
+    private SerializedProperty background = null;
+    private SerializedProperty tab = null;
+    private SerializedProperty mark = null;
+    private SerializedProperty title = null;
+
+    private SerializedProperty _IsCheck = null; 
+
+    private void OnEnable()
+    {
+        that = target as AD.UI.Toggle;
+
+        background = serializedObject.FindProperty("background");
+        tab = serializedObject.FindProperty("tab");
+        mark = serializedObject.FindProperty("mark");
+        title = serializedObject.FindProperty("title");
+        _IsCheck = serializedObject.FindProperty("_IsCheck");
+    }
+
+    public override void OnInspectorGUI()
+    {
+        Sprite sprite = null;
+        Object @object = null;
+        string str = "";
+
+        serializedObject.Update();
+
+        GUI.enabled = false;
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+            EditorGUILayout.TextField("ElementArea", that.ElementArea);
+        }
+
+        GUI.enabled = true;
+
+        EditorGUILayout.PropertyField(background);
+        EditorGUILayout.PropertyField(tab);
+        EditorGUILayout.PropertyField(mark);
+        EditorGUILayout.PropertyField(title);
+
+        EditorGUI.BeginChangeCheck();
+        GUIContent gUIContent = new GUIContent("Background");
+        sprite = EditorGUILayout.ObjectField(gUIContent, that.background.sprite as Object, typeof(Sprite), @object) as Sprite;
+        if (EditorGUI.EndChangeCheck()) that.background.sprite = sprite;
+
+        EditorGUI.BeginChangeCheck();
+        GUIContent tUIContent = new GUIContent("Tab");
+        sprite = EditorGUILayout.ObjectField(tUIContent, that.tab.sprite as Object, typeof(Sprite), @object) as Sprite;
+        if (EditorGUI.EndChangeCheck()) that.tab.sprite = sprite;
+
+        EditorGUI.BeginChangeCheck();
+        GUIContent mUIContent = new GUIContent("Mark");
+        sprite = EditorGUILayout.ObjectField(mUIContent, that.mark.sprite as Object, typeof(Sprite), @object) as Sprite;
+        if (EditorGUI.EndChangeCheck()) that.mark.sprite = sprite;
+
+        EditorGUI.BeginChangeCheck();
+        GUIContent tiUIContent = new GUIContent("Title");
+        str = EditorGUILayout.TextField(tiUIContent, that.title.text);
+        if (EditorGUI.EndChangeCheck()) that.title.text = str;
+
+        GUI.enabled = false;
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.Toggle("IsCheck", that.IsCheck);
+        }
+
+        GUI.enabled = true;
 
         serializedObject.ApplyModifiedProperties();
     }

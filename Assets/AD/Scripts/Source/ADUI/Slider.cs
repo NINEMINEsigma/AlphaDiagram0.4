@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
@@ -60,15 +61,15 @@ namespace AD.UI
             AD.UI.ADUI.Destory(this);
         }
 
-        #region Function
+        #region Function 
 
         [MenuItem("GameObject/AD/Slider", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
             AD.UI.Slider slider;
-            if (ADInputSystem.instance != null && ADInputSystem.instance._Slider != null)
+            if (ADGlobalSystem.instance != null && ADGlobalSystem.instance._Slider != null)
             {
-                slider = GameObject.Instantiate(ADInputSystem.instance._Slider) as AD.UI.Slider;
+                slider = GameObject.Instantiate(ADGlobalSystem.instance._Slider) as AD.UI.Slider;
             }
             else
             {
@@ -83,6 +84,7 @@ namespace AD.UI
                 slider.fill = slider_sl.fillRect.gameObject.GetComponent<UnityEngine.UI.Image>();
                 slider.handle = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
             }
+            slider.name = "New Slider";
             GameObjectUtility.SetParentAndAlign(slider.gameObject, menuCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(slider.gameObject, "Create " + slider.name);
             Selection.activeObject = slider.gameObject;
@@ -100,16 +102,16 @@ namespace AD.UI
         }
         static RectTransform GenerateBackground(Slider slider)
         {
-            RectTransform Backgound = new GameObject("Background").AddComponent<RectTransform>();
-            GameObjectUtility.SetParentAndAlign(Backgound.gameObject, slider.gameObject);
-            Backgound.gameObject.AddComponent<UnityEngine.UI.Image>();
-            Backgound.localPosition = new Vector3(0, 0, 0);
-            Backgound.anchorMin = new Vector2(0, 0.25f);
-            Backgound.anchorMax = new Vector2(1, 0.75f);
-            Backgound.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 160);
-            Backgound.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 10);
-            Backgound.pivot = new Vector2(0.5f, 0.5f);
-            return Backgound;
+            RectTransform Background = new GameObject("Background").AddComponent<RectTransform>();
+            GameObjectUtility.SetParentAndAlign(Background.gameObject, slider.gameObject);
+            Background.gameObject.AddComponent<UnityEngine.UI.Image>();
+            Background.localPosition = new Vector3(0, 0, 0);
+            Background.anchorMin = new Vector2(0, 0.25f);
+            Background.anchorMax = new Vector2(1, 0.75f);
+            Background.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 160);
+            Background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 10);
+            Background.pivot = new Vector2(0.5f, 0.5f);
+            return Background;
         }
         static RectTransform GenerateFillArea(Slider slider)
         {
@@ -165,9 +167,9 @@ namespace AD.UI
         public static AD.UI.Slider Generate(string name = "New Slider", Transform parent = null, params System.Type[] components)
         {
             AD.UI.Slider slider = null;
-            if (ADInputSystem.instance._Slider != null)
+            if (ADGlobalSystem.instance._Slider != null)
             {
-                slider = GameObject.Instantiate(ADInputSystem.instance._Slider) as AD.UI.Slider; 
+                slider = GameObject.Instantiate(ADGlobalSystem.instance._Slider) as AD.UI.Slider; 
             }
             else
             {
