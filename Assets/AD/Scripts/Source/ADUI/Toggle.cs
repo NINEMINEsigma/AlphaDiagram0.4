@@ -63,7 +63,7 @@ namespace AD.UI
             }
         }
 
-        private ADGlobalSystem.UnregisterInfo __unregisterInfo = null;
+        private RegisterInfo __unregisterInfo = null;
 
         private ADEvent<bool> actions = new ADEvent<bool>();
 
@@ -77,17 +77,16 @@ namespace AD.UI
         protected void Start()
         {
             AD.UI.ADUI.Initialize(this);
-            ADGlobalSystem.AddListener(Mouse.current.leftButton, () =>
+            __unregisterInfo = ADGlobalSystem.AddListener(Mouse.current.leftButton, () =>
             {
                 if (!Selected) return;
                 IsCheck = !IsCheck;
-            }, out var info);
-            __unregisterInfo = info;
+            }); 
         }
         protected void OnDestory()
         {
             AD.UI.ADUI.Destory(this);
-            __unregisterInfo.Unregister();
+            __unregisterInfo.UnRegister();
         }
 
         #region Function  
