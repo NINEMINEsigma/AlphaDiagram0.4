@@ -12,11 +12,11 @@ TagManager:
   - Water
   - UI
   - 
+  - GameObject
   - 
   - 
   - 
-  - 
-  - 
+  - GUI
   - 
   - 
   - 
@@ -40,4 +40,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: GameObject
+    uniqueID: 2662635571
+    locked: 0
+  - name: GUI
+    uniqueID: 3871714431
     locked: 0

@@ -11,5 +11,10 @@ namespace AD.MainScene
         {
             return MainApp.ADinstance;
         }
+
+        public void Init()
+        {
+
+        }
     }
 }

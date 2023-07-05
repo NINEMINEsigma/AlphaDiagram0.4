@@ -11,5 +11,10 @@ namespace AD.Entry
         {
             return EntryApp.ADinstance;
         }
+
+        public void Init()
+        {
+
+        }
     }
 }

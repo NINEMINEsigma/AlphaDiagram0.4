@@ -14,7 +14,7 @@ namespace AD
     {
         public abstract override IADArchitecture ADinstance(); 
 
-        protected override void Init()
+        public override void Init()
         {
             mCanvasInitializer.Initialize();
         }
@@ -27,7 +27,7 @@ namespace AD
     {
         public abstract override IADArchitecture ADinstance();
 
-        protected override void Init()
+        public override void Init()
         {
             mCanvasInitializer.Initialize();
         }
@@ -41,7 +41,7 @@ namespace AD
     {
         public abstract override IADArchitecture ADinstance();
 
-        protected override void Init()
+        public override void Init()
         {
             mCanvasInitializer.Initialize();
         }
@@ -55,7 +55,7 @@ namespace AD
     {
         public abstract override IADArchitecture ADinstance();
 
-        protected override void Init()
+        public override void Init()
         {
             mCanvasInitializer.Initialize();
         }
@@ -69,7 +69,7 @@ namespace AD
     {
         public abstract override IADArchitecture ADinstance();
 
-        protected override void Init()
+        public override void Init()
         {
             mCanvasInitializer.Initialize();
         }

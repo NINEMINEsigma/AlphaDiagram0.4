@@ -254,17 +254,19 @@ namespace AD.ADbase
     public interface IADSystem
     {
         IADArchitecture ADinstance();
+        void Init();
     }
 
     public interface IADController
     {
         IADArchitecture ADinstance();
+        void Init();
     }
 
     public abstract class ADController : MonoBehaviour, IADController
     {
         public abstract IADArchitecture ADinstance();
-        protected abstract void Init();
+        public abstract void Init(); 
     }
 
     public interface IADEvent
@@ -484,19 +486,22 @@ namespace AD.ADbase
 
         public IADArchitecture RegisterModel<_Model>(_Model model) where _Model : IADModel, new()
         {
+            model.Init();
             Register<_Model>(model);
             return ADinstance;
         }
 
         public IADArchitecture RegisterSystem<_System>(_System system) where _System : IADSystem, new()
         {
+            system.Init();
             Register<_System>(system);
             return ADinstance;
         }
 
         public IADArchitecture RegisterController<_Controller>(_Controller controller) where _Controller : IADController, new()
         {
-            Register<_Controller>(controller);
+            controller.Init();
+            Register<_Controller>(controller); 
             return ADinstance;
         }
 
@@ -514,19 +519,25 @@ namespace AD.ADbase
 
         public IADArchitecture RegisterModel<_Model>() where _Model : IADModel, new()
         {
-            Register<_Model>();
+            _Model cat = new _Model();
+            cat.Init();
+            Register<_Model>(cat);
             return ADinstance;
         }
 
         public IADArchitecture RegisterSystem<_System>() where _System : IADSystem, new()
         {
-            RegisterSystem(new _System());
+            _System cat = new _System();
+            cat.Init();
+            RegisterSystem(cat);
             return ADinstance;
         }
 
         public IADArchitecture RegisterController<_Controller>() where _Controller : IADController, new()
         {
-            RegisterController(new _Controller());
+            _Controller cat = new _Controller();
+            cat.Init();
+            RegisterController(cat);
             return ADinstance;
         }
 
@@ -594,42 +605,6 @@ namespace AD.ADbase
 
     }
 
-    #endregion
+    #endregion 
 
-}
-
-namespace AD
-{
-    #region Exp 
-
-    public static class ADUtility
-    {
-        static ADUR _instance = null;
-        static ADUR instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new GameObject().AddComponent<ADUR>();
-                    _instance.name = nameof(ADUtility);
-                }
-                return _instance;
-            }
-        }
-
-        public static void Record(string message, bool isClock = true)
-        {
-            if (isClock) instance.messages.Add(System.DateTime.Now.ToString());
-            instance.messages.Add(message);
-            if (instance.messages.Count >= 256) instance.messages.RemoveAt(0);
-        }
-
-        public static void _Destory()
-        {
-            _instance = null;
-        }
-    }
-
-    #endregion
 }

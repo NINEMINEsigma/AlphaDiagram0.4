@@ -5,11 +5,10 @@ using UnityEngine.UI;
 using AD.Utility;
 using UnityEngine.EventSystems;
 using AD.ADbase;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace AD.UI
 {
-    public class VirtualJoystick : PropertyModule, IDragHandler, IInitializePotentialDragHandler, IEndDragHandler
+    public class VirtualJoystick : PropertyModule, IDragHandler,IPointerDownHandler,IPointerUpHandler
     {
         [Header("VirtualJoystick")]
         public Camera TargetCamera;
@@ -19,7 +18,18 @@ namespace AD.UI
         public Image Fill;
         public Image JoyStick;
 
+        /// <summary>
+        /// z=DateValue
+        /// </summary>
         public Vector3 Value = new Vector3();
+        [HideInInspector] public Vector3 CatchValue = new Vector3();
+        public Vector3 DirectionValue
+        {
+            get
+            {
+                return new Vector3(Mathf.Clamp(Value.x / MaxX * 0.5f, -1, 1), Mathf.Clamp(Value.y / MaxX * 0.5f, -1, 1), 0);
+            }
+        }
 
         public ADEvent<PointerEventData> OnDragEvent = new ADEvent<PointerEventData>(),
             OnStart = new ADEvent<PointerEventData>(),
@@ -48,96 +58,89 @@ namespace AD.UI
             AD.UI.ADUI.Destory(this);
         }
 
-        private bool IsStart = false, IsEnd = false;
+        [SerializeField] private bool IsDrag = false;
         private float MaxX;
         [HideInInspector] public float DateValue = 180;
+        [HideInInspector] public float GlobalAngle = 0;
+
+        private void Update()
+        {
+            if (IsDrag)
+            {
+                GlobalAngle = Mathf.Atan2(JoyStick.transform.position.y - transform.position.y, JoyStick.transform.position.x - transform.position.x) * 180 / Mathf.PI;
+                float angle = DateValue / 2.0f - 90 + GlobalAngle;
+                Fill.rectTransform.eulerAngles = new Vector3(0, 0, angle);
+                while (DateValue > 30)
+                {
+                    DateValue -= 1.5f;
+                    Fill.fillAmount = DateValue / 360.0f;
+                    Value.z = DateValue;
+                } 
+            } 
+        }
 
         public void OnDrag(PointerEventData eventData)
         {
             OnDragEvent.Invoke(eventData);
             var Pos = TargetCamera.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Vector3.Distance(transform.position, TargetCamera.transform.position)));
-            Value = (Pos - transform.position).normalized;
-            if ((Pos - transform.position).magnitude > MaxX / 2.0f) Pos = transform.position + Value * MaxX / 2.0f;
-            JoyStick.transform.position = new Vector3(Pos.x, Pos.y, JoyStick.transform.position.z);
-            float angle = DateValue / 2.0f - 90 + Mathf.Atan2(JoyStick.transform.position.y - transform.position.y, JoyStick.transform.position.x - transform.position.x) * 180 / Mathf.PI;
-            Fill.rectTransform.eulerAngles = new Vector3(0, 0, angle);
+            CatchValue = Value = Pos - transform.position;
+            if (Value.magnitude > MaxX / 2.0f) Pos = transform.position + (Pos - transform.position).normalized * MaxX / 2.0f;
+            JoyStick.transform.position = new Vector3(Pos.x, Pos.y, JoyStick.transform.position.z); 
+        } 
 
-        }
-        public IEnumerator OnDragKeep()
-        {
-            DateValue = 180;
-            while (DateValue > 30)
-            {
-                DateValue -= 1.5f;
-                Fill.fillAmount = DateValue / 360.0f;
-                Value.z = DateValue;
-                yield return new WaitForEndOfFrame();
-            }
-        }
-
-        public void OnInitializePotentialDrag(PointerEventData eventData)
-        {
+        public void OnPointerDown(PointerEventData eventData)
+        { 
             OnStart.Invoke(eventData);
-            StopCoroutine(nameof(OnInitializePotentialDrag_Start));
+            StopCoroutine(nameof(OnInitializePotentialDrag_Start)); 
             StartCoroutine(OnInitializePotentialDrag_Start());
-
-            OnDragEvent.Invoke(eventData);
-            var Pos = TargetCamera.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Vector3.Distance(transform.position, TargetCamera.transform.position)));
-            if ((Pos - transform.position).magnitude > MaxX / 2.0f) Pos = transform.position + (Pos - transform.position).normalized * MaxX / 2.0f;
-            JoyStick.transform.position = new Vector3(Pos.x, Pos.y, JoyStick.transform.position.z);
-            float angle = DateValue / 2.0f - 90 + Mathf.Atan2(JoyStick.transform.position.y - transform.position.y, JoyStick.transform.position.x - transform.position.x) * 180 / Mathf.PI;
-            Fill.rectTransform.eulerAngles = new Vector3(0, 0, angle);
+            IsDrag = true;
         }
         private IEnumerator OnInitializePotentialDrag_Start()
         {
-            while (IsEnd) yield return new WaitForEndOfFrame();
-            IsStart = true;
+            StopCoroutine(nameof(OnInitializePotentialDrag_End));
+            DateValue = 180; 
             Value = new Vector3();
             float end = 15.0f;
             for (int i = 0; i < end; i++)
             {
-                MineVirtualJoystick.SetColor_A(i / end);
-                Background.SetColor_A(i / end);
-                JoyStick.SetColor_A(i / end);
+                MineVirtualJoystick.SetColor_A(i / end * 0.5f);
+                Background.SetColor_A(i / end * 0.5f);
+                JoyStick.SetColor_A(i / end * 0.75f);
                 yield return new WaitForEndOfFrame();
             }
             yield return new WaitForEndOfFrame();
-            MineVirtualJoystick.SetColor_A(1);
-            Background.SetColor_A(1);
-            JoyStick.SetColor_A(1);
-            JoyStick.transform.localPosition = new Vector3();
-            IsStart = false;
-            StartCoroutine(OnDragKeep());
+            MineVirtualJoystick.SetColor_A(0.5f);
+            Background.SetColor_A(0.5f);
+            JoyStick.SetColor_A(0.75f);  
         }
-
-        public void OnEndDrag(PointerEventData eventData)
+         
+        public void OnPointerUp(PointerEventData eventData)
         {
             OnEnd.Invoke(eventData);
             StopCoroutine(nameof(OnInitializePotentialDrag_End));
             StartCoroutine(OnInitializePotentialDrag_End());
+            IsDrag = false;
         }
         private IEnumerator OnInitializePotentialDrag_End()
         {
-            while (IsStart) yield return new WaitForEndOfFrame();
-            IsEnd = true;
+            StopCoroutine(nameof(OnInitializePotentialDrag_Start));  
             float end = 15.0f;
             DateValue = 0;
             Value = new Vector3();
             Fill.fillAmount = DateValue;
             for (int i = 0; i < end; i++)
             {
-                MineVirtualJoystick.SetColor_A(1 - i / end);
-                Background.SetColor_A(1 - i / end);
-                JoyStick.SetColor_A(1 - i / end);
+                MineVirtualJoystick.SetColor_A((1 - i / end) * 0.5f);
+                Background.SetColor_A((1 - i / end) * 0.5f);
+                JoyStick.SetColor_A((1 - i / end) * 0.75f);
                 yield return new WaitForEndOfFrame();
             }
             yield return new WaitForEndOfFrame();
             MineVirtualJoystick.SetColor_A(0);
             Background.SetColor_A(0);
             JoyStick.SetColor_A(0);
-            JoyStick.transform.localPosition = new Vector3();
-            IsEnd = false;
-            StopCoroutine(nameof(OnDragKeep));
+            JoyStick.transform.localPosition = new Vector3(); 
         }
+
     }
 }

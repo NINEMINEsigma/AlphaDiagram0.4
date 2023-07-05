@@ -11,5 +11,10 @@ namespace AD.Game
         {
             return GameApp.ADinstance;
         }
+
+        public void Init()
+        {
+
+        }
     }
 }

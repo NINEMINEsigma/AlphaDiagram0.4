@@ -33,6 +33,7 @@ MonoBehaviour:
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
     - AudioKit
+    - Cinemachine
     - CW.Common
     - LeanCommon
     - LeanPool

@@ -6,12 +6,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using AD;
 
 namespace AD.UI
 {
     [Serializable, RequireComponent(typeof(UnityEngine.UI.Image))]
     [AddComponentMenu("UI/AD/Button", 100)]
-    public class Button : ADUI,IPointerClickHandler
+    public class Button : ADUI, IPointerClickHandler
     {
         public Animator animator = null;
         public ADEvent OnClick = new ADEvent(), OnRelease = new ADEvent();
@@ -38,7 +39,7 @@ namespace AD.UI
 
         protected void Start()
         {
-            AD.UI.ADUI.Initialize(this); 
+            AD.UI.ADUI.Initialize(this);
         }
 
         protected void OnDestory()
@@ -73,7 +74,7 @@ namespace AD.UI
             }
             else
             {
-                button = new GameObject("New Button", components).AddComponent<AD.UI.Button>(); 
+                button = new GameObject("New Button", components).AddComponent<AD.UI.Button>();
             }
 
             GameObjectUtility.SetParentAndAlign(button.gameObject, parent.gameObject);
@@ -86,6 +87,20 @@ namespace AD.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             IsClick = !IsClick;
+        }
+
+        public void AddListener(UnityEngine.Events.UnityAction action, PressType type = PressType.ThisFramePressed)
+        {
+            if (type == PressType.ThisFramePressed) OnClick.AddListener(action);
+            else if (type == PressType.ThisFrameReleased) OnRelease.AddListener(action);
+            else AD.ADGlobalSystem.AddMessage("You try to add worry listener");
+        }
+
+        public void RemoveListener(UnityEngine.Events.UnityAction action, PressType type = PressType.ThisFramePressed)
+        {
+            if (type == PressType.ThisFramePressed) OnClick.RemoveListener(action);
+            else if (type == PressType.ThisFrameReleased) OnRelease.RemoveListener(action);
+            else AD.ADGlobalSystem.AddMessage("You try to remove worry listener");
         }
     }
 }

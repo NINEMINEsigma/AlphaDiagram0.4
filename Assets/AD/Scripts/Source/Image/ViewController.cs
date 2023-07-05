@@ -41,7 +41,7 @@ namespace AD.UI
     [Serializable]
     [RequireComponent(typeof(Image))]
     [AddComponentMenu("UI/AD/ViewController", 100)]
-    public sealed class ViewController : ADUI, IViewController,IADController
+    public sealed class ViewController : ADUI, IViewController, IADController
     {
         #region Attribute 
 
@@ -49,7 +49,7 @@ namespace AD.UI
         public Image ViewImage
         {
             get
-            { 
+            {
                 if (_ViewImage == null) _ViewImage = GetComponent<Image>();
                 return _ViewImage;
             }
@@ -102,7 +102,7 @@ namespace AD.UI
 
         public ViewController()
         {
-            ElementArea = "Image"; 
+            ElementArea = "Image";
         }
 
         private void Start()
@@ -111,19 +111,19 @@ namespace AD.UI
             AD.SceneSingleAssets.viewControllers.Add(this);
 
             ViewImage = GetComponent<Image>();
-            ViewImage.sprite = CurrentImage; 
+            ViewImage.sprite = CurrentImage;
         }
         private void OnDestroy()
-        { 
+        {
             AD.UI.ADUI.Destory(this);
-            AD.SceneSingleAssets.viewControllers.Remove(this); 
+            AD.SceneSingleAssets.viewControllers.Remove(this);
         }
 
         [MenuItem("GameObject/AD/Image", false, 10)]
         private static void ADD(MenuCommand menuCommand)
         {
             AD.UI.ViewController obj = null;
-            if(ADGlobalSystem.instance._Image!=null)
+            if (ADGlobalSystem.instance._Image != null)
             {
                 obj = GameObject.Instantiate(ADGlobalSystem.instance._Image);
                 obj.name = "New Image";
@@ -140,7 +140,7 @@ namespace AD.UI
         public static ViewController Generate(string name = "New Image", Transform parent = null, params System.Type[] components)
         {
             ViewController source = new GameObject(name, components).AddComponent<ViewController>();
-            source.transform.parent = parent; 
+            source.transform.parent = parent;
 
             return source;
         }
@@ -228,9 +228,13 @@ namespace AD.UI
             ViewImage.sprite = null;
             ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
             return this;
-        } 
+        }
 
-        #endregion
+        public void Init()
+        {
 
+        }
+
+        #endregion 
     }
 }
