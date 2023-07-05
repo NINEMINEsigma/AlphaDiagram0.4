@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using AD.ADbase;
@@ -12,9 +13,10 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls; 
+using UnityEngine.InputSystem.Controls;
+using AD.UI;
 
-namespace AD.UI
+namespace AD
 {
     public class RegisterInfo
     {
@@ -111,7 +113,7 @@ namespace AD.UI
 
     public class ADGlobalSystem : MonoBehaviour
     {
-        private static ADGlobalSystem _m_instance = null;
+        public static ADGlobalSystem _m_instance = null;
         public static ADGlobalSystem instance
         {
             get
@@ -126,9 +128,11 @@ namespace AD.UI
         }
 
         public ADUI _Toggle, _Slider, _Text, _Button;
+        public PropertyModule _VirtualJoystick;
         public ViewController _Image;
         public AudioSourceController _AudioSource;
 
+        public bool IsKeepObject = true;
 
         #region InputSystem
 
@@ -309,7 +313,7 @@ namespace AD.UI
         public static void ADD(MenuCommand menuCommand)
         {
             if (instance != null) return;
-            AD.UI.ADGlobalSystem obj = new GameObject("GlobalSystem").AddComponent<AD.UI.ADGlobalSystem>();
+            AD.ADGlobalSystem obj = new GameObject("GlobalSystem").AddComponent<AD.ADGlobalSystem>();
             _m_instance = obj;
             GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
@@ -357,8 +361,7 @@ namespace AD.UI
 
         private void OnDestroy()
         {
-            _m_instance = null;
-            SaveRecord();
+            if(!IsKeepObject) _m_instance = null;
         }
 
         #endregion
@@ -651,7 +654,7 @@ namespace AD.UI
             }
             UtilityPackage cMessage = new UtilityPackage(message, state);
             instance.record.Add(cMessage);
-            if (state != "") Debug.LogWarning(cMessage.ObtainResult());
+            if (state == "Warning") Debug.LogWarning(cMessage.ObtainResult());
         }
 
         public static void AddError(string message, string state = "Error")
@@ -662,7 +665,7 @@ namespace AD.UI
             }
             UtilityPackage cMessage = new UtilityPackage(message, state);
             instance.record.Add(cMessage);
-            if (state != "") Debug.LogError(cMessage.ObtainResult()); 
+            if (state == "Error") Debug.LogError(cMessage.ObtainResult()); 
         }
 
         public string ObtainResultAndClean()
@@ -688,9 +691,77 @@ namespace AD.UI
             }
         }
 
+        public static bool IsKeepException = true;
+
+        public static T Error<T>(string message, Exception ex, T result) where T : class, new()
+        {
+            if (IsKeepException) throw new ADException(message, ex);
+            AddError(message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace);
+            return result;
+        }
+        public static T Error<T>(string message, Exception ex = null) where T : class, new()
+        {
+            if (IsKeepException) throw new ADException(message, ex);
+            AddError(message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace);
+            return default(T);
+        }
+        public static T Error<T>(string message) where T : class, new()
+        {
+            if (IsKeepException) throw new ADException(message);
+            AddError(message);
+            return default(T);
+        }
+
+        public static bool Error(string message, bool result = false, Exception ex = null)
+        {
+            if (IsKeepException) throw new ADException(message, ex);
+            AddError(message);
+            return result;
+        }
+
+        public static void TrackError(string message, System.Exception ex)
+        {
+            //utility.AddError("\nMessage: " + message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace);
+            Error<object>("\nMessage: " + message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace, ex); 
+        }
+
+        public static T FinalCheck<T>(T result, string message = "you obtain a null object")
+        {
+            if (result == null) AddError(message);
+            return result;
+        }
+
+        public static void FunctionalRecord<T>(T func)
+        {
+            AddMessage(func.ToString());
+        }
+
         public string RecordPath { get; set; } = "null";
 
         #endregion
+    }
+
+    public static class MethodBaseExtension
+    { 
+        public static MethodBase TrackError(this MethodBase method, System.Exception ex)
+        {
+            var att = method.GetAttribute<ADAttribute>();
+            if (att == null)
+            {
+                ADGlobalSystem.AddWarning(method.Name + " not has an Attribute(User)");
+                ADGlobalSystem.AddError(method.Name + "\n" + ex.Message);
+                return method;
+            }
+            ADGlobalSystem.TrackError((att.message == "") ? method.Name : att.message, ex);
+            return method;
+        }
+
+        public static object SafeTrackError(this MethodBase method, System.Exception ex)
+        {
+            var att = method.GetAttribute<ADAttribute>();
+            ADGlobalSystem.TrackError((att.message == "") ? method.Name : att.message, ex);
+            return System.Activator.CreateInstance(att.type);
+        }
     }
 
 #if UNITY_EDITOR
@@ -703,8 +774,11 @@ namespace AD.UI
         List<string> buttons = new List<string>();
 
         private SerializedProperty _Toggle, _Slider, _Text, _Button;
+        private SerializedProperty _VirtualJoystick;
         private SerializedProperty _Image;
         private SerializedProperty _AudioSource;
+
+        private SerializedProperty _IsKeepObject;
 
         SerializedProperty record = null;
 
@@ -726,10 +800,13 @@ namespace AD.UI
             _Slider = serializedObject.FindProperty("_Slider");
             _Text = serializedObject.FindProperty("_Text");
             _Button = serializedObject.FindProperty("_Button");
+            _VirtualJoystick = serializedObject.FindProperty("_VirtualJoystick");
             _Image = serializedObject.FindProperty("_Image");
             _AudioSource = serializedObject.FindProperty("_AudioSource");
 
             record = serializedObject.FindProperty("record");
+
+            _IsKeepObject = serializedObject.FindProperty("IsKeepObject");
         }
 
         public override void OnInspectorGUI()
@@ -749,12 +826,20 @@ namespace AD.UI
 
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(_Toggle);
-            EditorGUILayout.PropertyField(_Slider);
-            EditorGUILayout.PropertyField(_Text);
-            EditorGUILayout.PropertyField(_Button);
-            EditorGUILayout.PropertyField(_Image);
-            EditorGUILayout.PropertyField(_AudioSource);
+            EditorGUILayout.PropertyField(_IsKeepObject);
+
+            if (Application.isEditor)
+            { 
+                EditorGUILayout.Space(25);
+
+                EditorGUILayout.PropertyField(_Toggle);
+                EditorGUILayout.PropertyField(_Slider);
+                EditorGUILayout.PropertyField(_Text);
+                EditorGUILayout.PropertyField(_Button);
+                EditorGUILayout.PropertyField(_VirtualJoystick);
+                EditorGUILayout.PropertyField(_Image);
+                EditorGUILayout.PropertyField(_AudioSource);
+            }
 
             if (Application.isPlaying)
             {
@@ -772,6 +857,19 @@ namespace AD.UI
                     that.SaveRecord();
                 }
             }
+
+            UnityEngine.Object @object = null;
+
+            EditorGUI.BeginChangeCheck();
+            ADGlobalSystem temp_cat = null;
+            GUIContent gUIContent = new GUIContent("Instance");
+            temp_cat = EditorGUILayout.ObjectField(gUIContent, ADGlobalSystem._m_instance as UnityEngine.Object, typeof(ADGlobalSystem), @object) as ADGlobalSystem;
+            if (EditorGUI.EndChangeCheck()) ADGlobalSystem._m_instance = temp_cat;
+
+            EditorGUI.BeginChangeCheck();
+            GUIContent bUIContent = new GUIContent("IsKeepException");
+            bool __IsKeepException = EditorGUILayout.Toggle(bUIContent, ADGlobalSystem.IsKeepException);
+            if (EditorGUI.EndChangeCheck()) ADGlobalSystem.IsKeepException = __IsKeepException;
 
             serializedObject.ApplyModifiedProperties();
         }

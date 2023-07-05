@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PropertyModule : MonoBehaviour
+namespace AD.UI
 {
-    // Start is called before the first frame update
-    void Start()
+    public abstract class PropertyModule : ADUI
     {
-        
-    }
+        [Header("PropertyModule")]
+        public List<GameObject> Childs = new List<GameObject>();
+        public GameObject Parent = null;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

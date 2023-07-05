@@ -173,3 +173,43 @@ public class ToggleEdior : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+
+[CustomEditor(typeof(AD.UI.Button)), CanEditMultipleObjects]
+public class ButtonEdior : Editor
+{
+    private AD.UI.Button that = null;
+
+    private SerializedProperty animator = null;
+    private SerializedProperty OnClick, OnRelease;
+
+    private void OnEnable()
+    {
+        that = target as AD.UI.Button;
+
+        animator = serializedObject.FindProperty("animator");
+        OnClick = serializedObject.FindProperty("OnClick");
+        OnRelease = serializedObject.FindProperty("OnRelease");
+    }
+
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+
+        GUI.enabled = false;
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.IntSlider("SerialNumber", that.SerialNumber, 0, AD.UI.ADUI.TotalSerialNumber - 1);
+            EditorGUILayout.TextField("ElementName", that.ElementName);
+            EditorGUILayout.TextField("ElementArea", that.ElementArea);
+        }
+
+        GUI.enabled = true;
+
+        EditorGUILayout.PropertyField(animator);
+        EditorGUILayout.PropertyField(OnClick);
+        EditorGUILayout.PropertyField(OnRelease);
+
+        serializedObject.ApplyModifiedProperties();
+    }
+}

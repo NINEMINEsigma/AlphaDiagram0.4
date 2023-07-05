@@ -155,10 +155,13 @@ MonoBehaviour:
   _Toggle: {fileID: 254901351885064430, guid: a0e2171712923504dad4ca3e6710777e, type: 3}
   _Slider: {fileID: 6436064238636930884, guid: e1f7008f05821744f8c98db9d09a2466, type: 3}
   _Text: {fileID: 4247100306540257601, guid: d7f701b428163a440a69cd4d249ca855, type: 3}
-  _Button: {fileID: 0}
+  _Button: {fileID: 1498806284698747971, guid: 6be8b892649722f46b1c22cd647f573b, type: 3}
+  _VirtualJoystick: {fileID: 9145189818668447401, guid: 59c9be2ba94220f499cc90ef816cfd96, type: 3}
   _Image: {fileID: 350532603337223207, guid: 8c9f0d46552aa6847b18cd92b5ed7b71, type: 3}
   _AudioSource: {fileID: 1273201300325413191, guid: 711c6dbbd6f2fc043895cdc8329b55a9, type: 3}
+  IsKeepObject: 1
   _IsOnValidate: 0
+  record: []
 --- !u!4 &75705471
 Transform:
   m_ObjectHideFlags: 0
@@ -824,10 +827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Selected: 0
   ElementArea: Image
-  SourcePairs:
-  - SpriteSource: {fileID: 21300000, guid: cc38125ddf4aa2c49943ceda3337457c, type: 3}
-    Name: 
-    SpriteName: 
+  SourcePairs: []
 --- !u!114 &1020410190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -848,7 +848,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cc38125ddf4aa2c49943ceda3337457c, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
