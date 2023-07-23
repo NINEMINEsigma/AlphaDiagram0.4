@@ -322,7 +322,7 @@ namespace AD.BASE
     public interface IADSystem : ICanInitialize, ICanSendCommand, ICanGetArchitecture, ICanGetController
     {
         void RegisterCommand<T>() where T : class, IADCommand, new();
-        void UnRegisterCommand<T>() where T : class, IADCommand, new();
+        void UnRegisterCommand<T>() where T : class, IADCommand, new(); 
     }
 
     public abstract class ADSystem : IADSystem
@@ -392,6 +392,12 @@ namespace AD.BASE
         public T GetController<T>() where T : class, IADController, new()
         {
             return Architecture.GetController<T>();
+        }
+
+        public MonoSystem RegisterController<_Controller>(_Controller controller) where _Controller : IADController, new()
+        {
+            Architecture.RegisterController(controller);
+            return this;
         }
     }
 
