@@ -1,14 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace AD.UI
 {
@@ -18,7 +10,15 @@ namespace AD.UI
     {
         #region Attribute
 
-        public UnityEngine.UI.Slider source = null;
+        private UnityEngine.UI.Slider _source = null;
+        public UnityEngine.UI.Slider source
+        {
+            get
+            {
+                _source ??= GetComponent<UnityEngine.UI.Slider>();
+                return _source;
+            }
+        }
 
         [SerializeField] private UnityEngine.UI.Image background = null;
         [SerializeField] private UnityEngine.UI.Image handle = null;
@@ -54,7 +54,7 @@ namespace AD.UI
 
         protected void Start()
         {
-            AD.UI.ADUI.Initialize(this);
+            AD.UI.ADUI.Initialize(this); 
         }
         protected void OnDestory()
         {
@@ -63,6 +63,7 @@ namespace AD.UI
 
         #region Function 
 
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/Slider", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
@@ -92,6 +93,7 @@ namespace AD.UI
 
         }
 
+#endif
         static Slider GenerateSliderParent(string name = "New Slider")
         {
             Slider slider = new GameObject(name).AddComponent<AD.UI.Slider>();
@@ -103,7 +105,7 @@ namespace AD.UI
         static RectTransform GenerateBackground(Slider slider)
         {
             RectTransform Background = new GameObject("Background").AddComponent<RectTransform>();
-            GameObjectUtility.SetParentAndAlign(Background.gameObject, slider.gameObject);
+            Background.SetParent(slider.transform);
             Background.gameObject.AddComponent<UnityEngine.UI.Image>();
             Background.localPosition = new Vector3(0, 0, 0);
             Background.anchorMin = new Vector2(0, 0.25f);
@@ -116,7 +118,7 @@ namespace AD.UI
         static RectTransform GenerateFillArea(Slider slider)
         {
             RectTransform FillArea = new GameObject("Fill Area").AddComponent<RectTransform>();
-            GameObjectUtility.SetParentAndAlign(FillArea.gameObject, slider.gameObject);
+            FillArea.SetParent(slider.transform);
             FillArea.localPosition = new Vector3(-5, 0, 0);
             FillArea.anchorMin = new Vector2(0, 0.25f);
             FillArea.anchorMax = new Vector2(1, 0.75f);
@@ -129,7 +131,7 @@ namespace AD.UI
         static RectTransform GenerateHandleSlideArea(Slider slider)
         {
             RectTransform HandleSlideArea = new GameObject("Handle Slide Area").AddComponent<RectTransform>();
-            GameObjectUtility.SetParentAndAlign(HandleSlideArea.gameObject, slider.gameObject);
+            HandleSlideArea.SetParent(slider.transform);
             HandleSlideArea.localPosition = new Vector3(0, 0, 0);
             HandleSlideArea.anchorMin = new Vector2(0, 0);
             HandleSlideArea.anchorMax = new Vector2(1, 1);
@@ -143,7 +145,7 @@ namespace AD.UI
         {
             RectTransform fill = new GameObject("Fill").AddComponent<RectTransform>();
             fill.gameObject.AddComponent<UnityEngine.UI.Image>();
-            GameObjectUtility.SetParentAndAlign(fill.gameObject, FullArea.gameObject);
+            fill.SetParent(fill.transform);
 
             fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 10);
             fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
@@ -155,7 +157,7 @@ namespace AD.UI
         {
             RectTransform Handle = new GameObject("Handle").AddComponent<RectTransform>();
             Handle.gameObject.AddComponent<UnityEngine.UI.Image>();
-            GameObjectUtility.SetParentAndAlign(Handle.gameObject, HandleSlideArea.gameObject);
+            Handle.SetParent(HandleSlideArea.transform);
 
             Handle.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 20);
             Handle.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
@@ -186,9 +188,9 @@ namespace AD.UI
 
                 slider.fill = slider_sl.fillRect.gameObject.GetComponent<UnityEngine.UI.Image>();
                 slider.handle = slider_sl.handleRect.gameObject.GetComponent<UnityEngine.UI.Image>();
-            }
-
-            GameObjectUtility.SetParentAndAlign(slider.gameObject, parent.gameObject);
+            } 
+            slider.transform.SetParent(parent, false);
+            slider.transform.localPosition = Vector3.zero;
             slider.name = name;
             foreach (var component in components) slider.gameObject.AddComponent(component);
 

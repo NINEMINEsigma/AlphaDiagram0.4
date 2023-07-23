@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine; 
-using AD.ADbase;
+using AD.BASE;
 using AD.Entry;
 
 namespace AD.Game
@@ -15,7 +15,8 @@ namespace AD.Game
 
         public override void Init()
         {
-            this.RegisterSystem<GameSystem>();
+            this
+                .RegisterSystem<GameSystem>();
         }
 
         public override IBaseMap ToMap()

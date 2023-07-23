@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +7,7 @@ namespace AD.Utility
 {
     public static class TextureExtension
     {
+#if UNITY_EDITOR
         /// <summary>
         /// 编辑器模式下Texture转换成Texture2D
         /// </summary>
@@ -90,7 +89,6 @@ namespace AD.Utility
                 Debug.Log(path);
             }
         }
-
         public static void SaveRenderTextureToPNG_Runtime(this RenderTexture self, string path, Action<TextureImporter> importAction = null)
         {
             if (path.Length != 0)
@@ -113,6 +111,7 @@ namespace AD.Utility
                 Debug.Log(path);
             }
         }
+#endif
 
         public static Texture2D ToTexture2D(this Sprite self)
         {

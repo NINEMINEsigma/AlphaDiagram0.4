@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using AD.UI;
 using UnityEngine;
 
@@ -25,16 +25,11 @@ namespace AD.Game
         {
             A, B, C, D, None
         }
-        public ActionType PreAction = ActionType.None, CurrentAction = ActionType.None;
-
-        public override IADArchitecture ADinstance()
-        {
-            return GameApp.ADinstance;
-        }
+        public ActionType PreAction = ActionType.None, CurrentAction = ActionType.None; 
 
         private void Start()
         {
-            GameApp.ADinstance.RegisterController(this);
+            GameApp.instance.RegisterController(this);
         }
 
         public override void Init()

@@ -1,13 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Runtime.InteropServices;
 using AD.Utility;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Profiling;
 
 namespace AD.UI
 {
@@ -55,6 +51,8 @@ namespace AD.UI
         public List<SourcePair> SourcePairs = new List<SourcePair>();
         private int CurrentPairIndex = 0;
         private float CurrentClock = 0;
+        private float delay = 0; 
+        private bool IsDelayToStart = false;
 
         public SourcePair CurrentSourcePair
         {
@@ -87,23 +85,33 @@ namespace AD.UI
         }
         public bool IsPlay
         {
-            get { return Source.isPlaying; }
+            get { return (Source.isPlaying && !IsPause) || IsDelayToStart; }
             set
             {
                 if (SourcePairs.Count > 0)
                 {
-                    if (value)
-                        Source.Play();
-                    else
-                        Source.Pause();
+                    if (value) Play();
+                    else Pause();
                 }
             }
         }
+        public bool IsPause { get; private set; } = false;
         public float CurrentTime
         {
             get { return CurrentClock; }
-            set { CurrentClock = Source.time = value; }
+            set
+            {
+                CurrentClock = value;
+                Source.time = Mathf.Clamp(value, 0, (CurrentClip == null) ? 0 : CurrentClip.length);
+                delay = Mathf.Clamp(-value, 0, Mathf.Infinity);
+                if (value < 0 && IsPlay)
+                {
+                    Stop();
+                    Play();
+                }
+            }
         }
+        public float CurrentDelay => (IsDelayToStart) ? delay : 0;
 
         [SerializeField] private AudioPostMixer _Mixer = null;
         public AudioPostMixer Mixer
@@ -157,8 +165,26 @@ namespace AD.UI
 
         private void Update()
         {
-            if (SourcePairs.Count == 0) return;
+            while (CurrentClip == null && SourcePairs.Count > 0)
+            {
+                SourcePairs.Remove(CurrentSourcePair);
+                CurrentPairIndex = 0;
+                return;
+            }
+            if (SourcePairs.Count == 0)
+                return;
+            if (Source.clip == null && CurrentClip != null)
+                Source.clip = CurrentClip;
             if (Sampling)
+                WhenSampling();
+            if (_m_LineRenderer != null && (!Sampling || !DrawingLine))
+                _m_LineRenderer.gameObject.SetActive(false);
+            if (IsPlay)
+                WhenPlaying();
+            if (IsDelayToStart)
+                WhenDelayCounting();
+
+            void WhenSampling()
             {
                 GetSpectrums();
                 GetFrequencyBands();
@@ -180,10 +206,44 @@ namespace AD.UI
                     else CurrentSourcePair.LineDrawer.DrawLine(_m_LineRenderer, this);
                 }
             }
-            if (_m_LineRenderer != null)
-                if (!Sampling || !DrawingLine)
-                    _m_LineRenderer.gameObject.SetActive(false);
 
+            void WhenPlaying()
+            {
+                WhenNeedUpdataCurrentClock();
+                if (CurrentClock > CurrentClip.length + 0.2f)
+                {
+                    Source.Stop();
+                    CurrentTime = 0;
+                    if (LoopAtAll)
+                    {
+                        if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
+                        else CurrentPairIndex = 0;
+                        Source.clip = CurrentClip;
+                        Source.Play();
+                    }
+                }
+
+            }
+
+            void WhenNeedUpdataCurrentClock()
+            {
+                if (!IsPause) CurrentClock += UnityEngine.Time.deltaTime;
+            }
+
+            void WhenNeedUpdataDelay()
+            {
+                if (!IsPause) delay -= Time.deltaTime;
+            }
+
+            void WhenDelayCounting()
+            { 
+                WhenNeedUpdataDelay();
+                if (delay <= 0)
+                {
+                    IsDelayToStart = false;
+                    Play();
+                }
+            }
         }
 
         public void DrawLineOnDefault()
@@ -208,7 +268,7 @@ namespace AD.UI
             m_curve.keys = keyframes;
             _m_LineRenderer.widthCurve = m_curve;
         }
-
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/AudioSource", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
@@ -217,131 +277,127 @@ namespace AD.UI
             Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
             Selection.activeObject = obj.gameObject;
         }
+#endif
 
         public static AudioSourceController Generate(string name = "New AudioSource", Transform parent = null, params System.Type[] components)
         {
             AudioSourceController source = new GameObject(name, components).AddComponent<AudioSourceController>();
-            GameObjectUtility.SetParentAndAlign(source.gameObject, parent.gameObject);
+            source.transform.parent = parent.transform;
 
             return source;
         }
 
-        public AudioSourceController NextPair()
+        public void NextPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return;
             if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
             else CurrentPairIndex = 0;
             bool curPlaying = Source.isPlaying;
             Stop();
             Source.clip = CurrentClip;
-            if (curPlaying) Play();
-            return this;
+            if (curPlaying) Play(); 
         }
-        public AudioSourceController PreviousPair()
+        public void PreviousPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return  ;
             if (CurrentPairIndex > 0) CurrentPairIndex--;
             else CurrentPairIndex = SourcePairs.Count - 1;
             bool curPlaying = Source.isPlaying;
             Stop();
             Source.clip = CurrentClip;
             if (curPlaying) Play();
-            return this;
         }
-        public AudioSourceController RandomPair()
+        public void RandomPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return ;
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
             bool curPlaying = Source.isPlaying;
             Stop();
             Source.clip = CurrentClip;
             if (curPlaying) Play();
-            return this;
         }
 
-        public AudioSourceController Play()
+        public void Play()
         {
+            IsPause = false;
+            if (delay > 0)
+            {
+                IsDelayToStart = true;
+                return;
+            }
+            if (SourcePairs.Count == 0) return;
             Source.Play();
-            StartCoroutine(ClockWithCilp(CurrentClip, Source.time));
-            return this;
         }
-        public AudioSourceController Stop()
+        public void Stop()
         {
+            IsPause = false;
             Source.Stop();
-            StopCoroutine(nameof(ClockWithCilp));
-            return this;
+            delay = 0;
+            IsDelayToStart = false;
+            CurrentClock = 0;
         }
-        public AudioSourceController Pause()
+        public void Pause()
         {
+            IsPause = true;
             Source.Pause();
-            StopCoroutine(nameof(ClockWithCilp));
-            return this;
+            return;
+        }
+        public void PlayOrPause()
+        {
+            IsPlay = !IsPlay;
         }
 
-        public AudioSourceController IgnoreListenerPause()
+        public void IgnoreListenerPause()
         {
             Source.ignoreListenerPause = true;
-            return this;
         }
-        public AudioSourceController SubscribeListenerPause()
+        public void SubscribeListenerPause()
         {
             Source.ignoreListenerPause = false;
-            return this;
         }
 
-        public AudioSourceController IgnoreListenerVolume()
+        public void IgnoreListenerVolume()
         {
             Source.ignoreListenerVolume = true;
-            return this;
         }
-        public AudioSourceController SubscribeListenerVolume()
+        public void SubscribeListenerVolume()
         {
             Source.ignoreListenerVolume = false;
-            return this;
         }
 
-        public AudioSourceController SetLoop()
+        public void SetLoop()
         {
             Source.loop = true;
-            StopCoroutine(nameof(ClockWithCilp));
-            return this;
         }
-        public AudioSourceController UnLoop()
+        public void UnLoop()
         {
             Source.loop = false;
-            StartCoroutine(ClockWithCilp(CurrentClip, Source.time));
-            return this;
         }
 
-        public AudioSourceController SetLoopAtAll()
+        public void SetLoopAtAll()
         {
             LoopAtAll = true;
-            return this;
         }
-        public AudioSourceController UnLoopAtAll()
+        public void UnLoopAtAll()
         {
             LoopAtAll = false;
-            return this;
         }
 
-        public AudioSourceController SetMute()
+        public void SetMute()
         {
             Source.mute = true;
-            return this;
         }
-        public AudioSourceController CancelMute()
+        public void CancelMute()
         {
             Source.mute = false;
-            return this;
         }
 
-        public AudioSourceController SetPitch(float pitch)
+        public void SetPitch(float pitch)
         {
             Source.pitch = pitch;
-            return this;
         }
 
-        public AudioSourceController SetSpeed(float speed)
+        public void SetSpeed(float speed)
         {
             if (_Mixer != null) _Mixer.SetSpeed(speed);
             else
@@ -349,25 +405,30 @@ namespace AD.UI
                 Debug.LogWarning("you try to change an AudioSource's speed without AudioMixer, which will cause it to change its pitch");
                 SetPitch(speed);
             }
-            return this;
+        }
+        public void AddSpeed(float value)
+        {
+            if (_Mixer != null) _Mixer.AddSpeed(value);
+            else
+            {
+                Debug.LogWarning("you try to change an AudioSource's speed without AudioMixer, which will cause it to change its pitch");
+                SetPitch(Source.pitch + value);
+            }
         }
 
-        public AudioSourceController SetVolume(float volume)
+        public void SetVolume(float volume)
         {
             Source.volume = volume;
-            return this;
         }
 
-        public AudioSourceController SetPriority(int priority)
+        public void SetPriority(int priority)
         {
             Source.priority = priority;
-            return this;
         }
 
-        public AudioSourceController RandomPairs()
+        public void RandomPairs()
         {
             SourcePairs.Sort((T, P) => { if (UnityEngine.Random.Range(-1, 1) > 0) return 1; else return -1; });
-            return this;
         }
 
         public void PrepareToOtherScene()
@@ -375,23 +436,7 @@ namespace AD.UI
             transform.parent = null;
             DontDestroyOnLoad(gameObject);
             StartCoroutine(ClockOnJump());
-        }
-
-        private IEnumerator ClockWithCilp(AudioClip clip, float current)
-        {
-            CurrentClock = current;
-            for (float duration = clip.length + 0.2f; CurrentClock < duration; CurrentClock += UnityEngine.Time.deltaTime)
-                yield return new WaitForEndOfFrame();
-            if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
-            else CurrentPairIndex = 0;
-            Source.Stop();
-            if (LoopAtAll)
-            {
-                Source.clip = CurrentClip;
-                Source.Play();
-                StartCoroutine(ClockWithCilp(CurrentClip, 0));
-            }
-        }
+        } 
 
         private IEnumerator ClockOnJump()
         {

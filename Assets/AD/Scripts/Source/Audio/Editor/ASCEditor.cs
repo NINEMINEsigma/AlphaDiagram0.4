@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic; 
 using UnityEditor;
 using UnityEngine;
 using AD.UI;
@@ -57,7 +55,7 @@ public class ASCEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        //base.OnInspectorGUI();
+        //BASE.OnInspectorGUI();
 
         serializedObject.Update();
 
@@ -81,6 +79,20 @@ public class ASCEditor : Editor
             if (that.CurrentClip != null) EditorGUILayout.Slider("CurrentTime", that.CurrentTime, 0, that.CurrentClip.length + 0.2f, null);
 
             GUI.enabled = true;
+
+            if (that.CurrentDelay > 0.1f)
+            {
+                if (that.CurrentDelay < that.CurrentClip.length + 0.2f)
+                    EditorGUILayout.Slider("Delay Clock", that.CurrentDelay, 0, that.CurrentClip.length + 0.2f, null);
+                else
+                {
+                    GUI.enabled = false;
+                    EditorGUILayout.Slider("Delay Clock", that.CurrentDelay, 0, Mathf.Infinity, null);
+                }
+            }
+
+            GUI.enabled = true;
+
             if (GUILayout.Button("Next", new GUILayoutOption[] { })) that.NextPair();
             if (GUILayout.Button("Previous", new GUILayoutOption[] { })) that.PreviousPair();
             if (GUILayout.Button("Random", new GUILayoutOption[] { })) that.RandomPair();

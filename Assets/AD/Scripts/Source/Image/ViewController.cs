@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using AD.Utility;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace AD.UI
@@ -119,6 +117,7 @@ namespace AD.UI
             AD.SceneSingleAssets.viewControllers.Remove(this);
         }
 
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/Image", false, 10)]
         private static void ADD(MenuCommand menuCommand)
         {
@@ -136,6 +135,7 @@ namespace AD.UI
             Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
             Selection.activeObject = obj.gameObject;
         }
+#endif
 
         public static ViewController Generate(string name = "New Image", Transform parent = null, params System.Type[] components)
         {
@@ -235,6 +235,63 @@ namespace AD.UI
 
         }
 
-        #endregion 
+        public void SendCommand<T>() where T : class, IADCommand, new()
+        {
+            Architecture.SendCommand<T>();
+        }
+
+        public void SendEvent<T>() where T : class, IADEvent, new()
+        {
+            Architecture.SendEvent<T>();
+        }
+
+        public T GetEvent<T>() where T : class, IADEvent, new()
+        {
+            return Architecture.GetEvent<T>();
+        }
+         
+        public T GetSystem<T>() where T : class, IADSystem, new()
+        {
+            return Architecture.GetSystem<T>();
+        }
+
+        public IADArchitecture ADInstance()
+        {
+            return Architecture;
+        }
+
+        public IADArchitecture Architecture { get; private set; } = null;
+
+        public void SetArchitecture(IADArchitecture target)
+        {
+            Architecture = target;
+        }
+
+        public void RegisterCommand<T>() where T : class,IADCommand,new()
+        {
+            Architecture.RegisterCommand<T>();
+        }
+
+        public void RegisterModel<T>() where T : class, IADModel, new()
+        {
+            Architecture.RegisterModel<T>();
+        }
+
+        public T GetModel<T>() where T : class, IADModel, new()
+        {
+            return Architecture.GetModel<T>();
+        }
+
+        public void RegisterCommand<T>(T _Command) where T : class, IADCommand, new()
+        {
+            Architecture.RegisterCommand<T>(_Command);
+        }
+
+        public void RegisterModel<T>(T _Model) where T : class, IADModel, new()
+        {
+            Architecture.RegisterModel<T>(_Model);
+        }
+
+        #endregion
     }
 }

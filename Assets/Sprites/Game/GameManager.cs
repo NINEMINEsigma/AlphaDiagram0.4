@@ -4,7 +4,7 @@ using UnityEngine;
 using AD.UI;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using AD.ADbase;
+using AD.BASE;
 using AD.Utility;
 
 namespace AD.Game
@@ -13,13 +13,8 @@ namespace AD.Game
     {
         private void Start()
         {
-            GameApp.ADinstance.RegisterController(this);
+            GameApp.instance.RegisterController(this);
         } 
 
-
-        public override IADArchitecture ADinstance()
-        {
-            return GameApp.ADinstance;
-        }
     }
 }

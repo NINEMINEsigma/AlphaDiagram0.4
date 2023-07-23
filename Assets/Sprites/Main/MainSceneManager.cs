@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using AD.Utility;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,15 +14,10 @@ namespace AD.MainScene
 
         private void Start()
         { 
-            MainApp.ADinstance.RegisterController(this);
+            MainApp.instance.RegisterController(this);
 
             SceneSingleAssets.CoroutineWorker.StartCoroutine(BGInit());
-        }
-
-        public override IADArchitecture ADinstance()
-        { 
-            return MainApp.ADinstance;
-        }
+        } 
 
         private IEnumerator BGInit()
         {

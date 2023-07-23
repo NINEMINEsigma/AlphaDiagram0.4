@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using UnityEngine;
 
 namespace AD.Game
 {
-    public class GameSystem : IADSystem
+    public class GameSystem : ADSystem
     {
-        public IADArchitecture ADinstance()
-        {
-            return GameApp.ADinstance;
-        }
-
-        public void Init()
+        public override void Init()
         {
 
         }

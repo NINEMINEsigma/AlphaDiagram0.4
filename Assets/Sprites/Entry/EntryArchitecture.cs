@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using UnityEngine;
-using AD.ADbase;
+using AD.BASE;
 
 namespace AD.Entry
 {
@@ -21,7 +17,9 @@ namespace AD.Entry
 
         public override void Init()
         {
-            this.RegisterSystem<EntrySystem>(); 
+            this
+                .RegisterSystem<EntrySystem>();
+
         }
     }
 }

@@ -1,19 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using AD.UI;
-using AD.Utility;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace AD
 {
     [Serializable]
-    public abstract class BaseController : AD.ADbase.ADController
+    public abstract class BaseController : AD.BASE.ADController
     {
-        public abstract override IADArchitecture ADinstance(); 
-
         public override void Init()
         {
             mCanvasInitializer.Initialize();
@@ -23,10 +18,8 @@ namespace AD
         [SerializeField] private AD.UI.CanvasInitializer mCanvasInitializer = new AD.UI.CanvasInitializer();
     }
     [Serializable]
-    public abstract class BaseController<T> : AD.ADbase.ADController
+    public abstract class BaseController<T> : AD.BASE.ADController
     {
-        public abstract override IADArchitecture ADinstance();
-
         public override void Init()
         {
             mCanvasInitializer.Initialize();
@@ -37,10 +30,8 @@ namespace AD
         public ADEvent<T> OnEvent = new ADEvent<T>();
     }
     [Serializable]
-    public abstract class BaseController<T1, T2> : AD.ADbase.ADController
+    public abstract class BaseController<T1, T2> : AD.BASE.ADController
     {
-        public abstract override IADArchitecture ADinstance();
-
         public override void Init()
         {
             mCanvasInitializer.Initialize();
@@ -51,10 +42,8 @@ namespace AD
         public ADEvent<T1, T2> OnEvent = new ADEvent<T1, T2>();
     }
     [Serializable]
-    public abstract class BaseController<T1, T2, T3> : AD.ADbase.ADController
+    public abstract class BaseController<T1, T2, T3> : AD.BASE.ADController
     {
-        public abstract override IADArchitecture ADinstance();
-
         public override void Init()
         {
             mCanvasInitializer.Initialize();
@@ -65,10 +54,8 @@ namespace AD
         public ADEvent<T1, T2, T3> OnEvent = new ADEvent<T1, T2, T3>();
     }
     [Serializable]
-    public abstract class BaseController<T1, T2, T3, T4> : AD.ADbase.ADController
+    public abstract class BaseController<T1, T2, T3, T4> : AD.BASE.ADController
     {
-        public abstract override IADArchitecture ADinstance();
-
         public override void Init()
         {
             mCanvasInitializer.Initialize();

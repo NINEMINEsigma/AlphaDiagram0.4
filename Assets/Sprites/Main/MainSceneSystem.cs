@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using UnityEngine;
 
 namespace AD.MainScene
 {
-    public class MainSceneSystem : IADSystem
+    public class MainSceneSystem : ADSystem
     {
-        public IADArchitecture ADinstance()
-        {
-            return MainApp.ADinstance;
-        }
-
-        public void Init()
+        public override void Init()
         {
 
         }

@@ -1,12 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
+using AD.UI;
 using UnityEngine;
-using UnityEngine.Audio;
 
 namespace AD.Utility
 {
-    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(AudioSourceController))]
     public class AudioPostMixer : MonoBehaviour
     {
         private AudioSource SelfSource = null;
@@ -21,6 +19,12 @@ namespace AD.Utility
         public void SetSpeed(float speed)
         {
             Package.Speed = speed;
+            SelfSource.SetSpeed(Package);
+        }
+
+        public void AddSpeed(float value)
+        {
+            Package.Speed += value;
             SelfSource.SetSpeed(Package);
         }
     }

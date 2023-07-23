@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +9,11 @@ namespace AD.Utility
 
         public static void Init()
         {
-            if (CoroutineWorker != null) GameObject.Destroy(CoroutineWorker); 
+            if (CoroutineWorker != null)
+            {
+                CoroutineWorker.GetComponent<MonoBehaviour>().StopAllCoroutines();
+                GameObject.Destroy(CoroutineWorker);
+            }
             CoroutineWorker = new GameObject();
             CoroutineWorker.AddComponent<ClockTick>();
             CoroutineWorker.name = "CoroutineWorker(TimeAssets)";
@@ -38,7 +41,7 @@ namespace AD.Utility
             Register("global");
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             for (int i = 0; i < TimeList.Count; i++)
             {

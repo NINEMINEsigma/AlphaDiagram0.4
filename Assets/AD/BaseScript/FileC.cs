@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace AD.ADbase
+namespace AD.BASE
 {
     public static class FileC
     {

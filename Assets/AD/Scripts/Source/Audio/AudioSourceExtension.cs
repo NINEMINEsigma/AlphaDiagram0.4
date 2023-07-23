@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -14,8 +13,13 @@ namespace AD.Utility
         public string TargetPitch_Attribute_Name = "MasterPitch";
         public string TargetPitchshifterPitch_Attribute_Name = "PitchShifterPitch";
 
+        [Space(20)]
+        public TMP_Text TargetOutputSpeed = null;
+
         public float TargetPitchValue = 1.0f;
-        public float Speed { get { return TargetPitchValue; } set { TargetPitchValue = value; } }
+        public float Speed { get { return TargetPitchValue; } set { if (TargetOutputSpeed != null) TargetOutputSpeed.text = value.ToString("F1") + "x"; TargetPitchValue = value; } }
+
+
     }
 
     public static class AudioSourceExtension

@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using UnityEngine;
 
 namespace AD.Entry
 {
-    public class EntrySystem : IADSystem
+    public class EntrySystem : ADSystem
     {
-        public IADArchitecture ADinstance()
-        {
-            return EntryApp.ADinstance;
-        }
-
-        public void Init()
+        public override void Init()
         {
 
         }

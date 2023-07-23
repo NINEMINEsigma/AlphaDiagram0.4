@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using AD.Entry;
 using UnityEngine;
 
@@ -20,7 +20,8 @@ namespace AD.MainScene
 
         public override void Init()
         {
-            this.RegisterSystem<MainSceneSystem>();
+            this
+                .RegisterSystem<MainSceneSystem>();
         }
     }
 }

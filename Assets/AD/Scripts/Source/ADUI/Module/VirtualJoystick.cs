@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using AD.Utility;
 using UnityEngine.EventSystems;
-using AD.ADbase;
+using AD.BASE;
 
 namespace AD.UI
 {

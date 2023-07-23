@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 
 namespace AD.UI
@@ -26,19 +23,19 @@ namespace AD.UI
             {
                 float t = VerticalAdaptive(cam_c, can_c) * canvas.sizeDelta.y;
                 canvas.sizeDelta = new Vector2(t, t);
-                Debug.Log("ADinstance.UI.CanvasExtension.Adaptive(Vertical) : " + t);
+                Debug.Log("ADInstance.UI.CanvasExtension.Adaptive(Vertical) : " + t);
             }
             else if (mode == CanvasAdaptive.Horizontal)
             {
                 float t = HorizontalAdaptive(cam_c, can_c) * canvas.sizeDelta.x; 
                 canvas.sizeDelta = new Vector2(t, t);
-                Debug.Log("ADinstance.UI.CanvasExtension.Adaptive(Horizontal) : " + t);
+                Debug.Log("ADInstance.UI.CanvasExtension.Adaptive(Horizontal) : " + t);
             }
             else if (mode == CanvasAdaptive.HorizontalAndVertical)
             {
                 float y_t = VerticalAdaptive(cam_c, can_c), x_t = HorizontalAdaptive(cam_c, can_c);
                 canvas.sizeDelta = new Vector2(canvas.sizeDelta.x * x_t, canvas.sizeDelta.y * y_t);
-                Debug.Log("ADinstance.UI.CanvasExtension.Adaptive : " + x_t + " " + y_t);
+                Debug.Log("ADInstance.UI.CanvasExtension.Adaptive : " + x_t + " " + y_t);
             } 
         }
 

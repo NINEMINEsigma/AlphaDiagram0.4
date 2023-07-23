@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using AD.ADbase;
+using AD.BASE;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using AD;
 
 namespace AD.UI
 {
@@ -46,7 +42,7 @@ namespace AD.UI
         {
             AD.UI.ADUI.Destory(this);
         }
-
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/Button", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
@@ -64,20 +60,22 @@ namespace AD.UI
             Undo.RegisterCreatedObjectUndo(button.gameObject, "Create " + button.name);
             Selection.activeObject = button.gameObject;
         }
+#endif
 
         public static AD.UI.Button Generate(string name = "New Button", Transform parent = null, params System.Type[] components)
         {
             AD.UI.Button button = null;
             if (ADGlobalSystem.instance._Slider != null)
             {
-                button = GameObject.Instantiate(ADGlobalSystem.instance._Button) as AD.UI.Button;
+                button = GameObject.Instantiate(ADGlobalSystem.instance._Button, parent) as AD.UI.Button;
             }
             else
             {
-                button = new GameObject("New Button", components).AddComponent<AD.UI.Button>();
+                button = new GameObject("New Button", components).AddComponent<AD.UI.Button>(); 
             }
 
-            GameObjectUtility.SetParentAndAlign(button.gameObject, parent.gameObject);
+            button.transform.SetParent(parent, false);
+            button.transform.localPosition = Vector3.zero;
             button.name = name;
             foreach (var component in components) button.gameObject.AddComponent(component);
 

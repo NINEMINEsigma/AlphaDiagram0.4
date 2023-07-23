@@ -5,14 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using AD.ADbase;
+using AD.BASE;
 using Newtonsoft.Json;
 using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using AD.UI;
 
@@ -307,18 +305,24 @@ namespace AD
             instance.multipleInputController = new Dictionary<List<ButtonControl>, Dictionary<PressType, UnityEvent>>(); 
         }
 
-        #endregion 
+        #endregion
 
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/GlobalSystem", false, 10)]
         public static void ADD(MenuCommand menuCommand)
         {
-            if (instance != null) return;
+            if (instance != null)
+            {
+                Selection.activeObject = instance.gameObject;
+                return;
+            }
             AD.ADGlobalSystem obj = new GameObject("GlobalSystem").AddComponent<AD.ADGlobalSystem>();
             _m_instance = obj;
             GameObjectUtility.SetParentAndAlign(obj.gameObject, menuCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(obj.gameObject, "Create " + obj.name);
             Selection.activeObject = obj.gameObject;
         }
+#endif
 
         #region MonoFunction
 
@@ -356,7 +360,7 @@ namespace AD
 
         public void OnApplicationQuit()
         {
-            SaveRecord();
+            if (!IsKeepObject) SaveRecord();
         }
 
         private void OnDestroy()
@@ -423,7 +427,7 @@ namespace AD
             }
             else if (obj.GetType().GetAttribute<EaseSave3Attribute>() != null)
             {
-                ES3.Save(filePath.Split('.')[^1], obj, filePath);
+                ES3.Save(obj.GetType().GetAttribute<EaseSave3Attribute>().key, obj, filePath);
             }
             else if (obj.GetType().GetAttribute<SerializableAttribute>() != null)
             {
@@ -489,7 +493,7 @@ namespace AD
             {
                 try
                 {
-                    obj = ES3.Load(filePath.Split('.')[^1], filePath);
+                    obj = ES3.Load(typeof(T).GetAttribute<EaseSave3Attribute>().key, filePath);
                     if (obj != null) return true;
                     else return false;
                 }
@@ -739,6 +743,10 @@ namespace AD
         public string RecordPath { get; set; } = "null";
 
         #endregion
+
+        #region ObjectPool
+
+        #endregion
     }
 
     public static class MethodBaseExtension
@@ -892,6 +900,12 @@ namespace AD
     [AttributeUsage(AttributeTargets.Class)]
     public class EaseSave3Attribute : Attribute
     {
+        public EaseSave3Attribute(string key) 
+        {
+            this.key = key;
+        }
+
+        public string key = "";
     }
 
     [Serializable]

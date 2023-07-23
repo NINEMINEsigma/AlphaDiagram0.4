@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
@@ -15,11 +11,11 @@ namespace AD.UI
     {
         public Text()
         {
-            ElementArea = "Text"; 
+            ElementArea = "Text";
         }
 
         protected void Start()
-        {
+        { 
             AD.UI.ADUI.Initialize(this);
         }
         protected void OnDestory()
@@ -27,10 +23,18 @@ namespace AD.UI
             AD.UI.ADUI.Destory(this);
         }
 
-        public TMP_Text source = null;
-        public string text { get { return source.text; } set { source.text = value; } } 
+        private TextMeshProUGUI _source = null;
+        public TextMeshProUGUI source
+        {
+            get
+            {
+                _source ??= GetComponent<TextMeshProUGUI>();
+                return _source;
+            }
+        }
+        public string text { get { return source.text; } set { source.text = value; } }
 
-
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/Text", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
@@ -43,12 +47,13 @@ namespace AD.UI
             else
             {
                 text = new GameObject("New Text").AddComponent<AD.UI.Text>();
-                text.source = text.gameObject.AddComponent<TextMeshProUGUI>(); 
+                text.gameObject.AddComponent<TextMeshProUGUI>();
             }
             GameObjectUtility.SetParentAndAlign(text.gameObject, menuCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(text.gameObject, "Create " + text.name);
             Selection.activeObject = text.gameObject;
         }
+#endif
 
         public static AD.UI.Text Generate(string name = "New Text", string defaultText = "", Transform parent = null, params System.Type[] components)
         {
@@ -62,13 +67,14 @@ namespace AD.UI
             else
             {
                 text = new GameObject(name, components).AddComponent<AD.UI.Text>();
-                text.source = text.gameObject.AddComponent<TextMeshProUGUI>(); 
-            }
-            GameObjectUtility.SetParentAndAlign(text.gameObject, parent.gameObject);
+                text.gameObject.AddComponent<TextMeshProUGUI>();
+            } 
+            text.transform.SetParent(parent, false);
+            text.transform.localPosition = Vector3.zero;
             text.text = defaultText;
 
             return text;
-        } 
+        }
 
     }
 }

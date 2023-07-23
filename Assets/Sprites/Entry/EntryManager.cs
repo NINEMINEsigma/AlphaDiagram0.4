@@ -4,7 +4,7 @@ using UnityEngine;
 using AD.UI;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using AD.ADbase;
+using AD.BASE;
 using AD.Utility;
 
 namespace AD.Entry
@@ -14,18 +14,12 @@ namespace AD.Entry
     {
         private void Start()
         {
-            EntryApp.ADinstance.RegisterController(this);
+            EntryApp.instance.RegisterController(this);
         }
 
         ~EntryManager()
         {
                 
         }
-
-
-        public override IADArchitecture ADinstance()
-        {
-            return EntryApp.ADinstance;
-        } 
     }
 }

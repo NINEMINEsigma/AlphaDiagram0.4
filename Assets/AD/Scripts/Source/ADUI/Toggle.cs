@@ -1,17 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Runtime.CompilerServices;
-using AD.ADbase;
+using AD.BASE;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AD.UI
 {
@@ -91,6 +85,7 @@ namespace AD.UI
 
         #region Function  
 
+#if UNITY_EDITOR
         [MenuItem("GameObject/AD/Toggle", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
         {
@@ -111,6 +106,7 @@ namespace AD.UI
             Undo.RegisterCreatedObjectUndo(toggle.gameObject, "Create " + toggle.name);
             Selection.activeObject = toggle.gameObject;
         }
+#endif
 
         public static AD.UI.Toggle Generate(string name = "New Text", Transform parent = null, params System.Type[] components)
         {
@@ -127,9 +123,9 @@ namespace AD.UI
                 toggle.background = GenerateBackground(toggle).GetComponent<UnityEngine.UI.Image>();
                 toggle.tab = GenerateTab(toggle).GetComponent<UnityEngine.UI.Image>();
                 toggle.mark = toggle.tab.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Image>();
-            }
-
-            GameObjectUtility.SetParentAndAlign(toggle.gameObject, parent.gameObject);
+            } 
+            toggle.transform.SetParent(parent, false);
+            toggle.transform.localPosition = Vector3.zero;
             toggle.name = name;
 
             return toggle;
@@ -150,7 +146,7 @@ namespace AD.UI
             background.anchorMax = new Vector2(1, 1);
             background.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
             background.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 24);
-            GameObjectUtility.SetParentAndAlign(background.gameObject, toggle.gameObject);
+            background.transform.parent = toggle.transform;
             return background;
         } 
         private static RectTransform GenerateTab(AD.UI.Toggle toggle)
@@ -161,8 +157,8 @@ namespace AD.UI
             tab.anchorMax = new Vector2(0, 1);
             tab.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 20);
             tab.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
-            GameObjectUtility.SetParentAndAlign(tab.gameObject,toggle.gameObject);
-            GameObjectUtility.SetParentAndAlign(GenerateMark().gameObject, tab.gameObject); 
+            tab.transform.parent = toggle.transform;
+            GenerateMark().transform.parent = tab.transform; 
             return tab;
         }
         private static RectTransform GenerateMark()
