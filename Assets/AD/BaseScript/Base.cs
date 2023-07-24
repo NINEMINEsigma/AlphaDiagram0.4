@@ -2285,6 +2285,16 @@ namespace AD.BASE
             }
         }
 
+        public void TrackThisShared(AbstractBindProperty<T> OtherProperty)
+        {
+            this._m_value = OtherProperty._m_value;
+        }
+
+        protected void Init(T _init)
+        {
+            _m_value = new Property<T>(_init);
+        }
+
         #region Func
 
         public AbstractBindProperty<T> Init()
@@ -2427,6 +2437,16 @@ namespace AD.BASE
         {
             self.Property._m_value._m_data.value = value;
             return self.Property._m_value._m_data.value;
+        }
+
+        public static T Get<T>(this IPropertyHasGet<T> self)
+        {
+            return self.Property._m_value.Get();
+        }
+
+        public static T Set<T>(this IPropertyHasSet<T> self, T value)
+        { 
+            return self.Property._m_value.Set(value);
         }
 
         public static IPropertyHasSet<T> AddListenerOnSet<T>(this IPropertyHasSet<T> self,UnityAction<T> action)

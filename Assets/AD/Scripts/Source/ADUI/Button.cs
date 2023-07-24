@@ -100,5 +100,11 @@ namespace AD.UI
             else if (type == PressType.ThisFrameReleased) OnRelease.RemoveListener(action);
             else AD.ADGlobalSystem.AddMessage("You try to remove worry listener");
         }
+
+        public void RemoveAllListener(PressType type = PressType.ThisFramePressed)
+        {
+            if (type == PressType.ThisFramePressed) OnClick.RemoveAllListeners();
+            else if (type == PressType.ThisFrameReleased) OnRelease.RemoveAllListeners();
+        }
     }
 }

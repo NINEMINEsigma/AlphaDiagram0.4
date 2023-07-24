@@ -156,78 +156,74 @@ namespace AD.UI
             canPrepareToOtherScenee.PrepareToOtherScenes(this);
         }
 
-        public ViewController SetTransparentChannelCollisionThreshold(float value)
+        public void SetTransparentChannelCollisionThreshold(float value)
         {
-            ViewImage.alphaHitTestMinimumThreshold = value;
-            return this;
+            ViewImage.alphaHitTestMinimumThreshold = value; 
         }
 
-        public ViewController SetMaterial(Material material)
+        public void SetMaterial(Material material)
         {
-            ViewImage.material = material;
-            return this;
+            ViewImage.material = material; 
         }
 
-        public ViewController RandomPairs()
+        public void RandomPairs()
         {
-            SourcePairs.Sort((T, P) => { if (UnityEngine.Random.Range(-1, 1) > 0) return 1; else return -1; });
-            return this;
+            SourcePairs.Sort((T, P) => { if (UnityEngine.Random.Range(-1, 1) > 0) return 1; else return -1; }); 
         }
 
-        public ViewController NextPair()
+        public void NextPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return  ;
             if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
             else CurrentPairIndex = 0;
             if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
-            return this;
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
         }
-        public ViewController PreviousPair()
+        public void PreviousPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return  ;
             if (CurrentPairIndex > 0) CurrentPairIndex--;
             else CurrentPairIndex = SourcePairs.Count - 1;
             if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
-            return this;
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
         }
-        public ViewController RandomPair()
+        public void RandomPair()
         {
-            if (SourcePairs.Count == 0) return this;
+            if (SourcePairs.Count == 0) return  ;
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
             if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
-            return this;
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
+        }
+        public void SetPair(int index)
+        {
+            if (SourcePairs.Count == 0) return;
+            CurrentPairIndex = Mathf.Clamp(index, 0, SourcePairs.Count - 1);
+            if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
         }
 
-        public ViewController SetAlpha(float alpha)
+        public void SetAlpha(float alpha)
         {
-            ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, ViewImage.color.b, alpha);
-            return this;
+            ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, ViewImage.color.b, alpha); 
         }
-        public ViewController SetRed(float red)
+        public void SetRed(float red)
         {
             ViewImage.color = new Color(red, ViewImage.color.g, ViewImage.color.b, ViewImage.color.a);
-            return this;
         }
-        public ViewController SetGreen(float green)
+        public void SetGreen(float green)
         {
             ViewImage.color = new Color(ViewImage.color.r, green, ViewImage.color.b, ViewImage.color.a);
-            return this;
         }
-        public ViewController SetBlue(float blue)
+        public void SetBlue(float blue)
         {
             ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, blue, ViewImage.color.a);
-            return this;
         }
 
-        public ViewController BakeAudioWaveformFormAudioCilp(AudioClip clip)
+        public void BakeAudioWaveformFormAudioCilp(AudioClip clip)
         {
             ViewImage.color = new Color();
             ViewImage.sprite = null;
-            ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
-            return this;
+            ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite(); 
         }
 
         public void Init()

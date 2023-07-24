@@ -316,6 +316,11 @@ namespace AD.UI
             Source.clip = CurrentClip;
             if (curPlaying) Play();
         }
+        public void SetPair(int index)
+        {
+            Stop();
+            CurrentPairIndex = Mathf.Clamp(index, 0, SourcePairs.Count - 1);
+        }
 
         public void Play()
         {
