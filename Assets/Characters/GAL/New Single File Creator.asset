@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d09d8a43c87a14101b9a7e0e34f7b584, type: 3}
+  m_Name: New Single File Creator
+  m_EditorClassIdentifier: 
+  LicenseCode: liangxie
+  FileName: 
+  Scripts: []
+  DependencyScripts: []
+  OutputFilePath: Assets/

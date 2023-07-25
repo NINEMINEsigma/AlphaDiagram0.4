@@ -24,5 +24,10 @@ namespace AD.Utility
         {
             return new Color(self.r, self.g, self.b, value);
         } 
+
+        public static Color RandomMix(this Color self)
+        {
+            return self + Random.ColorHSV();
+        }
     }
 }

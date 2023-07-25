@@ -4,6 +4,7 @@ using System.Linq;
 using AD.UI;
 using UnityEngine;
 using AD.BASE;
+using static AD.MainScene.CharacterSourcePair;
 
 namespace AD.MainScene
 {
@@ -14,7 +15,7 @@ namespace AD.MainScene
 
         [Header("Others")]
         public ReadOnlyBindProprety<List<int>> Appearance = new();
-        public ReadOnlyBindProprety<Dictionary<int, int>> PictureDifferences = new();
+        public ReadOnlyBindProprety<List<DifferenceBuff>> PictureDifferences = new();
         public ReadOnlyBindProprety<List<CharacterMessage>> CharacterMessages = new();
 
         [HideInInspector]public SingleSoundPlayer soundPlayer;

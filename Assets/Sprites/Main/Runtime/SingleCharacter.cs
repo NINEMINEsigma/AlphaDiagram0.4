@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AD.BASE;
 using AD.UI;
-using UnityEngine;
+using UnityEngine; 
 
 namespace AD.MainScene
 {
@@ -20,10 +20,10 @@ namespace AD.MainScene
             }
         }
 
-        public ReadOnlyBindProprety<Dictionary<int, int>> PictureDifferences = new();
+        public ReadOnlyBindProprety<List<CharacterSourcePair.DifferenceBuff>> PictureDifferences = new();
         public ReadOnlyBindProprety<List<int>> Appearance = new();
 
-        public void Init(Dictionary<int, int> PictureDifferences, List<int> Appearance)
+        public void Init(List<CharacterSourcePair.DifferenceBuff> PictureDifferences, List<int> Appearance)
         {
             this.PictureDifferences.MakeInit(PictureDifferences);
             this.Appearance.MakeInit(Appearance);

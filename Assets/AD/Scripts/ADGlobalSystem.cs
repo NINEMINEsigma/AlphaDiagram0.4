@@ -125,9 +125,9 @@ namespace AD
             }
         }
 
-        public ADUI _Toggle, _Slider, _Text, _Button;
+        public ADUI _Toggle, _Slider, _Text, _Button,_RawImage, _InputField;
         public PropertyModule _VirtualJoystick;
-        public ViewController _Image;
+        public ViewController _Image; 
         public AudioSourceController _AudioSource;
 
         public bool IsKeepObject = true;
@@ -781,7 +781,7 @@ namespace AD
 
         List<string> buttons = new List<string>();
 
-        private SerializedProperty _Toggle, _Slider, _Text, _Button;
+        private SerializedProperty _Toggle, _Slider, _Text, _Button, _RawImage, _InputField;
         private SerializedProperty _VirtualJoystick;
         private SerializedProperty _Image;
         private SerializedProperty _AudioSource;
@@ -811,6 +811,8 @@ namespace AD
             _VirtualJoystick = serializedObject.FindProperty("_VirtualJoystick");
             _Image = serializedObject.FindProperty("_Image");
             _AudioSource = serializedObject.FindProperty("_AudioSource");
+            _RawImage = serializedObject.FindProperty("_RawImage");
+            _InputField = serializedObject.FindProperty("_InputField");
 
             record = serializedObject.FindProperty("record");
 
@@ -844,6 +846,8 @@ namespace AD
                 EditorGUILayout.PropertyField(_Slider);
                 EditorGUILayout.PropertyField(_Text);
                 EditorGUILayout.PropertyField(_Button);
+                EditorGUILayout.PropertyField(_RawImage);
+                EditorGUILayout.PropertyField(_InputField);
                 EditorGUILayout.PropertyField(_VirtualJoystick);
                 EditorGUILayout.PropertyField(_Image);
                 EditorGUILayout.PropertyField(_AudioSource);

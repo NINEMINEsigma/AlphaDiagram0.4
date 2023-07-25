@@ -77,7 +77,7 @@ namespace AD.UI
                 IsCheck = !IsCheck;
             }); 
         }
-        protected void OnDestory()
+        protected void OnDestroy()
         {
             AD.UI.ADUI.Destory(this);
             __unregisterInfo.UnRegister();

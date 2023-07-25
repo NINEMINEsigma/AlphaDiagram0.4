@@ -38,10 +38,11 @@ namespace AD.UI
             AD.UI.ADUI.Initialize(this);
         }
 
-        protected void OnDestory()
+        protected void OnDestroy()
         {
             AD.UI.ADUI.Destory(this);
         }
+
 #if UNITY_EDITOR
         [MenuItem("GameObject/AD/Button", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)

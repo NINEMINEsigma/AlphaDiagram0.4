@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace AD.UI
 {
-    public class CustomWindowGenerater : ADSystem
+    public class CustomWindowGenerator : ADSystem
     {
-        public Canvas MainCanvas;
+        public RectTransform Parent;
 
-        public GameObject MainPerfab; 
+        public GameObject WindowPerfab; 
 
         public override void Init()
         {
@@ -16,13 +16,15 @@ namespace AD.UI
         }  
 
         public CustomWindowElement ObtainElement()
-        { 
-            return LeanPool.Spawn(MainPerfab, MainCanvas.transform).GetComponent<CustomWindowElement>().Init();
+        {
+            if (Architecture == null) return null;
+            return LeanPool.Spawn(WindowPerfab, Parent.transform).GetComponent<CustomWindowElement>().Init();
         }
 
         public CustomWindowElement ObtainElement(Vector2 rect)
-        { 
-            var cat = LeanPool.Spawn(MainPerfab, MainCanvas.transform).GetComponent<CustomWindowElement>().Init();
+        {
+            if (Architecture == null) return null;
+            var cat = LeanPool.Spawn(WindowPerfab, Parent.transform).GetComponent<CustomWindowElement>().Init();
             cat.rectTransform.sizeDelta = rect;
             return cat;
         }

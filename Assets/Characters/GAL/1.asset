@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: 0
   GUID: 114514
-  state: 0
-  path: F:/AlphaDiagram0.4/Temp
+  branch: 0
+  path: F:/AlphaDiagram0.4/Temp/ProcessJobs
   CharacterPrefab: {fileID: 6314134429309587858, guid: a1626f38e5983f941a7b7129f22407d2, type: 3}
   ChartBoxPrefab: {fileID: 8449874362648618131, guid: 6a18e2531ef8241438c553a37c6726f7, type: 3}
   SoundPlayerPrefab: {fileID: 2267094206821627219, guid: 5784c76c32d69fb4eb1e8acb43b0c24b, type: 3}
   Appearance: 0000000001000000
+  buffer: []
+  PictureDifferences: []
   SourcePairs: []
   charts: []
