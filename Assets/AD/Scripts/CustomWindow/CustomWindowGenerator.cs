@@ -15,13 +15,13 @@ namespace AD.UI
 
         }  
 
-        public CustomWindowElement ObtainElement()
+        public virtual CustomWindowElement ObtainElement()
         {
             if (Architecture == null) return null;
             return LeanPool.Spawn(WindowPerfab, Parent.transform).GetComponent<CustomWindowElement>().Init();
         }
 
-        public CustomWindowElement ObtainElement(Vector2 rect)
+        public virtual CustomWindowElement ObtainElement(Vector2 rect)
         {
             if (Architecture == null) return null;
             var cat = LeanPool.Spawn(WindowPerfab, Parent.transform).GetComponent<CustomWindowElement>().Init();

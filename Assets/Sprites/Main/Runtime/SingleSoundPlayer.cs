@@ -33,10 +33,10 @@ namespace AD.MainScene
             PlaySound(current);
         }
 
-        public void PlaySound(int current=-1)
+        public void PlaySound(int current = -1)
         {
-            if(current==-1)
-            { 
+            if (current == -1)
+            {
                 source.Play();
                 return;
             }

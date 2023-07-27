@@ -34,6 +34,8 @@ public class TextEdior : Editor
         if (EditorGUI.EndChangeCheck()) that.text = str;
 
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 }
 
@@ -92,8 +94,9 @@ public class SliderEdior : Editor
         sprite = EditorGUILayout.ObjectField(hUIContent, that.handleView as Object, typeof(Sprite), @object) as Sprite;
         if (EditorGUI.EndChangeCheck()) that.handleView = sprite;
 
-
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 }
 
@@ -174,6 +177,8 @@ public class ToggleEdior : Editor
         GUI.enabled = true;
 
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 }
 
@@ -182,16 +187,9 @@ public class ButtonEdior : Editor
 {
     private AD.UI.Button that = null;
 
-    private SerializedProperty animator = null;
-    private SerializedProperty OnClick, OnRelease;
-
     private void OnEnable()
     {
         that = target as AD.UI.Button;
-
-        animator = serializedObject.FindProperty("animator");
-        OnClick = serializedObject.FindProperty("OnClick");
-        OnRelease = serializedObject.FindProperty("OnRelease");
     }
 
     public override void OnInspectorGUI()
@@ -209,11 +207,9 @@ public class ButtonEdior : Editor
 
         GUI.enabled = true;
 
-        EditorGUILayout.PropertyField(animator);
-        EditorGUILayout.PropertyField(OnClick);
-        EditorGUILayout.PropertyField(OnRelease);
-
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 } 
 
@@ -243,6 +239,8 @@ public class RawImageEdior : Editor
         GUI.enabled = true;
 
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 }
  
@@ -279,5 +277,7 @@ public class InputFieldEdior : Editor
         if (EditorGUI.EndChangeCheck()) that.text = str;
 
         serializedObject.ApplyModifiedProperties();
+
+        base.OnInspectorGUI();
     }
 }

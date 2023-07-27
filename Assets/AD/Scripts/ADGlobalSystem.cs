@@ -125,10 +125,11 @@ namespace AD
             }
         }
 
-        public ADUI _Toggle, _Slider, _Text, _Button,_RawImage, _InputField;
+        public ADUI _Toggle, _Slider, _Text, _Button,_RawImage,_InputField;
         public PropertyModule _VirtualJoystick;
-        public ViewController _Image; 
+        public ViewController _Image;
         public AudioSourceController _AudioSource;
+        public CustomWindowElement _CustomWindowElement;
 
         public bool IsKeepObject = true;
 
@@ -427,7 +428,7 @@ namespace AD
             }
             else if (obj.GetType().GetAttribute<EaseSave3Attribute>() != null)
             {
-                ES3.Save(obj.GetType().GetAttribute<EaseSave3Attribute>().key, obj, filePath);
+                ES3.Save(filePath.Split('.')[^1], obj, filePath);
             }
             else if (obj.GetType().GetAttribute<SerializableAttribute>() != null)
             {
@@ -493,7 +494,7 @@ namespace AD
             {
                 try
                 {
-                    obj = ES3.Load(typeof(T).GetAttribute<EaseSave3Attribute>().key, filePath);
+                    obj = ES3.Load(filePath.Split('.')[^1], filePath);
                     if (obj != null) return true;
                     else return false;
                 }
@@ -743,10 +744,6 @@ namespace AD
         public string RecordPath { get; set; } = "null";
 
         #endregion
-
-        #region ObjectPool
-
-        #endregion
     }
 
     public static class MethodBaseExtension
@@ -785,6 +782,7 @@ namespace AD
         private SerializedProperty _VirtualJoystick;
         private SerializedProperty _Image;
         private SerializedProperty _AudioSource;
+        private SerializedProperty _CustomWindowElement; 
 
         private SerializedProperty _IsKeepObject;
 
@@ -808,11 +806,13 @@ namespace AD
             _Slider = serializedObject.FindProperty("_Slider");
             _Text = serializedObject.FindProperty("_Text");
             _Button = serializedObject.FindProperty("_Button");
+            _RawImage = serializedObject.FindProperty("_RawImage");
+            _InputField = serializedObject.FindProperty("_InputField");
             _VirtualJoystick = serializedObject.FindProperty("_VirtualJoystick");
             _Image = serializedObject.FindProperty("_Image");
             _AudioSource = serializedObject.FindProperty("_AudioSource");
-            _RawImage = serializedObject.FindProperty("_RawImage");
-            _InputField = serializedObject.FindProperty("_InputField");
+
+            _CustomWindowElement = serializedObject.FindProperty("_CustomWindowElement");
 
             record = serializedObject.FindProperty("record");
 
@@ -851,6 +851,7 @@ namespace AD
                 EditorGUILayout.PropertyField(_VirtualJoystick);
                 EditorGUILayout.PropertyField(_Image);
                 EditorGUILayout.PropertyField(_AudioSource);
+                EditorGUILayout.PropertyField(_CustomWindowElement);
             }
 
             if (Application.isPlaying)
@@ -904,12 +905,6 @@ namespace AD
     [AttributeUsage(AttributeTargets.Class)]
     public class EaseSave3Attribute : Attribute
     {
-        public EaseSave3Attribute(string key) 
-        {
-            this.key = key;
-        }
-
-        public string key = "";
     }
 
     [Serializable]

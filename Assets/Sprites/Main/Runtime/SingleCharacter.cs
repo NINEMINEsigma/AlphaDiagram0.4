@@ -40,30 +40,23 @@ namespace AD.MainScene
 
         public void Refresh(int current)
         {
-            //TestIsNeedAppearance
-            int currentState = 0;
-            currentState = TestIsNeedAppearance(current, currentState);
-            if (currentState % 2 == 0)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-            else gameObject.SetActive(true);
+            //TestIsNeedAppearance  
+            gameObject.SetActive(TestIsNeedAppearance(current));
             //UpdatePictureDifferences
             UpdatePictureDifferences(current);
         }
 
-        private int TestIsNeedAppearance(int current, int currentState)
+        private bool TestIsNeedAppearance(int current)
         {
+            bool currentState = true;
             for (int i = 0, e = Appearance.Get().Count; i < e; i++)
             {
-                currentState++;
                 if (Appearance.Get()[i] >= current)
                 {
-                    break;
+                    return currentState;
                 }
+                currentState = !currentState;
             }
-
             return currentState;
         }
     }

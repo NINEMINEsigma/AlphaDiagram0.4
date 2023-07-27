@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using AD.BASE;
 using AD.Utility;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace AD.UI
@@ -140,7 +143,7 @@ namespace AD.UI
         public static ViewController Generate(string name = "New Image", Transform parent = null, params System.Type[] components)
         {
             ViewController source = new GameObject(name, components).AddComponent<ViewController>();
-            source.transform.parent = parent;
+            source.transform.SetParent(parent, false);
 
             return source;
         }
@@ -156,74 +159,92 @@ namespace AD.UI
             canPrepareToOtherScenee.PrepareToOtherScenes(this);
         }
 
-        public void SetTransparentChannelCollisionThreshold(float value)
+        public ViewController SetTransparentChannelCollisionThreshold(float value)
         {
-            ViewImage.alphaHitTestMinimumThreshold = value; 
+            ViewImage.alphaHitTestMinimumThreshold = value;
+            return this;
         }
 
-        public void SetMaterial(Material material)
+        public ViewController SetMaterial(Material material)
         {
-            ViewImage.material = material; 
+            ViewImage.material = material;
+            return this;
         }
 
-        public void RandomPairs()
+        public ViewController RandomPairs()
         {
-            SourcePairs.Sort((T, P) => { if (UnityEngine.Random.Range(-1, 1) > 0) return 1; else return -1; }); 
+            SourcePairs.Sort((T, P) => { if (UnityEngine.Random.Range(-1, 1) > 0) return 1; else return -1; });
+            return this;
         }
 
-        public void NextPair()
+        public ViewController Refresh()
         {
-            if (SourcePairs.Count == 0) return  ;
+            ViewImage.sprite = CurrentImage;
+            return this;
+        }
+
+        public ViewController NextPair()
+        {
+            if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex < SourcePairs.Count - 1) CurrentPairIndex++;
             else CurrentPairIndex = 0;
-            if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
+            if (canTransformSprite == null) Refresh();
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
+            return this;
         }
-        public void PreviousPair()
+        public ViewController PreviousPair()
         {
-            if (SourcePairs.Count == 0) return  ;
+            if (SourcePairs.Count == 0) return this;
             if (CurrentPairIndex > 0) CurrentPairIndex--;
             else CurrentPairIndex = SourcePairs.Count - 1;
-            if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
+            if (canTransformSprite == null) Refresh();
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
+            return this;
         }
-        public void RandomPair()
+        public ViewController RandomPair()
         {
-            if (SourcePairs.Count == 0) return  ;
+            if (SourcePairs.Count == 0) return this;
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
-            if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
+            if (canTransformSprite == null) Refresh();
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
+            return this;
         }
-        public void SetPair(int index)
+        public ViewController SetPair(int index)
         {
-            if (SourcePairs.Count == 0) return;
+            if (SourcePairs.Count == 0) return this;
             CurrentPairIndex = Mathf.Clamp(index, 0, SourcePairs.Count - 1);
-            if (canTransformSprite == null) ViewImage.sprite = CurrentImage;
-            else canTransformSprite.TransformSprite(CurrentImage, ViewImage); 
+            if (canTransformSprite == null) Refresh();
+            else canTransformSprite.TransformSprite(CurrentImage, ViewImage);
+            return this;
         }
 
-        public void SetAlpha(float alpha)
+        public ViewController SetAlpha(float alpha)
         {
-            ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, ViewImage.color.b, alpha); 
+            ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, ViewImage.color.b, alpha);
+            return this;
         }
-        public void SetRed(float red)
+        public ViewController SetRed(float red)
         {
             ViewImage.color = new Color(red, ViewImage.color.g, ViewImage.color.b, ViewImage.color.a);
+            return this;
         }
-        public void SetGreen(float green)
+        public ViewController SetGreen(float green)
         {
             ViewImage.color = new Color(ViewImage.color.r, green, ViewImage.color.b, ViewImage.color.a);
+            return this;
         }
-        public void SetBlue(float blue)
+        public ViewController SetBlue(float blue)
         {
             ViewImage.color = new Color(ViewImage.color.r, ViewImage.color.g, blue, ViewImage.color.a);
+            return this;
         }
 
-        public void BakeAudioWaveformFormAudioCilp(AudioClip clip)
+        public ViewController BakeAudioWaveformFormAudioCilp(AudioClip clip)
         {
             ViewImage.color = new Color();
             ViewImage.sprite = null;
-            ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite(); 
+            ViewImage.sprite = AudioSourceController.BakeAudioWaveform(clip).ToSprite();
+            return this;
         }
 
         public void Init()
@@ -245,7 +266,7 @@ namespace AD.UI
         {
             return Architecture.GetEvent<T>();
         }
-         
+
         public T GetSystem<T>() where T : class, IADSystem, new()
         {
             return Architecture.GetSystem<T>();
@@ -263,7 +284,7 @@ namespace AD.UI
             Architecture = target;
         }
 
-        public void RegisterCommand<T>() where T : class,IADCommand,new()
+        public void RegisterCommand<T>() where T : class, IADCommand, new()
         {
             Architecture.RegisterCommand<T>();
         }
@@ -289,5 +310,59 @@ namespace AD.UI
         }
 
         #endregion
+
+        #region Resource
+
+        public void LoadOnResource(string source, bool isCurrent = true)
+        {
+            string finalPath = Application.dataPath + "/Resources/" + source;
+            StartCoroutine(LoadTexture2D(finalPath, isCurrent));
+        }
+
+        public void LoadOnUrl(string url, bool isCurrent = true)
+        {
+            StartCoroutine(LoadTexture2D(url, isCurrent));
+        }
+
+        public IEnumerator LoadTexture2D(string path, bool isCurrent)
+        {
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(path);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                var texture = DownloadHandlerTexture.GetContent(request);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                if (isCurrent && SourcePairs.Count > 0)
+                    CurrentImage = sprite;
+                else
+                    SourcePairs.Add(new ImagePair() { SpriteName = path, SpriteSource = sprite });
+                Refresh();
+            }
+            else
+                Debug.LogError("Failed To Load");
+        }
+
+        public void LoadByIo(string path, int width, int height, bool isCurrent = true)
+        {
+            byte[] bytes;
+            using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                bytes = new byte[fileStream.Length];
+                fileStream.Read(bytes, 0, (int)fileStream.Length);
+            }
+
+            Texture2D texture = new Texture2D(width, height);
+            texture.LoadImage(bytes);
+
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            if (isCurrent && SourcePairs.Count > 0)
+                CurrentImage = sprite;
+            else
+                SourcePairs.Add(new ImagePair() { SpriteName = path, SpriteSource = sprite });
+        }
+
+        #endregion
+
     }
 }

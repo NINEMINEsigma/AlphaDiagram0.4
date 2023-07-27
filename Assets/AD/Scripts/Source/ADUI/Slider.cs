@@ -56,7 +56,7 @@ namespace AD.UI
         {
             AD.UI.ADUI.Initialize(this); 
         }
-        protected void OnDestroy()
+        protected void OnDestory()
         {
             AD.UI.ADUI.Destory(this);
         }

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using AD.BASE;
 using UnityEngine;
 
-
-
 namespace AD.MainScene
 {
     public class ReadOnlyBindProprety<T> : AbstractBindProperty<T>, AD.BASE.IPropertyHasGet<T>
@@ -46,16 +44,19 @@ namespace AD.MainScene
         public void SetCurrent(int newCurrent)
         {
             currentIndex = newCurrent;
+            Refresh();
         }
 
         public void AddCurrent(int add)
         {
-            currentIndex += add;
+            currentIndex = (int)Mathf.Clamp(currentIndex + add, 0, Mathf.Infinity);
+            Refresh();
         }
 
         public void Refresh()
         {
             characterGroup.Refresh(currentIndex);
+            chartBoxGroup.Refresh(currentIndex);
         }
     }
 }

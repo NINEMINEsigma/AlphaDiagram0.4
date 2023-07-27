@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 74856100616418839}
   - component: {fileID: 74856100616418833}
   - component: {fileID: 74856100616418832}
-  - component: {fileID: 6253037949307868900}
   m_Layer: 5
   m_Name: CostomWindow
   m_TagString: Untagged
@@ -93,10 +92,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c97652864c87a4246a9f0fb221388f0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Padding: {x: 0, y: 0, z: 0, w: 0}
   isCanBackPool: 1
   SubPage: {fileID: 74856100949534831}
   TopLine: {fileID: 74856102319944895}
   Title: {fileID: 74856101785471358}
+  OnEsc:
+    m_PersistentCalls:
+      m_Calls: []
+  topOnClick: 1
 --- !u!114 &74856100616418832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,21 +119,6 @@ MonoBehaviour:
   - SpriteSource: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
     Name: 
     SpriteName: 
---- !u!114 &6253037949307868900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 74856100616418837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7847a689c7721eb4dba4344e727ab715, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dragArea: {fileID: 0}
-  dragObject: {fileID: 74856100616418836}
-  topOnClick: 1
 --- !u!1 &74856100949534828
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,8 +263,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: ESC
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f643cfed996714b4f8fdc30cb5b11834, type: 2}
-  m_sharedMaterial: {fileID: 3602760603720601795, guid: f643cfed996714b4f8fdc30cb5b11834, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e19e7b858b7058d478d5725621422819, type: 2}
+  m_sharedMaterial: {fileID: -8493678639131513909, guid: e19e7b858b7058d478d5725621422819, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -299,7 +288,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
+  m_fontSize: 22.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -454,6 +443,8 @@ MonoBehaviour:
   OnRelease:
     m_PersistentCalls:
       m_Calls: []
+  IsKeepState: 0
+  title: {fileID: 0}
 --- !u!95 &74856101198179884
 Animator:
   serializedVersion: 4
@@ -557,8 +548,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Title
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f643cfed996714b4f8fdc30cb5b11834, type: 2}
-  m_sharedMaterial: {fileID: 3602760603720601795, guid: f643cfed996714b4f8fdc30cb5b11834, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e19e7b858b7058d478d5725621422819, type: 2}
+  m_sharedMaterial: {fileID: -8493678639131513909, guid: e19e7b858b7058d478d5725621422819, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -582,7 +573,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 33.3
+  m_fontSize: 30.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

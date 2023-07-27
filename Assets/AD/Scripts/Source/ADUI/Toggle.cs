@@ -40,10 +40,10 @@ namespace AD.UI
 
         #region Attribute
 
-        public UnityEngine.UI.Image background = null;
-        public UnityEngine.UI.Image tab = null;
-        public UnityEngine.UI.Image mark = null;
-        public TMP_Text title = null;
+        public UnityEngine.UI.Image background;
+        public UnityEngine.UI.Image tab;
+        public UnityEngine.UI.Image mark;
+        public TMP_Text title;
 
         private bool _IsCheck = false;
         public bool IsCheck
@@ -57,7 +57,7 @@ namespace AD.UI
             }
         }
 
-        private RegisterInfo __unregisterInfo = null;
+        private RegisterInfo __unregisterInfo;
 
         private ADEvent<bool> actions = new ADEvent<bool>();
 
@@ -187,6 +187,12 @@ namespace AD.UI
         {
             actions.RemoveListener(action); 
             return this;
+        }
+
+        public AD.UI.Toggle SetTitle(string title)
+        {
+            this.title.text = title;
+            return this; 
         }
 
         #endregion

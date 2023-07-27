@@ -1,5 +1,6 @@
 using System;
 using AD.BASE;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,12 +22,14 @@ namespace AD.UI
             }
             set
             {
-                if (animator != null) animator.SetBool("IsClick", value);
-                _IsClick = value;
+                if (animator != null && IsKeepState) animator.SetBool("IsClick", value);
+                _IsClick = value && IsKeepState;
                 if (value) OnClick.Invoke();
                 else OnRelease.Invoke();
             }
         }
+        public bool IsKeepState = false;
+        public TMP_Text title;
 
         public Button()
         {
@@ -78,6 +81,7 @@ namespace AD.UI
             button.transform.SetParent(parent, false);
             button.transform.localPosition = Vector3.zero;
             button.name = name;
+            button.SetTitle(name);
             foreach (var component in components) button.gameObject.AddComponent(component);
 
             return button;
@@ -107,5 +111,12 @@ namespace AD.UI
             if (type == PressType.ThisFramePressed) OnClick.RemoveAllListeners();
             else if (type == PressType.ThisFrameReleased) OnRelease.RemoveAllListeners();
         }
+
+        public AD.UI.Button SetTitle(string title)
+        {
+            this.title.text = title;
+            return this;
+        }
+
     }
 }

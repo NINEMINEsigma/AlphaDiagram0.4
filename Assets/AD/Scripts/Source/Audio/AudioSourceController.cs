@@ -294,7 +294,7 @@ namespace AD.UI
             else CurrentPairIndex = 0;
             bool curPlaying = Source.isPlaying;
             Stop();
-            Source.clip = CurrentClip;
+            Refresh();
             if (curPlaying) Play(); 
         }
         public void PreviousPair()
@@ -304,7 +304,7 @@ namespace AD.UI
             else CurrentPairIndex = SourcePairs.Count - 1;
             bool curPlaying = Source.isPlaying;
             Stop();
-            Source.clip = CurrentClip;
+            Refresh();
             if (curPlaying) Play();
         }
         public void RandomPair()
@@ -313,13 +313,17 @@ namespace AD.UI
             CurrentPairIndex = UnityEngine.Random.Range(0, SourcePairs.Count);
             bool curPlaying = Source.isPlaying;
             Stop();
-            Source.clip = CurrentClip;
+            Refresh();
             if (curPlaying) Play();
         }
         public void SetPair(int index)
         {
-            Stop();
+            if (SourcePairs.Count == 0) return;
             CurrentPairIndex = Mathf.Clamp(index, 0, SourcePairs.Count - 1);
+            bool curPlaying = Source.isPlaying;
+            Stop();
+            Refresh();
+            if (curPlaying) Play();
         }
 
         public void Play()
@@ -350,6 +354,11 @@ namespace AD.UI
         public void PlayOrPause()
         {
             IsPlay = !IsPlay;
+        }
+
+        public void Refresh()
+        {
+            Source.clip = CurrentClip;
         }
 
         public void IgnoreListenerPause()
@@ -668,6 +677,15 @@ namespace AD.UI
 
         #endregion
 
+        #region Resource
+
+        /*public static AudioClip Load(ParticleSystemTriggerEventType )
+        {
+
+        }*/
+
+        #endregion
+
         /// <summary>
         /// 通过这个函数来生成一个AudioSource,并初始化其播放的片段为audioClip
         /// </summary>
@@ -773,7 +791,6 @@ namespace AD.UI
             texture.Apply();
             return texture;
         }
-
 
         public IADUI Obtain(int serialNumber)
         {

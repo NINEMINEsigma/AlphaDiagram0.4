@@ -1,19 +1,36 @@
 using System.Collections.Generic;
 using AD.BASE;
-using UnityEngine; 
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
     [RequireComponent(typeof(AD.UI.ViewController))]
-    public class CustomWindowElement : MonoBehaviour
-    { 
-        public Dictionary<string,RectTransform> Childs = new Dictionary<string,RectTransform>();
+    public class CustomWindowElement : MonoBehaviour,IDragHandler,IBeginDragHandler
+    {
+        public Dictionary<string, RectTransform> Childs = new Dictionary<string, RectTransform>();
 
-        public RectTransform rectTransform { get;private set; }
-        public AD.UI.ViewController background { get; private set; }
+        private RectTransform _rectTransform;
+        public RectTransform rectTransform
+        {
+            get
+            {
+                _rectTransform ??= GetComponent<RectTransform>();
+                return _rectTransform;
+            }
+        }
+        private AD.UI.ViewController _background;
+        public AD.UI.ViewController background
+        {
+            get
+            {
+                _background ??= GetComponent<AD.UI.ViewController>();
+                return _background;
+            }
+        }
 
-        public Vector2 capacity => new Vector2(rectTransform.rect.width, rectTransform.rect.height - TopLine.rect.height);
-        public Vector2 size { get; private set; } = new Vector2(0, 0);
+        public Vector2 capacity => new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y - TopLine.sizeDelta.y);
+        public Vector2 size { get; private set; }
         [SerializeField] private Vector4 _Padding = Vector4.zero;
         public Vector4 Padding
         {
@@ -28,7 +45,7 @@ namespace AD.UI
             }
         }
 
-        [HideInInspector]public bool isCanBackPool = true;
+        [HideInInspector] public bool isCanBackPool = true;
         private bool isCanRefresh = true;
 
         [SerializeField] private RectTransform SubPage, TopLine;
@@ -36,22 +53,16 @@ namespace AD.UI
 
         public ADEvent OnEsc = new ADEvent();
 
-        private void Awake()
-        {
-            rectTransform = GetComponent<RectTransform>();
-            background = GetComponent<AD.UI.ViewController>();
-        }
-
         public CustomWindowElement Init()
         {
             foreach (var item in Childs)
-            { 
+            {
                 Destroy(item.Value.gameObject);
             }
             Childs.Clear();
             rectTransform.localPosition = Vector3.zero;
             rectTransform.sizeDelta = new Vector2(300, 100);
-            size = Vector2.zero; 
+            size = new Vector2(capacity.x, 0);
             Padding = Vector4.zero;
             isCanBackPool = true;
             return this;
@@ -60,8 +71,8 @@ namespace AD.UI
         public void BackPool()
         {
             if (!isCanBackPool) return;
-            Init();
             OnEsc.Invoke();
+            Init();
             CustomWindowGenerator.Despawn(this);
         }
 
@@ -72,8 +83,36 @@ namespace AD.UI
             return this;
         }
 
+        public CustomWindowElement MoveWithRectControl(Vector4 args)
+        {
+            if (!isCanRefresh) return this;
+            rectTransform.rect.Set(args[0], args[1], args[2], args[3]);
+            return this;
+        }
+
+        public CustomWindowElement SetRect(Vector2 Rect)
+        {
+            if (!isCanRefresh) return this;
+            rectTransform.sizeDelta = Rect + new Vector2(0, TopLine.sizeDelta.y);
+            return this;
+        }
+
+        public RectTransform GetChild(string keyName)
+        {
+            if (Childs.ContainsKey(keyName)) return Childs[keyName];
+            else return null;
+        }
+
+        public CustomWindowElement SetTitle(string title)
+        {
+            Title.text = title;
+            return this;
+        }
+
+        #region  Refresh
+
         public void RefreshAllChild()
-        { 
+        {
             if (isCanRefresh)
                 foreach (var item in Childs)
                 {
@@ -84,83 +123,229 @@ namespace AD.UI
         private void RefreshWithNeedSpace(float x, float y, RectTransform rect)
         {
             if (!isCanRefresh) return;
-            if (capacity.x < x + Padding[1] + Padding[3])
+            if (capacity.x < x + Padding[0] + Padding[2])
             {
-                rectTransform.rect.Set(rectTransform.rect.x, rectTransform.rect.y, x + Padding[1] + Padding[3], TopLine.rect.height);
+                SetRect(new Vector2(x + Padding[0] + Padding[2], size.y)); 
                 RefreshAllChild();
-                RefreshWithNeedSpace(rect);
+                RefreshWithNeedSpace(x, y, rect);
                 return;
             }
-            if (capacity.x < size.x + x + Padding[3])
+            if (capacity.x > size.x + x + Padding[0] + Padding[2])
             {
-                if (capacity.y < size.y + y + Padding[4])
-                {
-                    rectTransform.rect.Set(
-                        rectTransform.rect.x,
-                        rectTransform.rect.y,
-                        rectTransform.rect.width,
-                        rectTransform.sizeDelta.y + ((int)(y / TopLine.rect.height) + 1) * TopLine.rect.height);
-                    RefreshWithNeedSpace(rect);
-                    return;
-                }
-                else size = new Vector2(x, size.y + y);
+                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, size.x + Padding[0], rect.rect.width);
+                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.rect.height);
+                size = new Vector2(size.x + x, size.y);
             }
-            else size = new Vector2(size.x + x, size.y);
-            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, size.x - x + Padding[1], rect.rect.width);
-            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[2], rect.rect.height);
+            else
+            {
+                if (capacity.y < size.y + y + Padding[1] + Padding[3]) 
+                    SetRect(new Vector2(size.x , size.y + y + Padding[1] + Padding[3]));
+                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, Padding[0], rect.rect.width);
+                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.rect.height);
+                size = new Vector2(x, size.y + y);
+            }
         }
 
         private void RefreshWithNeedSpace(RectTransform rect)
         {
             if (!isCanRefresh) return;
-            float x = rect.rect.width, y = rect.rect.height;
-            RefreshWithNeedSpace(x, y,rect);
+            float x = rect.sizeDelta.x, y = rect.sizeDelta.y;
+            RefreshWithNeedSpace(x, y, rect);
         }
 
-        public T GenerateADUI<T>(string keyName, ADUI prefab) where T : ADUI, new()
+        #endregion
+
+        #region Generate
+
+        public T SetADUIOnWindow<T>(string keyName, ADUI item) where T : ADUI, new()
         {
-            if (Childs.ContainsKey(keyName)) return null;
-            T target = GameObject.Instantiate(prefab.gameObject, SubPage.transform).GetComponent<T>();
-            GenerateTarget(keyName, target.gameObject);
-            return target;
+            return SetADUIOnWindow<T>(keyName, item, item.GetComponent<RectTransform>().sizeDelta);
         }
 
-        public bool GenerateTarget(string keyName, GameObject prefab)
+        public bool SetItemOnWindow(string keyName, GameObject item)
+        {
+            return SetItemOnWindow(keyName, item, item.GetComponent<RectTransform>().sizeDelta);
+        }
+
+        public T SetADUIOnWindow<T>(string keyName, ADUI item, Vector2 Rect) where T : ADUI, new()
+        {
+            if (Childs.ContainsKey(keyName)) return null; 
+            if (SetItemOnWindow(keyName, item.gameObject, Rect))
+                return item.GetComponent<T>();
+            else return null;
+        }
+
+        public bool SetItemOnWindow(string keyName, GameObject prefab, Vector2 Rect)
         {
             if (Childs.ContainsKey(keyName) || !prefab.TryGetComponent<RectTransform>(out var target)) return false;
-            target.SetParent(SubPage);
+            target.SetParent(SubPage, false);
+            target.sizeDelta = Rect;
             Childs.Add(keyName, target);
             RefreshWithNeedSpace(target);
             return true;
         }
 
-        public CustomWindowElement GenerateSubWindow(Vector2 rect)
-        {
-            CustomWindowElement customWindow = GameObject.Instantiate(gameObject).GetComponent<CustomWindowElement>();
-            customWindow.SetRect(rect);
-            customWindow.OnEsc.AddListener(this.RefreshAllChild);
-            customWindow.isCanRefresh = false;
-            GenerateTarget(customWindow.GetHashCode().ToString(), customWindow.gameObject);
-            return customWindow;
-        }
-
-        public void SetRect(Vector2 Rect)
-        {
-            if (!isCanRefresh) return;
-            rectTransform.rect.Set(rectTransform.rect.x, rectTransform.rect.y, Rect.x, Rect.y + TopLine.rect.height);
-            RefreshAllChild();
-        }
-
-        public RectTransform GetChild(string keyName)
-        {
-            if (Childs.ContainsKey(keyName)) return Childs[keyName];
+        public CustomWindowElement GenerateSubWindow(string keyName, Vector2 rect,string title)
+        { 
+            var subWindow = GameObject.Instantiate(gameObject).GetComponent<CustomWindowElement>();
+            if (SetItemOnWindow(keyName, subWindow.gameObject, rect))
+                return subWindow.SetTitle(title);
             else return null;
-        } 
-
-        public CustomWindowElement SetTitle(string title)
-        {
-            Title.text = title;
-            return this;
         }
+
+        #region Button
+
+        public AD.UI.Button GenerateButton(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.Button>(keyName, AD.UI.Button.Generate(keyName)).SetTitle(keyName);
+        }
+
+        public AD.UI.Button GenerateButton(string keyName, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Button>(keyName, AD.UI.Button.Generate(keyName), rect).SetTitle(keyName);
+        }
+
+        #endregion
+
+        #region Slider
+
+        public AD.UI.Slider GenerateSlider(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.Slider>(keyName, AD.UI.Slider.Generate(keyName));
+        }
+
+        public AD.UI.Slider GenerateSlider(string keyName, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Slider>(keyName, AD.UI.Slider.Generate(keyName), rect);
+        }
+
+        #endregion
+
+        #region Text
+
+        public AD.UI.Text GenerateText(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.Text>(keyName, AD.UI.Text.Generate(keyName));
+        }
+
+        public AD.UI.Text GenerateText(string keyName, string defaultText)
+        {
+            return SetADUIOnWindow<AD.UI.Text>(keyName, AD.UI.Text.Generate(keyName, defaultText));
+        }
+
+        public AD.UI.Text GenerateText(string keyName, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Text>(keyName, AD.UI.Text.Generate(keyName), rect);
+        }
+
+        public AD.UI.Text GenerateText(string keyName, string defaultText, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Text>(keyName, AD.UI.Text.Generate(keyName, defaultText), rect);
+        }
+
+        #endregion
+
+        #region Toggle
+
+        public AD.UI.Toggle GenerateToggle(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.Toggle>(keyName, AD.UI.Toggle.Generate(keyName));
+        }
+
+        public AD.UI.Toggle GenerateToggle(string keyName, string defaultText)
+        {
+            return SetADUIOnWindow<AD.UI.Toggle>(keyName, AD.UI.Toggle.Generate(keyName)).SetTitle(defaultText);
+        }
+
+        public AD.UI.Toggle GenerateToggle(string keyName, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Toggle>(keyName, AD.UI.Toggle.Generate(keyName), rect);
+        }
+
+        public AD.UI.Toggle GenerateToggle(string keyName, string defaultText, Vector2 rect)
+        {
+            return SetADUIOnWindow<AD.UI.Toggle>(keyName, AD.UI.Toggle.Generate(keyName), rect).SetTitle(defaultText);
+        }
+
+        #endregion
+
+        #region InputField
+
+        public AD.UI.InputField GenerateInputField(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.InputField>(keyName, AD.UI.InputField.Generate(keyName));
+        }
+
+        public AD.UI.InputField GenerateInputField(string keyName, Vector2 Rect)
+        {
+            return SetADUIOnWindow<AD.UI.InputField>(keyName, AD.UI.InputField.Generate(keyName), Rect);
+        }
+
+        #endregion
+
+        #region RawImage
+
+        public AD.UI.RawImage GenerateRawImage(string keyName)
+        {
+            return SetADUIOnWindow<AD.UI.RawImage>(keyName, AD.UI.RawImage.Generate(keyName));
+        }
+
+        public AD.UI.RawImage GenerateRawImage(string keyName, Vector2 Rect)
+        {
+            return SetADUIOnWindow<AD.UI.RawImage>(keyName, AD.UI.RawImage.Generate(keyName), Rect);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Drag
+
+        public bool topOnClick = true;
+
+        private Vector2 originalLocalPointerPosition;
+        private Vector3 originalPanelLocalPosition;
+
+        private RectTransform DragObjectInternal => rectTransform;
+
+        private RectTransform DragAreaInternal => transform.parent.transform as RectTransform;
+
+        public void OnBeginDrag(PointerEventData data)
+        {
+            originalPanelLocalPosition = DragObjectInternal.localPosition;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(DragAreaInternal, data.position, data.pressEventCamera, out originalLocalPointerPosition);
+            gameObject.transform.SetAsLastSibling();
+
+            if (topOnClick == true)
+                DragObjectInternal.SetAsLastSibling();
+        }
+
+        public void OnDrag(PointerEventData data)
+        {
+            Vector2 localPointerPosition;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(DragAreaInternal, data.position, data.pressEventCamera, out localPointerPosition))
+            {
+                Vector3 offsetToOriginal = localPointerPosition - originalLocalPointerPosition;
+                DragObjectInternal.localPosition = originalPanelLocalPosition + offsetToOriginal;
+            }
+
+            ClampToArea();
+        }
+
+        private void ClampToArea()
+        {
+            Vector3 pos = DragObjectInternal.localPosition;
+
+            Vector3 minPosition = DragAreaInternal.rect.min - DragObjectInternal.rect.min;
+            Vector3 maxPosition = DragAreaInternal.rect.max - DragObjectInternal.rect.max;
+
+            pos.x = Mathf.Clamp(DragObjectInternal.localPosition.x, minPosition.x, maxPosition.x);
+            pos.y = Mathf.Clamp(DragObjectInternal.localPosition.y, minPosition.y, maxPosition.y);
+
+            DragObjectInternal.localPosition = pos;
+        }
+
+        #endregion
+
     }
 }
