@@ -322,7 +322,7 @@ namespace AD.BASE
     public interface IADSystem : ICanInitialize, ICanSendCommand, ICanGetArchitecture, ICanGetController
     {
         void RegisterCommand<T>() where T : class, IADCommand, new();
-        void UnRegisterCommand<T>() where T : class, IADCommand, new(); 
+        void UnRegisterCommand<T>() where T : class, IADCommand, new();
     }
 
     public abstract class ADSystem : IADSystem
@@ -399,6 +399,7 @@ namespace AD.BASE
             Architecture.RegisterController(controller);
             return this;
         }
+
     }
 
     public interface IADController : ICanInitialize, ICanGetArchitecture, ICanSendCommand, ICanSendEvent, ICanGetSystem, ICanGetModel
@@ -743,12 +744,7 @@ namespace AD.BASE
 
         public IADArchitecture UnRegister<_T>() where _T : new()
         {
-            var cat = AD__Objects.FirstOrDefault(P => P.GetType().Equals(typeof(_T)));
-            if (!cat.Equals(default(_T)))
-            {
-                AD__Objects.Remove(cat);
-                (cat as ICanInitialize)?.Init();
-            }
+            AD__Objects.Remove(AD__Objects.FirstOrDefault(T => T.GetType().Equals(typeof(_T))));
             return instance;
         }
 
@@ -1799,15 +1795,16 @@ namespace AD.BASE
 
         public void Invoke(T0 arg0)
         {
-            foreach (var index in InvokeArray)
-            {
-                if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+            if (InvokeArray != null)
+                foreach (var index in InvokeArray)
                 {
-                    Debug.LogWarning("you like to try invoke a error action");
-                    continue;
+                    if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+                    {
+                        Debug.LogWarning("you like to try invoke a error action");
+                        continue;
+                    }
+                    _m_Delegates[index].Invoke(arg0);
                 }
-                _m_Delegates[index].Invoke(arg0);
-            }
         }
 
         public override ADBaseInvokableCall[] GetAllListener()
@@ -1875,15 +1872,16 @@ namespace AD.BASE
 
         public void Invoke(T0 arg0, T1 arg1)
         {
-            foreach (var index in InvokeArray)
-            {
-                if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+            if (InvokeArray != null)
+                foreach (var index in InvokeArray)
                 {
-                    Debug.LogWarning("you like to try invoke a error action");
-                    continue;
+                    if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+                    {
+                        Debug.LogWarning("you like to try invoke a error action");
+                        continue;
+                    }
+                    _m_Delegates[index].Invoke(arg0, arg1);
                 }
-                _m_Delegates[index].Invoke(arg0, arg1);
-            }
         }
 
         public override ADBaseInvokableCall[] GetAllListener()
@@ -1953,15 +1951,16 @@ namespace AD.BASE
 
         public void Invoke(T0 arg0, T1 arg1, T2 arg2)
         {
-            foreach (var index in InvokeArray)
-            {
-                if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+            if (InvokeArray != null)
+                foreach (var index in InvokeArray)
                 {
-                    Debug.LogWarning("you like to try invoke a error action");
-                    continue;
+                    if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+                    {
+                        Debug.LogWarning("you like to try invoke a error action");
+                        continue;
+                    }
+                    _m_Delegates[index].Invoke(arg0, arg1, arg2);
                 }
-                _m_Delegates[index].Invoke(arg0, arg1, arg2);
-            }
         }
 
         public override ADBaseInvokableCall[] GetAllListener()
@@ -2033,15 +2032,16 @@ namespace AD.BASE
 
         public void Invoke(T0 arg0, T1 arg1, T2 arg2, T3 arg3)
         {
-            foreach (var index in InvokeArray)
-            {
-                if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+            if (InvokeArray != null)
+                foreach (var index in InvokeArray)
                 {
-                    Debug.LogWarning("you like to try invoke a error action");
-                    continue;
+                    if (index > 0 && index < _m_Delegates.Count && _m_Delegates[index] == null)
+                    {
+                        Debug.LogWarning("you like to try invoke a error action");
+                        continue;
+                    }
+                    _m_Delegates[index].Invoke(arg0, arg1, arg2, arg3);
                 }
-                _m_Delegates[index].Invoke(arg0, arg1, arg2, arg3);
-            }
         }
 
         public override ADBaseInvokableCall[] GetAllListener()
@@ -2090,14 +2090,14 @@ namespace AD.BASE
 
     #region Property 
 
-    public interface IPropertyHasGet<T> 
+    public interface IPropertyHasGet<T>
     {
         AbstractBindProperty<T> Property { get; }
     }
     public interface IPropertyHasSet<T>
     {
         AbstractBindProperty<T> Property { get; }
-    } 
+    }
 
     public class Property<T>
     {
@@ -2117,25 +2117,25 @@ namespace AD.BASE
 
         internal ADOrderlyEvent _m_get = null;
         internal ADOrderlyEvent<T> _m_set = null;
-        internal ADOrderlyEvent<T> _m_set_same = null; 
+        internal ADOrderlyEvent<T> _m_set_same = null;
         internal PropertyAsset _m_data = null;
         public bool IsHaveValue => _m_data != null;
 
         public Property(ADOrderlyEvent<T> set, T data)
         {
             _m_set = set ?? throw new ArgumentNullException(nameof(set));
-            _m_data = new PropertyAsset(data); 
+            _m_data = new PropertyAsset(data);
         }
         public Property(T data)
         {
             _m_data = new PropertyAsset(data);
         }
         public Property()
-        { 
+        {
         }
 
         public T Set(T _Right = default)
-        { 
+        {
             if (_Right.Equals(default))
             {
                 if (_m_data == null)
@@ -2150,21 +2150,21 @@ namespace AD.BASE
             }
             else
             {
-                if (_m_data != null) 
+                if (_m_data != null)
                     if (_m_data.value.Equals(_Right))
-                        _m_set_same?.Invoke(_Right); 
-                else
-                {
-                    _m_data = new PropertyAsset();
-                    _m_set?.Invoke(_Right);
-                }
+                        _m_set_same?.Invoke(_Right);
+                    else
+                    {
+                        _m_data = new PropertyAsset();
+                        _m_set?.Invoke(_Right);
+                    }
                 _m_data.value = _Right;
             }
             return _Right;
         }
 
         public T Get()
-        { 
+        {
             return (IsHaveValue) ? _m_data.value : default;
         }
 
@@ -2173,7 +2173,7 @@ namespace AD.BASE
             _m_get = null;
             _m_set = null;
             _m_set_same = null;
-            _m_data = null; 
+            _m_data = null;
         }
 
         public void AddListenerOnSet(UnityAction<T> action)
@@ -2193,16 +2193,16 @@ namespace AD.BASE
         }
 
         public void RemoveListenerOnSet(UnityAction<T> action)
-        { 
+        {
             _m_set?.RemoveListener(action);
         }
         public void RemoveListenerOnSetSame(UnityAction<T> action)
         {
-            _m_set_same?.RemoveListener(action); 
+            _m_set_same?.RemoveListener(action);
         }
         public void RemoveListenerOnGet(UnityAction action)
         {
-            _m_get?.RemoveListener(action); 
+            _m_get?.RemoveListener(action);
         }
 
         public void RemoveListenerOnSet()
@@ -2224,7 +2224,7 @@ namespace AD.BASE
         }
         public void SortOnSetSame(IComparer<int> comparer)
         {
-            _m_set_same?.InvokeArray.Sort(comparer); 
+            _m_set_same?.InvokeArray.Sort(comparer);
         }
         public void SortOnGet(IComparer<int> comparer)
         {
@@ -2285,6 +2285,14 @@ namespace AD.BASE
             }
         }
 
+        #region Func
+
+        public AbstractBindProperty<T> Init()
+        {
+            _m_value.Init();
+            return this;
+        }
+
         public void TrackThisShared(AbstractBindProperty<T> OtherProperty)
         {
             this._m_value = OtherProperty._m_value;
@@ -2293,14 +2301,6 @@ namespace AD.BASE
         protected void Init(T _init)
         {
             _m_value = new Property<T>(_init);
-        }
-
-        #region Func
-
-        public AbstractBindProperty<T> Init()
-        {
-            _m_value.Init();
-            return this;
         }
 
         internal AbstractBindProperty<T> AddListenerOnSet(UnityAction<T> action)
@@ -2378,7 +2378,7 @@ namespace AD.BASE
         internal List<int> IndexArrayOnGet()
         {
             return _m_value.IndexArrayOnGet();
-        } 
+        }
 
         #endregion
 
@@ -2433,35 +2433,25 @@ namespace AD.BASE
             return self.Property._m_value._m_data.value;
         }
 
-        public static T SetOriginal<T>(this IPropertyHasSet<T> self,T value)
+        public static T SetOriginal<T>(this IPropertyHasSet<T> self, T value)
         {
             self.Property._m_value._m_data.value = value;
             return self.Property._m_value._m_data.value;
         }
 
-        public static T Get<T>(this IPropertyHasGet<T> self)
-        {
-            return self.Property._m_value.Get();
-        }
-
-        public static T Set<T>(this IPropertyHasSet<T> self, T value)
-        { 
-            return self.Property._m_value.Set(value);
-        }
-
-        public static IPropertyHasSet<T> AddListenerOnSet<T>(this IPropertyHasSet<T> self,UnityAction<T> action)
+        public static IPropertyHasSet<T> AddListenerOnSet<T>(this IPropertyHasSet<T> self, UnityAction<T> action)
         {
             self.Property.AddListenerOnSet(action);
             return self;
         }
 
-        public static IPropertyHasSet<T> AddListenerOnSetSame<T>(this IPropertyHasSet<T> self,UnityAction<T> action)
+        public static IPropertyHasSet<T> AddListenerOnSetSame<T>(this IPropertyHasSet<T> self, UnityAction<T> action)
         {
             self.Property.AddListenerOnSetSame(action);
             return self;
         }
 
-        public static IPropertyHasGet<T> AddListenerOnGet<T>(this IPropertyHasGet<T> self,UnityAction action)
+        public static IPropertyHasGet<T> AddListenerOnGet<T>(this IPropertyHasGet<T> self, UnityAction action)
         {
             self.Property.AddListenerOnGet(action);
             return self;
@@ -2503,7 +2493,7 @@ namespace AD.BASE
             return self;
         }
 
-        public static IPropertyHasSet<T> SortOnSet<T>(this IPropertyHasSet<T> self,IComparer<int> comparer)
+        public static IPropertyHasSet<T> SortOnSet<T>(this IPropertyHasSet<T> self, IComparer<int> comparer)
         {
             self.SortOnSet(comparer);
             return self;
@@ -2515,7 +2505,7 @@ namespace AD.BASE
             return self;
         }
 
-        public static IPropertyHasGet<T> SortOnGet<T>(this IPropertyHasGet<T> self,IComparer<int> comparer)
+        public static IPropertyHasGet<T> SortOnGet<T>(this IPropertyHasGet<T> self, IComparer<int> comparer)
         {
             self.SortOnGet(comparer);
             return self;
@@ -2535,6 +2525,17 @@ namespace AD.BASE
         {
             return self.IndexArrayOnGet();
         }
+
+        public static T Get<T>(this IPropertyHasGet<T> self)
+        {
+            return self.Property._m_value.Get();
+        }
+
+        public static T Set<T>(this IPropertyHasSet<T> self, T value)
+        {
+            return self.Property._m_value.Set(value);
+        }
+
 
     }
 

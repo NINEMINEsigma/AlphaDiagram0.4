@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WaterPost : MonoBehaviour
 {
@@ -53,9 +54,9 @@ public class WaterPost : MonoBehaviour
                 _Material.SetVector("_startPos", startPos);
             }
         }
-        else if (Input.GetMouseButton(0))
+        else if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Vector2 mousePos = Input.mousePosition;
+            Vector2 mousePos = Mouse.current.position.ReadValue();
             startPos = new Vector4(mousePos.x / Screen.width, mousePos.y / Screen.height, 0, 0);
             waveStartTime = Time.time;
         }
