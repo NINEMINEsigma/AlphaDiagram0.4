@@ -21,6 +21,8 @@ public class ASCEditor : Editor
     private /*bool*/SerializedProperty DrawingLine;
     private /*bool*/SerializedProperty Sampling;
 
+    private /*Gameobject*/SerializedProperty _m_LineRenderer;
+    private /*Gameobject*/SerializedProperty LineRendererPrefab;
 
     private /*SpectrumLength*/SerializedProperty SpectrumCount;
     private /*float[]*/SerializedProperty samples;
@@ -38,6 +40,9 @@ public class ASCEditor : Editor
         SourcePairs = serializedObject.FindProperty("SourcePairs");
 
         _Mixer = serializedObject.FindProperty("_Mixer");
+
+        _m_LineRenderer = serializedObject.FindProperty("_m_LineRenderer");
+        LineRendererPrefab = serializedObject.FindProperty("LineRendererPrefab");
 
         LoopAtAll = serializedObject.FindProperty("LoopAtAll");
         DrawingLine = serializedObject.FindProperty("DrawingLine");
@@ -102,6 +107,10 @@ public class ASCEditor : Editor
         }
 
         EditorGUILayout.PropertyField(_Mixer);
+
+        EditorGUILayout.PropertyField(_m_LineRenderer);
+        EditorGUILayout.PropertyField(LineRendererPrefab);
+
         EditorGUILayout.PropertyField(LoopAtAll);
         EditorGUILayout.PropertyField(Sampling);
 

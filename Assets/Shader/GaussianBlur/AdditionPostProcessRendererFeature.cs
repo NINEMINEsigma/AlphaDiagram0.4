@@ -13,12 +13,10 @@ namespace AD.Experiemntal.Rendering.Universal
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            var cameraColorTarget = renderer.cameraColorTarget;
-            var cameraDepth = renderer.cameraDepthTarget;
-            var dest = RenderTargetHandle.CameraTarget;
-            if (postData == null)
+            if (postData == null) 
                 return;
-            postPass.Setup(evt, cameraColorTarget, cameraDepth, dest, postData);
+            postPass.Setup( evt, renderer, RenderTargetHandle.CameraTarget,postData);
+
             renderer.EnqueuePass(postPass);
         }
 

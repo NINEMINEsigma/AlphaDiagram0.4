@@ -124,8 +124,8 @@ namespace AD.UI
         public bool LoopAtAll = true;
         public bool Sampling = false;
 
-        private LineRenderer _m_LineRenderer = null;
-        [SerializeField] LineRenderer LineRendererPrefab = null;
+        [SerializeField] private LineRenderer _m_LineRenderer = null;
+        [SerializeField] private LineRenderer LineRendererPrefab = null;
 
         #endregion
 
@@ -193,18 +193,19 @@ namespace AD.UI
                 BandNegativeCheck();
                 if (DrawingLine)
                 {
+                    if (_m_LineRenderer == null)
+                    {
+                        _m_LineRenderer = GameObject.Instantiate(LineRendererPrefab, transform).gameObject.GetComponent<LineRenderer>();
+                        _m_LineRenderer.name = name + " LineRenderer(AudioiSourceController)";
+                    }
+                    else _m_LineRenderer.gameObject.SetActive(true);
                     if (CurrentSourcePair.LineDrawer == null)
                     {
-                        if (_m_LineRenderer == null)
-                        {
-                            _m_LineRenderer = GameObject.Instantiate(LineRendererPrefab, transform).gameObject.GetComponent<LineRenderer>();
-                            _m_LineRenderer.name = "New LineRenderer(AudioiSourceController)";
-                        }
-                        else _m_LineRenderer.gameObject.SetActive(true);
                         DrawLineOnDefault();
                     }
                     else CurrentSourcePair.LineDrawer.DrawLine(_m_LineRenderer, this);
                 }
+                else if (_m_LineRenderer != null) _m_LineRenderer.gameObject.SetActive(false);
             }
 
             void WhenPlaying()

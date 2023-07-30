@@ -93,7 +93,14 @@ namespace AD.UI
         public CustomWindowElement SetRect(Vector2 Rect)
         {
             if (!isCanRefresh) return this;
-            rectTransform.sizeDelta = Rect + new Vector2(0, TopLine.sizeDelta.y);
+            try
+            {
+                rectTransform.sizeDelta = Rect + new Vector2(0, TopLine.sizeDelta.y);
+            }
+            catch(System.Exception ex)
+            {
+                Debug.LogAssertion(ex);
+            }
             return this;
         }
 

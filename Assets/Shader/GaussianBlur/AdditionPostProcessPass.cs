@@ -1,6 +1,7 @@
 ﻿using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 #endif
 
@@ -58,6 +59,11 @@ namespace AD.Experiemntal.Rendering.Universal
             m_CameraDepthAttachment = cameraDepth;
             m_Destination = destination;
             m_Materials = new MaterialLibrary(data);
+        }
+
+        public void Setup(RenderPassEvent @event, ScriptableRenderer renderer, RenderTargetHandle dest, AdditionalPostProcessData data)
+        {
+            Setup(@event, renderer.cameraColorTarget, renderer.cameraDepthTarget, dest, data);
         }
 
         void Render(CommandBuffer cmd, ref RenderingData renderingData)
