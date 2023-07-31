@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: New Single File Creator
+  m_EditorClassIdentifier: Assembly-CSharp:AD:SingleFileCreator
+  LicenseCode: "//\n//\tninemine\n//"
+  FileName: ChooseSystem.cs
+  Scripts:
+  - {fileID: 11500000, guid: 42e184c55855ea249b502056514ac412, type: 3}
+  DependencyScripts: []
+  OutputFilePath: F:/AlphaDiagram0.4/Assets/Sprites/Choose

@@ -7,7 +7,7 @@ using AD.BASE;
 
 namespace AD.UI
 {
-    public class VirtualJoystick : PropertyModule, IDragHandler,IPointerDownHandler,IPointerUpHandler
+    public class VirtualJoystick : PropertyModule, IDragHandler, IPointerDownHandler, IPointerUpHandler
     {
         [Header("VirtualJoystick")]
         public Camera TargetCamera;
@@ -74,8 +74,8 @@ namespace AD.UI
                     DateValue -= 1.5f;
                     Fill.fillAmount = DateValue / 360.0f;
                     Value.z = DateValue;
-                } 
-            } 
+                }
+            }
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -84,20 +84,20 @@ namespace AD.UI
             var Pos = TargetCamera.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, Vector3.Distance(transform.position, TargetCamera.transform.position)));
             CatchValue = Value = Pos - transform.position;
             if (Value.magnitude > MaxX / 2.0f) Pos = transform.position + (Pos - transform.position).normalized * MaxX / 2.0f;
-            JoyStick.transform.position = new Vector3(Pos.x, Pos.y, JoyStick.transform.position.z); 
-        } 
+            JoyStick.transform.position = new Vector3(Pos.x, Pos.y, JoyStick.transform.position.z);
+        }
 
         public void OnPointerDown(PointerEventData eventData)
-        { 
+        {
             OnStart.Invoke(eventData);
-            StopCoroutine(nameof(OnInitializePotentialDrag_Start)); 
+            StopCoroutine(nameof(OnInitializePotentialDrag_Start));
             StartCoroutine(OnInitializePotentialDrag_Start());
             IsDrag = true;
         }
         private IEnumerator OnInitializePotentialDrag_Start()
         {
             StopCoroutine(nameof(OnInitializePotentialDrag_End));
-            DateValue = 180; 
+            DateValue = 180;
             Value = new Vector3();
             float end = 15.0f;
             for (int i = 0; i < end; i++)
@@ -110,9 +110,9 @@ namespace AD.UI
             yield return new WaitForEndOfFrame();
             MineVirtualJoystick.SetColor_A(0.5f);
             Background.SetColor_A(0.5f);
-            JoyStick.SetColor_A(0.75f);  
+            JoyStick.SetColor_A(0.75f);
         }
-         
+
         public void OnPointerUp(PointerEventData eventData)
         {
             OnEnd.Invoke(eventData);
@@ -122,7 +122,7 @@ namespace AD.UI
         }
         private IEnumerator OnInitializePotentialDrag_End()
         {
-            StopCoroutine(nameof(OnInitializePotentialDrag_Start));  
+            StopCoroutine(nameof(OnInitializePotentialDrag_Start));
             float end = 15.0f;
             DateValue = 0;
             Value = new Vector3();
@@ -138,7 +138,7 @@ namespace AD.UI
             MineVirtualJoystick.SetColor_A(0);
             Background.SetColor_A(0);
             JoyStick.SetColor_A(0);
-            JoyStick.transform.localPosition = new Vector3(); 
+            JoyStick.transform.localPosition = new Vector3();
         }
 
     }

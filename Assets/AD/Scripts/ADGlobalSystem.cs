@@ -373,7 +373,7 @@ namespace AD
 
         #region UtilityFunction
 
-        //»ñÈ¡³ÉÕâ¸öÎÄ¼şµÄÎÄ¼şÂ·¾¶£¨²»°üÀ¨±¾Éí£©
+        //è·å–æˆè¿™ä¸ªæ–‡ä»¶çš„æ–‡ä»¶è·¯å¾„ï¼ˆä¸åŒ…æ‹¬æœ¬èº«ï¼‰
         public static DirectoryInfo GetDirectroryOfFile(string filePath)
         {
             Debug.Log($"CreateDirectrory {filePath}[folder_path],");
@@ -389,7 +389,7 @@ namespace AD
             return null;
         }
 
-        //Éú³ÉÕâ¸öÎÄ¼şµÄÎÄ¼şÂ·¾¶£¨²»°üº¬±¾Éí£©
+        //ç”Ÿæˆè¿™ä¸ªæ–‡ä»¶çš„æ–‡ä»¶è·¯å¾„ï¼ˆä¸åŒ…å«æœ¬èº«ï¼‰
         public static DirectoryInfo CreateDirectroryOfFile(string filePath)
         {
             Debug.Log($"CreateDirectrory {filePath}[folder_path],");
@@ -494,7 +494,7 @@ namespace AD
             {
                 try
                 {
-                    obj = ES3.Load(filePath.Split('.')[^1], filePath);
+                    obj = ES3.Load(filePath.Split('.', '/', '\\')[^2], filePath);
                     if (obj != null) return true;
                     else return false;
                 }
@@ -544,7 +544,7 @@ namespace AD
             {
                 if (!Directory.Exists(destPath))
                 {
-                    //Ä¿±êÄ¿Â¼²»´æÔÚÔò´´½¨ 
+                    //ç›®æ ‡ç›®å½•ä¸å­˜åœ¨åˆ™åˆ›å»º 
                     try
                     {
                         Directory.CreateDirectory(destPath);
@@ -556,28 +556,28 @@ namespace AD
                         return;
                     }
                 }
-                //»ñµÃÔ´ÎÄ¼şÏÂËùÓĞÎÄ¼ş 
+                //è·å¾—æºæ–‡ä»¶ä¸‹æ‰€æœ‰æ–‡ä»¶ 
                 List<string> files = new(Directory.GetFiles(sourcePath));
                 files.ForEach(c =>
                 {
                     string destFile = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //¸²¸ÇÄ£Ê½ 
+                    //è¦†ç›–æ¨¡å¼ 
                     if (File.Exists(destFile))
                     {
                         File.Delete(destFile);
                     }
                     File.Move(c, destFile);
                 });
-                //»ñµÃÔ´ÎÄ¼şÏÂËùÓĞÄ¿Â¼ÎÄ¼ş 
+                //è·å¾—æºæ–‡ä»¶ä¸‹æ‰€æœ‰ç›®å½•æ–‡ä»¶ 
                 List<string> folders = new List<string>(Directory.GetDirectories(sourcePath));
 
                 folders.ForEach(c =>
                 {
                     string destDir = Path.Combine(new string[] { destPath, Path.GetFileName(c) });
-                    //Directory.Move±ØĞëÒªÔÚÍ¬Ò»¸ö¸ùÄ¿Â¼ÏÂÒÆ¶¯²ÅÓĞĞ§£¬²»ÄÜÔÚ²»Í¬¾íÖĞÒÆ¶¯¡£ 
+                    //Directory.Moveå¿…é¡»è¦åœ¨åŒä¸€ä¸ªæ ¹ç›®å½•ä¸‹ç§»åŠ¨æ‰æœ‰æ•ˆï¼Œä¸èƒ½åœ¨ä¸åŒå·ä¸­ç§»åŠ¨ã€‚ 
                     //Directory.Move(c, destDir); 
 
-                    //²ÉÓÃµİ¹éµÄ·½·¨ÊµÏÖ 
+                    //é‡‡ç”¨é€’å½’çš„æ–¹æ³•å®ç° 
                     MoveFolder(c, destDir);
                 });
             }
@@ -590,36 +590,36 @@ namespace AD
 
         public static void CopyFilefolder(string sourceFilePath, string targetFilePath)
         {
-            //»ñÈ¡Ô´ÎÄ¼ş¼ĞÖĞµÄËùÓĞ·ÇÄ¿Â¼ÎÄ¼ş
+            //è·å–æºæ–‡ä»¶å¤¹ä¸­çš„æ‰€æœ‰éç›®å½•æ–‡ä»¶
             string[] files = Directory.GetFiles(sourceFilePath);
             string fileName;
             string destFile;
-            //Èç¹ûÄ¿±êÎÄ¼ş¼Ğ²»´æÔÚ£¬ÔòĞÂ½¨Ä¿±êÎÄ¼ş¼Ğ
+            //å¦‚æœç›®æ ‡æ–‡ä»¶å¤¹ä¸å­˜åœ¨ï¼Œåˆ™æ–°å»ºç›®æ ‡æ–‡ä»¶å¤¹
             if (!Directory.Exists(targetFilePath))
             {
                 Directory.CreateDirectory(targetFilePath);
             }
-            //½«»ñÈ¡µ½µÄÎÄ¼şÒ»¸öÒ»¸ö¿½±´µ½Ä¿±êÎÄ¼ş¼ĞÖĞ 
+            //å°†è·å–åˆ°çš„æ–‡ä»¶ä¸€ä¸ªä¸€ä¸ªæ‹·è´åˆ°ç›®æ ‡æ–‡ä»¶å¤¹ä¸­ 
             foreach (string s in files)
             {
                 fileName = Path.GetFileName(s);
                 destFile = Path.Combine(targetFilePath, fileName);
                 File.Copy(s, destFile, true);
             }
-            //ÉÏÃæÒ»¶ÎÔÚMSDNÉÏ¿ÉÒÔ¿´µ½Ô´Âë 
+            //ä¸Šé¢ä¸€æ®µåœ¨MSDNä¸Šå¯ä»¥çœ‹åˆ°æºç  
 
-            //»ñÈ¡²¢´æ´¢Ô´ÎÄ¼ş¼ĞÖĞµÄÎÄ¼ş¼ĞÃû
+            //è·å–å¹¶å­˜å‚¨æºæ–‡ä»¶å¤¹ä¸­çš„æ–‡ä»¶å¤¹å
             string[] filefolders = Directory.GetFiles(sourceFilePath);
-            //´´½¨DirectoryinfoÊµÀı 
+            //åˆ›å»ºDirectoryinfoå®ä¾‹ 
             DirectoryInfo dirinfo = new DirectoryInfo(sourceFilePath);
-            //»ñÈ¡µÃÔ´ÎÄ¼ş¼ĞÏÂµÄËùÓĞ×ÓÎÄ¼ş¼ĞÃû
+            //è·å–å¾—æºæ–‡ä»¶å¤¹ä¸‹çš„æ‰€æœ‰å­æ–‡ä»¶å¤¹å
             DirectoryInfo[] subFileFolder = dirinfo.GetDirectories();
             for (int j = 0; j < subFileFolder.Length; j++)
             {
-                //»ñÈ¡ËùÓĞ×ÓÎÄ¼ş¼ĞÃû 
+                //è·å–æ‰€æœ‰å­æ–‡ä»¶å¤¹å 
                 string subSourcePath = sourceFilePath + "\\" + subFileFolder[j].ToString();
                 string subTargetPath = targetFilePath + "\\" + subFileFolder[j].ToString();
-                //°ÑµÃµ½µÄ×ÓÎÄ¼ş¼Ğµ±³ÉĞÂµÄÔ´ÎÄ¼ş¼Ğ£¬µİ¹éµ÷ÓÃCopyFilefolder
+                //æŠŠå¾—åˆ°çš„å­æ–‡ä»¶å¤¹å½“æˆæ–°çš„æºæ–‡ä»¶å¤¹ï¼Œé€’å½’è°ƒç”¨CopyFilefolder
                 CopyFilefolder(subSourcePath, subTargetPath);
             }
         }
@@ -680,7 +680,7 @@ namespace AD
             record = new List<UtilityPackage>();
             Debug.Log("Record is clean");
             return result;
-        } 
+        }
 
         public void SaveRecord()
         {
@@ -690,6 +690,7 @@ namespace AD
 
                 Output((RecordPath == "null") ? (Path.Combine(
                         Application.persistentDataPath,
+                        "ADRecordlog",
                         DateTime.Now.Hour.ToString() + "H" +
                         DateTime.Now.Minute.ToString() + "M" +
                         DateTime.Now.Second.ToString() + "S" + ".AD.log")) : (RecordPath), allMessage);

@@ -19,7 +19,23 @@ namespace AD.Entry
         {
             this
                 .RegisterSystem<EntrySystem>();
+        }
 
+        public static string TargetSceneName
+        {
+            get
+            {
+                return instance.GetController<EntryManager>().TargetSceneName;
+            }
+            set
+            {
+                instance.GetController<EntryManager>().TargetSceneName = value;
+            }
+        }
+
+        public static void OnEnd()
+        {
+            instance.GetController<EntryManager>().OnEnd();
         }
     }
 }
