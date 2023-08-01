@@ -81,4 +81,9 @@ namespace AD.UI
             Items.Remove(obj); 
         }
     }
+
+    public interface IButton
+    {
+        void SetTitle(string title);
+    }
 }

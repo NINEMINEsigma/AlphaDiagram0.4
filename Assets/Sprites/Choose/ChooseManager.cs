@@ -19,6 +19,8 @@ namespace AD.Choose
         public override void Init() 
         { 
             base.Init(); 
+
+            Architecture.Init();
         }
          
     }

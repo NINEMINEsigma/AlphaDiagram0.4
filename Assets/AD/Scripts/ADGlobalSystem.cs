@@ -494,7 +494,7 @@ namespace AD
             {
                 try
                 {
-                    obj = ES3.Load(filePath.Split('.', '/', '\\')[^2], filePath);
+                    obj = ES3.Load(Path.GetFileNameWithoutExtension(filePath), filePath);
                     if (obj != null) return true;
                     else return false;
                 }

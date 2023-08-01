@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AD.BASE;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace AD.UI
@@ -14,14 +12,7 @@ namespace AD.UI
         [Header("PropertyModule")]
         public Dictionary<int, GameObject> Childs = new();
         private GridLayoutGroup _GridLayoutGroup = null;
-        public virtual GridLayoutGroup GridLayoutGroup
-        {
-            get
-            {
-                if (IsNeedLayoutGourp) return _GridLayoutGroup;
-                else return null;
-            }
-        }
+        public virtual GridLayoutGroup GridLayoutGroup => IsNeedLayoutGourp ? _GridLayoutGroup : null;
 
         public PropertyModule()
         {
@@ -29,17 +20,30 @@ namespace AD.UI
         }
 
         private bool _IsNeedLayoutGourp = false;
+        protected virtual GridLayoutGroup HowGetOrAddGridLayoutGroup()
+        {
+            if (_GridLayoutGroup == null) return gameObject.GetOrAddComponent<GridLayoutGroup>();
+            else return _GridLayoutGroup;
+        }
         protected virtual bool IsNeedLayoutGourp
         {
-            get { return _IsNeedLayoutGourp; }
+            get
+            {
+                if (_IsNeedLayoutGourp)
+                {
+                    _GridLayoutGroup = HowGetOrAddGridLayoutGroup();
+                    _GridLayoutGroup.enabled = true;
+                }
+                return _IsNeedLayoutGourp; 
+            }
             set
             {
                 if (value)
                 {
-                    _GridLayoutGroup ??= gameObject.GetOrAddComponent<GridLayoutGroup>();
+                    _GridLayoutGroup = HowGetOrAddGridLayoutGroup();
                     _GridLayoutGroup.enabled = true;
                 }
-                else if (_GridLayoutGroup = null) _GridLayoutGroup.enabled = false;
+                else if (_GridLayoutGroup != null) _GridLayoutGroup.enabled = false;
                 _IsNeedLayoutGourp = value;
             }
         }
@@ -63,8 +67,13 @@ namespace AD.UI
             if (child != null)
             {
                 Childs[key] = child;
-                child.transform.SetParent(transform, false);
+                LetChildAdd(child);
             }
+        }
+
+        protected virtual void LetChildAdd(GameObject child)
+        {
+            child.transform.SetParent(transform, false);
         }
 
         protected virtual void LetChildDestroy(GameObject child)

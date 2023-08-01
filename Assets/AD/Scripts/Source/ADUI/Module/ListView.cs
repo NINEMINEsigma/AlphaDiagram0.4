@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 namespace AD.UI
 {
+    public abstract class ListViewItem: PropertyModule
+    {
+        public abstract ListViewItem Init();
+    }
+
     public class ListView : PropertyModule
     {
         [Header("ListView")]
         [SerializeField] private ScrollRect _Scroll;
         [SerializeField] private VerticalLayoutGroup _List;
         [SerializeField] private TMP_Text _Title;
-        [SerializeField] private GameObject Prefab;
+        [SerializeField] private ListViewItem Prefab;
         [SerializeField] private int index = 0;
 
         public ScrollRect.ScrollRectEvent onValueChanged
@@ -24,17 +29,17 @@ namespace AD.UI
         {
             _Title.text = title;
         }
-        public void SetPrefab(GameObject prefab)
+        public void SetPrefab(ListViewItem prefab)
         {
             Prefab = prefab;
         }
 
-        public GameObject GenerateItem()
+        public ListViewItem GenerateItem()
         {
             if (Prefab == null) return null;
-            GameObject item  = LeanPool.Spawn(Prefab);
+            GameObject item  = LeanPool.Spawn(Prefab.gameObject);
             this[index++] = item;
-            return item;
+            return item.GetComponent<ListViewItem>().Init();
         }
 
         protected override void LetChildDestroy(GameObject child)

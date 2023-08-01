@@ -2,7 +2,7 @@
 //	ninemine
 //
 using AD.BASE;
-
+using AD.Source;
 namespace AD.Choose 
 { 
     //Register 
@@ -17,9 +17,10 @@ namespace AD.Choose
             throw new System.NotImplementedException(); 
         } 
         public override void Init()
-        { 
-            this
-                .RegisterSystem<ChooseSystem>(); 
+        {
+            RegisterModel<PlayerModel>();
+
+            RegisterSystem<ChooseSystem>(); 
         }
 
         public static string TargetSceneName

@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
-    [Serializable, RequireComponent(typeof(UnityEngine.UI.Image))]
+    [Serializable]
     [AddComponentMenu("UI/AD/Button", 100)]
-    public class Button : ADUI, IPointerClickHandler
+    public class Button : ADUI, IPointerClickHandler, IButton
     {
         public Animator animator = null;
         public ADEvent OnClick = new ADEvent(), OnRelease = new ADEvent();
@@ -118,5 +118,9 @@ namespace AD.UI
             return this;
         }
 
+        void IButton.SetTitle(string title)
+        {
+            this.SetTitle(title);
+        }
     }
 }
