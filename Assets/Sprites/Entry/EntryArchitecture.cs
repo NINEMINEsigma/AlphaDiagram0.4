@@ -1,6 +1,6 @@
 using AD.BASE;
 
-namespace AD.Entry
+namespace AD.ProjectTwilight.Entry
 {
     //Register
     public class EntryApp : ADArchitecture<EntryApp>

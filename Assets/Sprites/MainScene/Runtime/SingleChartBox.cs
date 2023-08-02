@@ -1,12 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AD.UI;
 using UnityEngine;
 using AD.BASE;
-using static AD.MainScene.CharacterSourcePair;
+using AD.ProjectTwilight.MainScene;
 
-namespace AD.MainScene
+namespace AD.ProjectTwilight.MainScene
 {
     public class SingleChartBox : MonoBehaviour
     {
@@ -15,7 +14,7 @@ namespace AD.MainScene
 
         [Header("Others")]
         public ReadOnlyBindProprety<List<int>> Appearance = new();
-        public ReadOnlyBindProprety<List<DifferenceBuff>> PictureDifferences = new();
+        public ReadOnlyBindProprety<List<CharacterSourcePair.DifferenceBuff>> PictureDifferences = new();
         public ReadOnlyBindProprety<List<CharacterMessage>> CharacterMessages = new();
 
         [HideInInspector]public SingleSoundPlayer soundPlayer;

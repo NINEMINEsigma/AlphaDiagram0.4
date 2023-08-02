@@ -3,7 +3,7 @@ using UnityEngine;
 using AD.UI;
 using UnityEngine.Rendering;
 
-namespace AD.Entry
+namespace AD.ProjectTwilight.Entry
 {
     public class DrawLine : AD.UI.ICanDrawLine
     {

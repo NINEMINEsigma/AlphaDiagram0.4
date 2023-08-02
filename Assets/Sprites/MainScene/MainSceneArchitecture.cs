@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using AD.BASE;
-using AD.Entry;
-using UnityEngine;
 
-namespace AD.MainScene
-{ 
+namespace AD.ProjectTwilight.MainScene
+{
     public class MainApp : ADArchitecture<MainApp>
     {
         public override bool FromMap(IBaseMap from)

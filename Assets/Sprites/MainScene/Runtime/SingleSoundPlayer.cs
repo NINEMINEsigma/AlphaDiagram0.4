@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using AD.UI;
 using UnityEngine;
-using AD.BASE;
 using System.Linq;
 
-namespace AD.MainScene
+namespace AD.ProjectTwilight.MainScene
 {
     [RequireComponent(typeof(AudioSourceController))]
     public class SingleSoundPlayer : MonoBehaviour

@@ -1,14 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AD.BASE;
 using AD.UI;
 using UnityEditor;
 using UnityEngine;
-using static Unity.VisualScripting.Member;
 
-namespace AD.MainScene
+namespace AD.ProjectTwilight.MainScene
 {
     [Serializable]
     public class CharacterMessage

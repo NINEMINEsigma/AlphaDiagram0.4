@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace AD.BASE
@@ -174,86 +175,49 @@ namespace AD.BASE
 
 
 
-        public static Dictionary<string, List<FileInfo>> Files = new();
+        private static Dictionary<string, List<FileInfo>> Files = new();
 
-        public static FileInfo GetFileInfo(string path, string name)
+        public static List<FileInfo> GetFiles(string group)
         {
-            DirectoryInfo direction = new(path);
-            FileInfo[] files = direction.GetFiles("*");
-            foreach (var it in files)
-                if (it.Name == name) return it;
-            return null;
+            Files.TryGetValue(group, out var files);
+            return files;
         }
 
-        public static void ReGetFiles(string group, string path, Func<string, bool> func, bool state = true)
+        public static void LoadFiles(string group,string dictionary, Predicate<string> _Right)
         {
             if (Files.ContainsKey(group))
-            {
-                Files.Remove(group);
-            }
-            GetFiles(group, path, func, state);
+                Files[group] = Files[group].Union(FindAll(dictionary, _Right)).ToList();
+            else Files[group] = FindAll(dictionary, _Right);
         }
 
-        public static void GetFiles(string group, string path, Func<string, bool> func, bool state = true)
+        public static List<FileInfo> FindAll(string dictionary,string extension)
         {
-            if (Files.ContainsKey(group)) return;
-            else if (!Files.ContainsKey(group)) Files.TryAdd(group, new());
-            path = string.Format("{0}", path);
-            //string path = string.Format("{0}", @"C:\Users\USER\Desktop\JXBWG\Assets\StreamingAssets");
-
-            //获取指定路径下面的所有资源文件  
-            if (Directory.Exists(path))
-            {
-                DirectoryInfo direction = new(path);
-                FileInfo[] files = direction.GetFiles("*");
-                for (int i = 0; i < files.Length; i++)
-                {
-                    /*if (files[i].Name.EndsWith(".meta"))
-                    {
-                        continue;
-                    }*/
-                    if (func(files[i].Name) == state)
-                    {
-                        Files[group].Add(files[i]);
-                    }
-                }
-            }
-            else
-            {
-                TryCreateDirectroryOfFile(path + "/XXX.XX");
-            }
-
-            string DEBUG_OUTPUT_STR = "";
-            foreach (var it in Files[group])
-            {
-                DEBUG_OUTPUT_STR += it.FullName + "\n";
-            }
-            Debug.Log(DEBUG_OUTPUT_STR);
+            return FindAll(dictionary, T => Path.GetExtension(T) == extension);
         }
 
-        public static void GetFiles()
+        public static List<FileInfo> FindAll(string dictionary, Predicate<string> _Right)
         {
-            string path = string.Format("{0}", Application.persistentDataPath);
-            //string path = string.Format("{0}", @"C:\Users\USER\Desktop\JXBWG\Assets\StreamingAssets");
-
-            //获取指定路径下面的所有资源文件  
-            if (Directory.Exists(path))
-            {
-                DirectoryInfo direction = new(path);
-                FileInfo[] files = direction.GetFiles("*");
-                for (int i = 0; i < files.Length; i++)
-                {
-                    //忽略关联文件
-                    if (files[i].Name.EndsWith(".meta"))
-                    {
-                        continue;
-                    }
-                    Debug.Log("文件名:" + files[i].Name);
-                    Debug.Log("文件绝对路径:" + files[i].FullName);
-                    Debug.Log("文件所在目录:" + files[i].DirectoryName);
-                }
-            }
+            DirectoryInfo direction = new(dictionary);
+            FileInfo[] files = direction.GetFiles("*");
+            List<FileInfo> result = new();
+            foreach (var it in files)
+                if (_Right(it.Name)) result.Add(it);
+            return result.Count == 0 ? result : null;
         }
+
+        public static FileInfo First(string dictionary, string name)
+        {
+            return First(dictionary, T => Path.GetFileNameWithoutExtension(T) == name);
+        }
+
+        public static FileInfo First(string dictionary, Predicate<string> _Right)
+        {
+            DirectoryInfo direction = new(dictionary);
+            FileInfo[] files = direction.GetFiles("*");
+            foreach (var it in files)
+                if (_Right(it.Name)) return it;
+            return null;
+        } 
 
     }
 }

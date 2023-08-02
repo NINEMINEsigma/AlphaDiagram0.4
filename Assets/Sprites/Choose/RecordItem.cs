@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AD.Choose
+namespace AD.ProjectTwilight.Choose
 {
     public class RecordItem : ListViewItem
     {

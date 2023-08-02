@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace AD.Entry
+namespace AD.ProjectTwilight.Entry
 {
     public class BackgroundView : AD.BASE.ADController
     {

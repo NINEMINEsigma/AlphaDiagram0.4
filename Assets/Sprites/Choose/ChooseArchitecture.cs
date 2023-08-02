@@ -2,9 +2,9 @@
 //	ninemine
 //
 using AD.BASE;
-using AD.Source;
-namespace AD.Choose 
-{ 
+
+namespace AD.ProjectTwilight.Choose
+{
     //Register 
     public class ChooseApp : ADArchitecture<ChooseApp> 
     { 
@@ -18,8 +18,6 @@ namespace AD.Choose
         } 
         public override void Init()
         {
-            RegisterModel<PlayerModel>();
-
             RegisterSystem<ChooseSystem>(); 
         }
 

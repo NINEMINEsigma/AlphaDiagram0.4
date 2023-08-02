@@ -1,43 +1,55 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using AD.BASE;
 using UnityEngine;
 
-namespace AD.Source
+namespace AD.ProjectTwilight.Source
 {
-    [EaseSave3,Serializable]
+    [EaseSave3, Serializable]
+    public class SinglePlayerAsset
+    {
+        public string PlayerName;
+        public string Chapter;
+        public string Branch;
+        public int step;
+    }
+
+    [EaseSave3, Serializable]
     public class PlayerModel : AD.BASE.ADModel
     {
-        public static string path => Path.Combine(Application.persistentDataPath, "data", "player") + ".model";
-        public static string file => "player.model";
+        public static string DataPath => Path.Combine(Application.persistentDataPath, "data", "player") + "/";
+
+        public static string GetPath(string fileName) => DataPath + fileName + ".model";
 
         public override void Init()
         {
-            ADGlobalSystem.CreateDirectroryOfFile(path);
-            Load(path);
+            models = new();
+            ADGlobalSystem.CreateDirectroryOfFile(DataPath + "file.model");
         }
 
-        public List<int> models = new List<int>();
+        public List<SinglePlayerAsset> models = new();
+        public SinglePlayerAsset current = null;
 
         public PlayerModel Init(PlayerModel _Right)
         {
             this.models = _Right.models;
+            this.current = null;
             return this;
-        }
+        } 
 
-        public override IADModel Load(string path)
+        public override IADModel Load(string fileName)
         {
-            if (ADGlobalSystem.Input<PlayerModel>(path, out object target))
+            FileC.LoadFiles(nameof(PlayerModel), DataPath, T => Path.GetExtension(T) == "model");
+            if (ADGlobalSystem.Input<PlayerModel>(GetPath(fileName), out object target))
                 Init(target as PlayerModel);
-            else ADGlobalSystem.Output(path, this);
+            else ADGlobalSystem.Output(GetPath(fileName), this);
             return this;
         }
 
-        public override void Save(string path)
+        public override void Save(string fileName)
         {
-            ADGlobalSystem.Output(path, this);
+            ADGlobalSystem.Output(GetPath(fileName), this);
         }
     }
 }

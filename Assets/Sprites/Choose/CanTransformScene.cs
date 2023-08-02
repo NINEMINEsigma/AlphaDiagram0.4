@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace AD.Choose
+namespace AD.ProjectTwilight.Choose
 {
     public class CanTransformScene : MonoBehaviour
     {

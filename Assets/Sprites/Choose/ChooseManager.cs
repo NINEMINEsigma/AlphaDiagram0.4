@@ -2,13 +2,8 @@
 //	ninemine
 //
 
-using System.Collections;
-using UnityEngine;
-using AD.UI;
-using UnityEngine.Rendering;
-
-namespace AD.Choose 
-{ 
+namespace AD.ProjectTwilight.Choose
+{
     //Main Controller 
     public class ChooseManager : AD.SceneBaseController 
     { 

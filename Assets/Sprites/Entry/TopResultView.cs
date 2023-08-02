@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AD.Entry
+namespace AD.ProjectTwilight.Entry
 {
     public class TopResultView : AD.BASE.ADController
     {

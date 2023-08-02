@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using AD.BASE;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AD.MainScene
+namespace AD.ProjectTwilight.MainScene
 {
     public class SoundGroup : ADController
     {
