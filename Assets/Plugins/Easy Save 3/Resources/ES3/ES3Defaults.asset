@@ -37,10 +37,10 @@ MonoBehaviour:
     - CW.Common
     - LeanCommon
     - LeanPool
+    - MK.Glow
     - QFramework
     - QFramework.CoreKit
     - ResKit
-    - Test
     - UIKit
     showAdvancedSettings: 1
   addMgrToSceneAutomatically: 1
