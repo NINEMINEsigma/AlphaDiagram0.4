@@ -85,6 +85,39 @@ namespace AD.UI
         {
             get { return source.text; }
             set { source.text = value; }
-        } 
+        }
+
+        public InputField SetText(string text)
+        {
+            this.text = text;
+            return this;
+        }
+
+        public enum PressType
+        {
+            OnSelect,
+            OnEnd
+        }
+
+        public void AddListener(UnityEngine.Events.UnityAction<string> action, PressType type = PressType.OnEnd)
+        {
+            if (type == PressType.OnSelect) source.onSelect.AddListener(action);
+            else if (type == PressType.OnEnd) source.onEndEdit.AddListener(action);
+            else AD.ADGlobalSystem.AddMessage("You try to add worry listener");
+        }
+
+        public void RemoveListener(UnityEngine.Events.UnityAction<string> action, PressType type = PressType.OnEnd)
+        {
+            if (type == PressType.OnSelect) source.onSelect.RemoveListener(action);
+            else if (type == PressType.OnEnd) source.onEndEdit.RemoveListener(action);
+            else AD.ADGlobalSystem.AddMessage("You try to remove worry listener");
+        }
+
+        public void RemoveAllListener(PressType type = PressType.OnEnd)
+        {
+            if (type == PressType.OnSelect) source.onSelect.RemoveAllListeners();
+            else if (type == PressType.OnEnd) source.onEndEdit.RemoveAllListeners();
+        }
+
     }
 }

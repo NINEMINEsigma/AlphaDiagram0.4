@@ -85,7 +85,7 @@ namespace AD.UI
         }
         public bool IsPlay
         {
-            get { return (Source.isPlaying && !IsPause) || IsDelayToStart; }
+            get { return (Source.isPlaying || IsDelayToStart) && !IsPause; }
             set
             {
                 if (SourcePairs.Count > 0)
@@ -179,7 +179,7 @@ namespace AD.UI
                 WhenSampling();
             if (_m_LineRenderer != null && (!Sampling || !DrawingLine))
                 _m_LineRenderer.gameObject.SetActive(false);
-            if (IsPlay)
+            if (IsPlay && !IsDelayToStart)
                 WhenPlaying();
             if (IsDelayToStart)
                 WhenDelayCounting();

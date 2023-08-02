@@ -65,6 +65,7 @@ namespace AD.UI
             size = new Vector2(capacity.x, 0);
             Padding = Vector4.zero;
             isCanBackPool = true;
+            Title.text = "";
             return this;
         }
 

@@ -271,6 +271,8 @@ public class InputFieldEdior : Editor
 
         GUI.enabled = true;
 
+        base.OnInspectorGUI();
+
         EditorGUI.BeginChangeCheck();
         GUIContent gUIContent = new GUIContent("InputField");
         str = EditorGUILayout.TextField(gUIContent, that.text);
@@ -278,6 +280,5 @@ public class InputFieldEdior : Editor
 
         serializedObject.ApplyModifiedProperties();
 
-        base.OnInspectorGUI();
     }
 }

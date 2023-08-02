@@ -25,7 +25,7 @@ namespace AD.UI
         {
             if (Architecture == null) return null;
             var cat = LeanPool.Spawn(WindowPerfab, Parent.transform).GetComponent<CustomWindowElement>().Init();
-            cat.rectTransform.sizeDelta = rect;
+            cat.SetRect(rect);
             return cat;
         }
 

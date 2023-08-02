@@ -313,7 +313,7 @@ namespace AD.BASE
             Architecture = target;
         }
 
-        protected void Output(string str)
+        protected virtual void Output(string str)
         {
 
         }

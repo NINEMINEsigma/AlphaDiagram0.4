@@ -34,9 +34,9 @@ namespace AD
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-
             base.OnInspectorGUI();
+
+            serializedObject.Update();
 
             GUILayout.BeginHorizontal();
 
