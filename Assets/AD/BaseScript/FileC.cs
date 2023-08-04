@@ -8,7 +8,23 @@ using UnityEngine;
 namespace AD.BASE
 {
     public static class FileC
-    {
+    { 
+        //获取成这个文件的文件路径（不包括本身）
+        public static DirectoryInfo GetDirectroryOfFile(string filePath)
+        {
+            Debug.Log($"CreateDirectrory {filePath}[folder_path],");
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var dir_name = Path.GetDirectoryName(filePath);
+                if (Directory.Exists(dir_name))
+                {
+                    Debug.Log($"Exists {dir_name}[dir_name],");
+                    return Directory.GetParent(dir_name);
+                }
+            }
+            return null;
+        }
+
         //生成这个文件的文件路径（不包括本身）
         public static void TryCreateDirectroryOfFile(string filePath)
         {
@@ -26,6 +42,27 @@ namespace AD.BASE
                     Debug.Log($"Exists {dir_name}[dir_name],");
                 }
             }
+        }
+
+        //生成这个文件的文件路径（不包含本身）
+        public static DirectoryInfo CreateDirectroryOfFile(string filePath)
+        {
+            Debug.Log($"CreateDirectrory {filePath}[folder_path],");
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var dir_name = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(dir_name))
+                {
+                    Debug.Log($"No Exists {dir_name}[dir_name],");
+                    return Directory.CreateDirectory(dir_name);
+                }
+                else
+                {
+                    Debug.Log($"Exists {dir_name}[dir_name],");
+                    return Directory.GetParent(dir_name);
+                }
+            }
+            return null;
         }
 
         //移动整个路径
@@ -177,17 +214,27 @@ namespace AD.BASE
 
         private static Dictionary<string, List<FileInfo>> Files = new();
 
+        public static bool TryGetFiles(string group, out List<FileInfo> fileInfos)
+        {
+            return Files.TryGetValue(group, out fileInfos);
+        }
+
         public static List<FileInfo> GetFiles(string group)
         {
             Files.TryGetValue(group, out var files);
             return files;
         }
 
-        public static void LoadFiles(string group,string dictionary, Predicate<string> _Right)
+        public static void LoadFiles(string group, string dictionary, Predicate<string> _Right)
         {
             if (Files.ContainsKey(group))
                 Files[group] = Files[group].Union(FindAll(dictionary, _Right)).ToList();
-            else Files[group] = FindAll(dictionary, _Right);
+            else
+            {
+                var result = FindAll(dictionary, _Right);
+                if (result != null)
+                    Files[group] = result;
+            }
         }
 
         public static List<FileInfo> FindAll(string dictionary,string extension)
@@ -202,7 +249,7 @@ namespace AD.BASE
             List<FileInfo> result = new();
             foreach (var it in files)
                 if (_Right(it.Name)) result.Add(it);
-            return result.Count == 0 ? result : null;
+            return result.Count != 0 ? result : null;
         }
 
         public static FileInfo First(string dictionary, string name)

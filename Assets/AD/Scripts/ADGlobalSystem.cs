@@ -373,43 +373,6 @@ namespace AD
 
         #region UtilityFunction
 
-        //获取成这个文件的文件路径（不包括本身）
-        public static DirectoryInfo GetDirectroryOfFile(string filePath)
-        {
-            Debug.Log($"CreateDirectrory {filePath}[folder_path],");
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                var dir_name = Path.GetDirectoryName(filePath);
-                if (Directory.Exists(dir_name))
-                {
-                    Debug.Log($"Exists {dir_name}[dir_name],");
-                    return Directory.GetParent(dir_name);
-                }
-            }
-            return null;
-        }
-
-        //生成这个文件的文件路径（不包含本身）
-        public static DirectoryInfo CreateDirectroryOfFile(string filePath)
-        {
-            Debug.Log($"CreateDirectrory {filePath}[folder_path],");
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                var dir_name = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(dir_name))
-                {
-                    Debug.Log($"No Exists {dir_name}[dir_name],");
-                    return Directory.CreateDirectory(dir_name);
-                }
-                else
-                {
-                    Debug.Log($"Exists {dir_name}[dir_name],");
-                    return Directory.GetParent(dir_name);
-                }
-            }
-            return null;
-        }
-
         public static void Output<T>(string filePath, T obj)
         {
             if (obj == null)
@@ -417,7 +380,7 @@ namespace AD
                 AddMessage("Failed Output " + filePath);
                 return;
             }
-            CreateDirectroryOfFile(filePath);
+            FileC.CreateDirectroryOfFile(filePath);
             if (typeof(T).Equals(typeof(string)))
             {
                 File.WriteAllText(filePath, obj as string, Encoding.UTF8);
@@ -450,7 +413,7 @@ namespace AD
 
         public static bool Input(string filePath, out string str)
         {
-            if (GetDirectroryOfFile(filePath) == null)
+            if (FileC.GetDirectroryOfFile(filePath) == null)
             {
                 str = "";
                 return false;
@@ -472,7 +435,7 @@ namespace AD
 
         public static bool Input<T>(string filePath, out object obj)
         {
-            if (GetDirectroryOfFile(filePath) == null)
+            if (FileC.GetDirectroryOfFile(filePath) == null)
             {
                 obj = default(T);
                 return false;

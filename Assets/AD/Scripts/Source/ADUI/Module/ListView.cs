@@ -47,6 +47,11 @@ namespace AD.UI
             LeanPool.Despawn(child);
         }
 
+        protected override void LetChildAdd(GameObject child)
+        {
+            child.transform.SetParent(_List.gameObject.transform, false);
+        }
+
         public GameObject FindItem(int index)
         {
             return this[index];

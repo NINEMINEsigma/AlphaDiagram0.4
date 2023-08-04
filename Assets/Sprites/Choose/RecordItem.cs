@@ -26,13 +26,15 @@ namespace AD.ProjectTwilight.Choose
 
         public override ListViewItem Init()
         {
-            throw new System.NotImplementedException();
+            return this;
         }
 
         [SerializeField] private ViewController Box;
         [SerializeField] private RectTransform SubPage;
         [SerializeField] private GameObject Prefab;
         [SerializeField] private int index;
+
+        public int myModelIndex = 0;
 
         protected override void LetChildAdd(GameObject child)
         {
@@ -56,6 +58,12 @@ namespace AD.ProjectTwilight.Choose
             this[index++] = cat;
             cat.GetComponent<IButton>().SetTitle(title);
         }
+
+        public void SelectModel()
+        {
+            ChooseApp.instance.GetSystem<ChooseSystem>().ConfirmModelWithListViewIndex(myModelIndex);
+        }
+
 
 
     }

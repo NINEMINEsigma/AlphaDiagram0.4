@@ -239,7 +239,7 @@ MonoBehaviour:
   _AudioSource: {fileID: 1273201300325413191, guid: 711c6dbbd6f2fc043895cdc8329b55a9, type: 3}
   _CustomWindowElement: {fileID: 74856100616418833, guid: 312f31ed2782b8f48b2b5e85ef045aa2, type: 3}
   IsKeepObject: 1
-  _IsOnValidate: 1
+  _IsOnValidate: 0
   record: []
 --- !u!4 &259301007
 Transform:

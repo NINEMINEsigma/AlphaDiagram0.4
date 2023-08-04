@@ -10,7 +10,7 @@ namespace AD.ProjectTwilight
     /// <summary>
     /// ProjectTwilight
     /// </summary>
-    public class ProjectTwilightApp : ADArchitecture<ProjectTwilightApp>
+    public class PTApp : ADArchitecture<PTApp>
     {
         public override bool FromMap(IBaseMap from)
         {
@@ -25,6 +25,8 @@ namespace AD.ProjectTwilight
         public override void Init()
         {
             base.Init();
+
+            ADGlobalSystem.IsKeepException = true;
 
             RegisterModel<PlayerModel>();
         }

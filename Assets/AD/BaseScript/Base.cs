@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -222,11 +223,15 @@ namespace AD.BASE
         private DateTime AD__GeneratedTime;
     }
 
-    public interface ICanInitialize
+    public interface IAnyArchitecture
+    {
+
+    }
+    public interface ICanInitialize: IAnyArchitecture
     {
         void Init();
     }
-    public interface ICanGetArchitecture
+    public interface ICanGetArchitecture: IAnyArchitecture
     {
         IADArchitecture ADInstance();
         void SetArchitecture(IADArchitecture target);
@@ -267,6 +272,7 @@ namespace AD.BASE
 
     public interface IADArchitecture
     {
+        static IADArchitecture instence { get; }
         void Init();
         IADArchitecture AddMessage(string message);
         _Model GetModel<_Model>() where _Model : class, IADModel, new();
@@ -286,7 +292,7 @@ namespace AD.BASE
         IADArchitecture SendEvent<_Event>() where _Event : class, IADEvent, new();
         IADArchitecture SendCommand<_Command>() where _Command : class, IADCommand, new();
         IADArchitecture UnRegister<_T>() where _T : new();
-        bool Contains<_Type>();
+        bool Contains<_Type>();  
     }
 
     public interface IADModel : ICanInitialize, ICanGetArchitecture

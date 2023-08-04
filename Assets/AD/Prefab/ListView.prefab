@@ -378,7 +378,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4994205417334539626}
   m_HandleRect: {fileID: 4994205417334539627}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -635,6 +635,7 @@ MonoBehaviour:
   Selected: 0
   ElementArea: PropertyModule
   _Scroll: {fileID: 4994205415834291398}
+  SubPage: {fileID: 4994205416245690048}
   _List: {fileID: 4994205416245690050}
   _Title: {fileID: 4994205416468584610}
   Prefab: {fileID: 0}
