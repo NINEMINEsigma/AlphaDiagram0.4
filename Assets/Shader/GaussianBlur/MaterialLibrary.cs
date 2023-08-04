@@ -1,9 +1,7 @@
 ﻿using UnityEngine.Rendering;
 using UnityEngine;
-#if UNITY_EDITOR
-#endif
 
-namespace AD.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
     public class MaterialLibrary
     {

@@ -1,11 +1,8 @@
 ﻿using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
-using UnityEngine.UI;
-#if UNITY_EDITOR
-#endif
 
-namespace AD.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
     /// <summary>
     /// 对URP屏幕后处理扩展

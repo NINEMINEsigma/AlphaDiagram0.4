@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System;
-using UnityEngine.Experiemntal.Rendering.Universal;
 
-namespace AD.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
 
     [Serializable, VolumeComponentMenu("Addition-post-processing/GaussianBlur")]

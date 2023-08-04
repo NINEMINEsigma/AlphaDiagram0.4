@@ -2432,6 +2432,16 @@ namespace AD.BASE
         public AbstractBindProperty<T> Property => this;
     }
 
+    public class BindPropertyJustGet<T> : AbstractBindProperty<T>, IPropertyHasGet<T>
+    {
+        public AbstractBindProperty<T> Property => this;
+    }
+
+    public class BindPropertyJustSet<T> : AbstractBindProperty<T>, IPropertyHasSet<T>
+    {
+        public AbstractBindProperty<T> Property => this;
+    }
+
     public static class PropertyExtension
     {
         public static T GetOriginal<T>(this IPropertyHasGet<T> self)

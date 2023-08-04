@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 //必须得用到这个namespace？
-namespace UnityEngine.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
     public class LearnRenderPassFeature : ScriptableRendererFeature
     {

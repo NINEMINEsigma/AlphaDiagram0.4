@@ -1,9 +1,6 @@
 using UnityEngine.Rendering.Universal;
-#if UNITY_EDITOR
-#endif
-using UnityEngine.Experiemntal.Rendering.Universal;
 
-namespace AD.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
     public class AdditionPostProcessRendererFeature : ScriptableRendererFeature
     {

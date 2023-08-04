@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace AD.Experiemntal.Rendering.Universal
+namespace AD.Experimental.Rendering.Universal
 {
     [Serializable]
     public class AdditionalPostProcessData : ScriptableObject
