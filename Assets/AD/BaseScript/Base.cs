@@ -2555,4 +2555,17 @@ namespace AD.BASE
     }
 
     #endregion
+
+    #region Extension
+
+    public static class ObjectExtension
+    {
+        public static T As<T>(this object self) where T : class
+        {
+            return self as T;
+        }
+    }
+
+    #endregion
+
 }

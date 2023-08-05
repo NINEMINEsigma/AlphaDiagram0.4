@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using AD.BASE;
 using UnityEngine;
-using static UnityEditorInternal.ReorderableList;
 
 namespace AD.ProjectTwilight.Source
 {
@@ -29,12 +28,12 @@ namespace AD.ProjectTwilight.Source
 
         public override IADModel Load(string path)
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         public override void Save(string path)
         {
-
+            throw new NotImplementedException();
         }
     }
 
@@ -55,7 +54,7 @@ namespace AD.ProjectTwilight.Source
 
         public void ConfirmModel(CurrentData currentData)
         {
-            Architecture.RegisterModel(currentData);
+            PTApp.instance.RegisterModel(currentData);
         }
 
         public override IADModel Load(string fileName = "")

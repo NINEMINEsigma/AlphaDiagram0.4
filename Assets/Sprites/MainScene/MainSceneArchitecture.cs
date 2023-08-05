@@ -19,5 +19,8 @@ namespace AD.ProjectTwilight.MainScene
             this
                 .RegisterSystem<MainSceneSystem>();
         }
+
+        public float AudoDelayTime = 3.5f;
+
     }
 }

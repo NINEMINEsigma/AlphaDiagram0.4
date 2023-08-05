@@ -7,6 +7,7 @@ using AD.ProjectTwilight.Source;
 
 namespace AD.ProjectTwilight
 {
+
     /// <summary>
     /// ProjectTwilight
     /// </summary>
@@ -24,11 +25,32 @@ namespace AD.ProjectTwilight
 
         public override void Init()
         {
-            base.Init();
-
-            ADGlobalSystem.IsKeepException = true;
+            base.Init(); 
 
             RegisterModel<PlayerModel>();
+        }
+
+        public void LoadCharacterSourcePairsOnAB(string path)
+        {
+
+        }
+
+        public void SetUpGameMainSceneSystem(CharacterSourcePairs assets)
+        {
+            GameMain.GetSystem<MainGroupSystem>().SourceAsset = assets;
+        }
+
+        public void SavePlayerModel()
+        {
+            GetModel<PlayerModel>().Save();
+        }
+
+        public SinglePlayerAsset CurrentPlayer
+        {
+            get
+            {
+                return GetModel<CurrentData>().current;
+            }
         }
 
         public IADArchitecture Entry => EntryApp.instance;

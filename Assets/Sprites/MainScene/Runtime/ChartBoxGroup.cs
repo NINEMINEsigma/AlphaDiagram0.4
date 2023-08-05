@@ -17,7 +17,7 @@ namespace AD.ProjectTwilight.MainScene
         {
             rectTransform = GetComponent<RectTransform>();
             layoutGroup = GetComponent<GridLayoutGroup>();
-            foreach (var item in GetSystem<MainGroupController>().SourcePairs)
+            foreach (var item in GetSystem<MainGroupSystem>().SourcePairs)
             {
                 var cat = GameObject.Instantiate(item.ChartBoxPrefab, transform);
                 cat.Init(item.GUID);

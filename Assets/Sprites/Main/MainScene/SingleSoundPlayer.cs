@@ -20,7 +20,7 @@ namespace AD.ProjectTwilight.MainScene
 
         public void Init(int uid)
         {
-            source.SourcePairs = MainApp.instance.GetSystem<MainGroupController>().SourcePairs.FirstOrDefault(T => T.GUID == uid).SourcePairs;
+            source.SourcePairs = MainApp.instance.GetSystem<MainGroupSystem>().SourcePairs.FirstOrDefault(T => T.GUID == uid).SourcePairs;
             Refresh(0);
         }
 

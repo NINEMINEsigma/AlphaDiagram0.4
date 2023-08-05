@@ -14,7 +14,7 @@ namespace AD.ProjectTwilight.MainScene
         }
     }
 
-    public class MainGroupController : MonoSystem
+    public class MainGroupSystem : MonoSystem
     {
         [Header("Asset")]
         public CharacterSourcePairs SourceAsset;
@@ -61,4 +61,18 @@ namespace AD.ProjectTwilight.MainScene
             chartBoxGroup.Refresh(currentIndex);
         }
     }
+
+    public class NeedAddCurrentIndexWhenAutoMode : ADCommand
+    {
+        public override string LogMessage()
+        {
+            return "Add Current Index";
+        }
+
+        public override void OnExecute()
+        {
+            MainApp.instance.GetSystem<MainGroupSystem>().AddCurrent(1);
+        }
+    }
+
 }

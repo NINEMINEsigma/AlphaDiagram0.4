@@ -24,11 +24,11 @@ namespace AD.ProjectTwilight.MainScene
 
         public void Init(int uid)
         {
-            var character = MainApp.instance.GetSystem<MainGroupController>().characterGroup.characters[uid];
+            var character = MainApp.instance.GetSystem<MainGroupSystem>().characterGroup.characters[uid];
             this.PictureDifferences.TrackThisShared(character.PictureDifferences);
             this.Appearance.TrackThisShared(character.Appearance);
-            this.CharacterMessages.MakeInit(MainApp.instance.GetSystem<MainGroupController>().SourcePairs.FirstOrDefault(T => T.GUID == uid).charts);
-            this.soundPlayer = MainApp.instance.GetSystem<MainGroupController>().soundGroup.sounds[uid];
+            this.CharacterMessages.MakeInit(MainApp.instance.GetSystem<MainGroupSystem>().SourcePairs.FirstOrDefault(T => T.GUID == uid).charts);
+            this.soundPlayer = MainApp.instance.GetSystem<MainGroupSystem>().soundGroup.sounds[uid];
 
             Next.RemoveAllListener();
             Past.RemoveAllListener();
@@ -77,12 +77,12 @@ namespace AD.ProjectTwilight.MainScene
 
         public void NextPart()
         {
-            MainApp.instance.GetSystem<MainGroupController>().AddCurrent(1);
+            MainApp.instance.GetSystem<MainGroupSystem>().AddCurrent(1);
         }
 
         public void PastPart()
         {
-            MainApp.instance.GetSystem<MainGroupController>().AddCurrent(-1);
+            MainApp.instance.GetSystem<MainGroupSystem>().AddCurrent(-1);
         }
 
         public void PlaySound()

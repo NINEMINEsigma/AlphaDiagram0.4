@@ -68,7 +68,7 @@ namespace AD
 
     public interface ISceneSingleController
     {
-
+        MonoBehaviour SceneMono {  get; }
     }
     public interface IAudioSourceController : IADUI
     {
@@ -127,6 +127,8 @@ namespace AD
         }
 
         public ADEvent OnSceneStart = new ADEvent(), OnSceneEnd = new ADEvent();
+
+        public MonoBehaviour SceneMono { get => this; }
     }
 
     public class CoroutineWorkerMono:MonoBehaviour
@@ -141,23 +143,26 @@ namespace AD
         public static List<IViewController> viewControllers = new List<IViewController>();
         public static List<IADInputSystem> inputSystems = new List<IADInputSystem>();
         public static object infomation = null;
-        public static MonoBehaviour CoroutineWorker = null;
+        private static MonoBehaviour _m_CoroutineWorker = null;
+        public static MonoBehaviour CoroutineWorker
+        {
+            get
+            {
+                _m_CoroutineWorker ??= ((instence == null) ? new GameObject("CoroutineWorker(SingleAssets)").AddComponent<CoroutineWorkerMono>() : instence.SceneMono);
+                return _m_CoroutineWorker;
+            }
+            set
+            {
+                CoroutineWorker = value;
+            }
+        }
 
         public static void Init()
         {
             instence = null;
             audioSourceControllers = new List<IAudioSourceController>();
             viewControllers = new List<IViewController>();
-            inputSystems = new List<IADInputSystem>();
-            if (CoroutineWorker == null && instence == null)
-            {
-                CoroutineWorker = new GameObject().AddComponent<CoroutineWorkerMono>();
-                CoroutineWorker.name = "CoroutineWorker(SingleAssets)";
-            }
-            else
-            {
-                CoroutineWorker = instence as MonoBehaviour;
-            }
+            inputSystems = new List<IADInputSystem>(); 
         }
     }
 
