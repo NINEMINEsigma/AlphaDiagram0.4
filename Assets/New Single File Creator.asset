@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: New Single File Creator
   m_EditorClassIdentifier: Assembly-CSharp:AD:SingleFileCreator
   LicenseCode: "//\n//\tninemine\n//"
-  FileName: ChooseSystem.cs
+  FileName: ScripteData.cs
   Scripts:
-  - {fileID: 11500000, guid: 42e184c55855ea249b502056514ac412, type: 3}
+  - {fileID: 11500000, guid: 0eeee22d19be6cf479b7551798362c57, type: 3}
   DependencyScripts: []
-  OutputFilePath: F:/AlphaDiagram0.4/Assets/Sprites/Choose
+  OutputFilePath: F:/AlphaDiagram0.4/Assets/AD/Scripts/Data

@@ -20,16 +20,22 @@ namespace AD.BASE
 
     public interface IBase
     {
-        IBaseMap ToMap();
+        void ToMap(out IBaseMap BM);
         bool FromMap(IBaseMap from);
     }
 
-    public abstract class BaseClass : IBase
+    public interface IBase<T> : IBase where T : class, IBaseMap, new()
+    {
+        void ToMap(out T BM);
+        bool FromMap(T from);
+    }
+
+    public abstract class BaseMonoClass : MonoBehaviour, IBase
     {
         #region attribute
 
-        private bool AD__IsCollected { get; set; } = false;
-        private List<string> AD__InjoinedGroup { get; set; } = new List<string>();
+        protected bool AD__IsCollected { get; set; } = false;
+        private List<string> AD__InjoinedGroup { get; set; } = new List<string>(); 
 
         public bool IsCollected
         {
@@ -47,39 +53,33 @@ namespace AD.BASE
 
         #region Basefunction
 
-        public BaseClass() { }
+        public BaseMonoClass() { }
 
-        public BaseClass(List<string> group_name)
+        public BaseMonoClass(List<string> group_name)
         {
             foreach (var name in group_name) CollectionMechanism.Collect(name, this);
             AD__InjoinedGroup = group_name;
             AD__IsCollected = true;
         }
 
-        ~BaseClass()
+        ~BaseMonoClass()
         {
             IsCollected = false;
         }
 
-        #endregion
+        #endregion 
 
-        abstract public bool FromMap(IBaseMap from);
+        public abstract void ToMap(out IBaseMap BM);
+        public abstract bool FromMap(IBaseMap from);
 
-        abstract public IBaseMap ToMap();
     }
 
-    public abstract class BaseMonoClass : MonoBehaviour, IBase
+    public abstract class BaseMonoClass<T> : MonoBehaviour, IBase<T> where T : class, IBaseMap, new()
     {
         #region attribute
 
         private bool AD__IsCollected { get; set; } = false;
-        private List<string> AD__InjoinedGroup { get; set; } = new List<string>();
-        private Transform AD__Transform = null;
-
-        protected bool AD_Transform
-        {
-            get { return AD__Transform; }
-        }
+        private List<string> AD__InjoinedGroup { get; set; } = new List<string>(); 
 
         public bool IsCollected
         {
@@ -113,34 +113,28 @@ namespace AD.BASE
 
         #endregion
 
-        #region Monofunction
-
-        protected void Awake()
+        public abstract void ToMap(out T BM);
+        public abstract bool FromMap(T from);
+        public virtual void ToMap(out IBaseMap BM)
         {
-            AD__Transform = GetComponent<Transform>();
+            ToMap(out T bm);
+            BM = bm;
         }
-
-        #endregion
-
-        abstract public bool FromMap(IBaseMap from);
-
-        abstract public IBaseMap ToMap();
+        public abstract bool FromMap(IBaseMap from);
     }
 
     public interface IBaseMap
     {
-        IBase ToObject();
+        void ToObject(out IBase obj);
         bool FromObject(IBase from);
         string Serialize();
         bool Deserialize(string source);
     }
 
-    public abstract class BaseMap : IBaseMap
+    public interface IBaseMap<T> : IBaseMap where T : class, IBase, new()
     {
-        public abstract bool FromObject(IBase from);
-        public abstract IBase ToObject();
-        public abstract string Serialize();
-        public abstract bool Deserialize(string source);
+        void ToObject(out T obj);
+        bool FromObject(T from); 
     }
 
     public static class CollectionMechanism
@@ -216,6 +210,11 @@ namespace AD.BASE
         }
 
         public IBase ToObject()
+        {
+            throw new ADException("Can not use an ADException to create IBase object");
+        }
+
+        public void ToObject(out IBase obj)
         {
             throw new ADException("Can not use an ADException to create IBase object");
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AD.BASE;
+using AD.Experimental.EditorAsset.Cache;
 using AD.UI;
 using UnityEditor;
 using UnityEngine;
@@ -19,8 +20,8 @@ namespace AD.ProjectTwilight.MainScene
 
     [Serializable]
     [CreateAssetMenu(menuName = "AD/CharacterSourcePair")]
-    public class CharacterSourcePair : ScriptableObject,ICanInitialize
-    { 
+    public class CharacterSourcePair : AbstractScriptableObject, ICanInitialize
+    {
         public static List<CharacterSourcePair> CharacterSourcePairsBuffer = new List<CharacterSourcePair>();
 
         [Header("Asset")]
@@ -31,7 +32,7 @@ namespace AD.ProjectTwilight.MainScene
         //人物分支编号
         public int branch = 0;
         //路径
-        [TextArea]public string path = "";
+        [TextArea] public string path = "";
         //预制体
         public SingleCharacter CharacterPrefab;
         public SingleChartBox ChartBoxPrefab;
@@ -44,7 +45,7 @@ namespace AD.ProjectTwilight.MainScene
         //差分，区间堆
         public List<DifferenceBuff> PictureDifferences = new();
         //音频
-        public List<SourcePair> SourcePairs = new();
+        public List<UI.SourcePair> SourcePairs = new();
         //文本
         public List<CharacterMessage> charts = new();
 
@@ -85,7 +86,8 @@ namespace AD.ProjectTwilight.MainScene
             buffer.Clear();
             SourcePairs.Clear();
             charts.Clear(); ;
-        } 
+        }
+
     }
 
     internal class CharacterSourcePairTranslater

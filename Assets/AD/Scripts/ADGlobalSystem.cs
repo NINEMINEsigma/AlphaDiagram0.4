@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem.Controls;
 using AD.UI;
+using static Unity.VisualScripting.Member;
 
 namespace AD
 {
@@ -498,6 +499,41 @@ namespace AD
                     obj = default(T);
                     return false;
                 }
+            }
+        }
+
+        public static bool Deserialize<T>(string source, out object obj)
+        {
+            try
+            {
+                obj = JsonConvert.DeserializeObject<T>(source);
+                if (obj != null) return true;
+                else return false;
+            }
+            catch
+            {
+                obj = default(T);
+                return false;
+            }
+        }
+
+        public static bool Serialize<T>(T obj, out string str)
+        {
+#if UNITY_EDITOR
+            if(typeof(T).GetAttribute<SerializableAttribute>() == null)
+            {
+                Debug.LogWarning("this type is not use SerializableAttribute but you now is try to serialize it");
+            }
+#endif
+            try
+            {
+                str = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                return true;
+            }
+            catch
+            {
+                str = "error";
+                return false;
             }
         }
 

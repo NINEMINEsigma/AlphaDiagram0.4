@@ -17,7 +17,8 @@ namespace AD.ProjectTwilight.MainScene
     public class MainGroupController : MonoSystem
     {
         [Header("Asset")]
-        public List<CharacterSourcePair> SourcePairs = new List<CharacterSourcePair>();
+        public CharacterSourcePairs SourceAsset;
+        [HideInInspector]public List<CharacterSourcePair> SourcePairs = new List<CharacterSourcePair>();
 
         [Header("Object")]
         public CharacterGroup characterGroup;
@@ -34,6 +35,9 @@ namespace AD.ProjectTwilight.MainScene
 
         public override void Init()
         {
+            SourcePairs.Clear();
+            foreach (var data in SourceAsset) 
+                SourcePairs.Add(data as CharacterSourcePair); 
             RegisterController(characterGroup);
             RegisterController(soundGroup);
             RegisterController(chartBoxGroup);
