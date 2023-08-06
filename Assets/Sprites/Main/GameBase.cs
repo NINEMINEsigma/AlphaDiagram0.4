@@ -15,12 +15,12 @@ namespace AD.ProjectTwilight
     {
         public override bool FromMap(IBaseMap from)
         {
-            throw new System.NotImplementedException();
+            return false;
         }
 
         public override IBaseMap ToMap()
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public override void Init()
@@ -57,5 +57,13 @@ namespace AD.ProjectTwilight
         public IADArchitecture Choose => ChooseApp.instance;
         public IADArchitecture GameMain => MainApp.instance;
 
+    }
+
+    public class InitProjectTwilight : ADCommand
+    {
+        public override void OnExecute()
+        {
+            PTApp.instance.FromMap(null);
+        }
     }
 }

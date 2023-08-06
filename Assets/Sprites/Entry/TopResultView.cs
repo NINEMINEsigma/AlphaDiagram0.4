@@ -34,12 +34,14 @@ namespace AD.ProjectTwilight.Entry
 
         public void WhereSceneTarget(string scene)
         {
-            EntryApp.TargetSceneName = scene;
+            Architecture
+                .RegisterCommand<SetTargetSceneName>(new(scene))
+                .SendCommand<SetTargetSceneName>();
         }
 
         public void OnEnd()
         {
-            EntryApp.OnEnd();
+            Architecture.SendCommand<EntrySceneOnEnd>();
         }
 
     }

@@ -4,6 +4,7 @@ using AD.UI;
 using UnityEngine;
 using AD.BASE;
 using AD.ProjectTwilight.MainScene;
+using static Cinemachine.CinemachinePathBase;
 
 namespace AD.ProjectTwilight.MainScene
 {
@@ -13,9 +14,9 @@ namespace AD.ProjectTwilight.MainScene
         public ViewController CharacterImage;
 
         [Header("Others")]
-        public ReadOnlyBindProprety<List<int>> Appearance = new();
         public ReadOnlyBindProprety<List<CharacterSourcePair.DifferenceBuff>> PictureDifferences = new();
         public ReadOnlyBindProprety<List<CharacterMessage>> CharacterMessages = new();
+        [SerializeField] private int RecordKeyIndex = 0, RecordStep = 0;
 
         [HideInInspector]public SingleSoundPlayer soundPlayer;
 
@@ -26,7 +27,6 @@ namespace AD.ProjectTwilight.MainScene
         {
             var character = MainApp.instance.GetSystem<MainGroupSystem>().characterGroup.characters[uid];
             this.PictureDifferences.TrackThisShared(character.PictureDifferences);
-            this.Appearance.TrackThisShared(character.Appearance);
             this.CharacterMessages.MakeInit(MainApp.instance.GetSystem<MainGroupSystem>().SourcePairs.FirstOrDefault(T => T.GUID == uid).charts);
             this.soundPlayer = MainApp.instance.GetSystem<MainGroupSystem>().soundGroup.sounds[uid];
 
@@ -56,33 +56,39 @@ namespace AD.ProjectTwilight.MainScene
             //UpdatePictureDifferences
             UpdatePictureDifferences(current);
             //PlaySound
-            soundPlayer.Refresh(current);
+            soundPlayer.Refresh(RecordKeyIndex);
             //SetText
-            SetText(current);
+            SetText(RecordKeyIndex);
         }
+
+        public static readonly bool DefualtAppearance = false;
 
         private bool TestIsNeedAppearance(int current)
         {
-            bool currentState = true;
-            for (int i = 0, e = Appearance.Get().Count; i < e; i++)
+            if (CharacterMessages.Get().Count == 0) return DefualtAppearance;
+            if (RecordKeyIndex >= CharacterMessages.Get().Count || RecordKeyIndex < 0) return DefualtAppearance;
+            while (RecordStep < current && CharacterMessages.Get()[RecordKeyIndex].Appearance < current)
             {
-                if (Appearance.Get()[i] >= current)
-                {
-                    return currentState;
-                }
-                currentState = !currentState;
+                RecordKeyIndex++;
+                if (RecordKeyIndex >= CharacterMessages.Get().Count) return DefualtAppearance;
             }
-            return currentState;
+            while (RecordStep > current && CharacterMessages.Get()[RecordKeyIndex].Appearance > current)
+            {
+                RecordKeyIndex--;
+                if (RecordKeyIndex < 0) return DefualtAppearance;
+            }
+            RecordStep = current;
+            return CharacterMessages.Get()[RecordKeyIndex].Appearance == current;
         }
 
         public void NextPart()
         {
-            MainApp.instance.GetSystem<MainGroupSystem>().AddCurrent(1);
+            MainApp.instance.SendImmediatelyCommand<AddCurrentIndox>(new(1));
         }
 
         public void PastPart()
         {
-            MainApp.instance.GetSystem<MainGroupSystem>().AddCurrent(-1);
+            MainApp.instance.SendImmediatelyCommand<AddCurrentIndox>(new(-1));
         }
 
         public void PlaySound()
@@ -90,14 +96,10 @@ namespace AD.ProjectTwilight.MainScene
             soundPlayer.PlaySound();
         }
 
-        public void SetText(int current)
+        public void SetText(int key)
         {
-            if(current>= CharacterMessages.Get().Count||current<0)
-            {
-                ChartText.text = "null";
-                return;
-            }
-            ChartText.text = CharacterMessages.Get()[current].message;
+            if (gameObject.activeInHierarchy)
+                ChartText.text = CharacterMessages.Get()[key].message;
         }
     }
 }

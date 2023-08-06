@@ -274,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &211657878
 RectTransform:
   m_ObjectHideFlags: 0
@@ -779,9 +779,6 @@ MonoBehaviour:
   OnSceneEnd:
     m_PersistentCalls:
       m_Calls: []
-  Images:
-  - {fileID: 1338313889}
-  - {fileID: 984204159}
 --- !u!114 &966864170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -886,12 +883,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 966864168}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87a04c21398d43d45982390287133c13, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bcff5a20a2cb3c48861c1ea7e277378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SourceAsset: {fileID: 11400000, guid: 7103e4203219bac4b85321d051285b4a, type: 2}
-  SourcePairs:
-  - {fileID: 11400000, guid: 61f3f94dab006e44998cf8ec27461ad6, type: 2}
+  SourcePairs: []
   characterGroup: {fileID: 1356525534}
   chartBoxGroup: {fileID: 269852768}
   soundGroup: {fileID: 702689102}
@@ -1721,10 +1717,11 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 966864173}
-        m_TargetAssemblyTypeName: AD.MainScene.MainGroupController, Assembly-CSharp
-        m_MethodName: AddCurrent
-        m_Mode: 3
+      - m_Target: {fileID: 966864169}
+        m_TargetAssemblyTypeName: AD.ProjectTwilight.MainScene.MainSceneManager,
+          Assembly-CSharp
+        m_MethodName: Skip
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

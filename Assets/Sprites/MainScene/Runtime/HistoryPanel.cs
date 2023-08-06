@@ -24,8 +24,27 @@ namespace AD.ProjectTwilight.MainScene
 
         private void Start()
         {
-            MainApp.instance.RegisterController(this);
+            MainApp.instance
+                .RegisterController(this)
+                .RegisterCommand<ActiveHistoryPanel>()
+                .RegisterCommand<HideHistoryPanel>();
         }
-
     }
+
+    public class ActiveHistoryPanel : ADCommand
+    {
+        public override void OnExecute()
+        {
+            GetController<HistoryPanel>().SetActive();
+        }
+    }
+
+    public class HideHistoryPanel : ADCommand
+    {
+        public override void OnExecute()
+        {
+            GetController<HistoryPanel>().SetNotActive();
+        }
+    }
+
 }

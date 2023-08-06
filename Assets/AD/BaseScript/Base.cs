@@ -291,7 +291,9 @@ namespace AD.BASE
         IADArchitecture SendEvent<_Event>() where _Event : class, IADEvent, new();
         IADArchitecture SendCommand<_Command>() where _Command : class, IADCommand, new();
         IADArchitecture UnRegister<_T>() where _T : new();
-        bool Contains<_Type>();  
+        bool Contains<_Type>();
+        public IADArchitecture SendImmediatelyCommand<_Command>() where _Command : class, IADCommand, new();
+        public IADArchitecture SendImmediatelyCommand<_Command>(_Command command) where _Command : class, IADCommand, new();
     }
 
     public interface IADModel : ICanInitialize, ICanGetArchitecture
@@ -481,7 +483,7 @@ namespace AD.BASE
         void Trigger();
     }
 
-    public interface IADCommand : ICanGetArchitecture, ICanGetModel
+    public interface IADCommand : ICanGetArchitecture, ICanGetModel,ICanGetController
     {
         void Execute();
         string LogMessage();
@@ -503,7 +505,10 @@ namespace AD.BASE
             OnExecute();
         }
 
-        public abstract string LogMessage();
+        public virtual string LogMessage()
+        {
+            return this.GetType().FullName;
+        }
 
         public abstract void OnExecute();
 
@@ -515,6 +520,11 @@ namespace AD.BASE
         public T GetModel<T>() where T : class, IADModel, new()
         {
             return Architecture.GetModel<T>();
+        }
+
+        public T GetController<T>() where T : class, IADController, new()
+        {
+            return Architecture.GetController<T>();
         }
     }
 
@@ -598,6 +608,11 @@ namespace AD.BASE
         {
             return logMessage;
         }
+
+        public T GetController<T>() where T : class, IADController, new()
+        {
+            return Architecture.GetController<T>();
+        }
     }
 
     public interface IADMessage
@@ -655,9 +670,9 @@ namespace AD.BASE
         public virtual void Save(string path)
         {
             AD.BASE.FileC.TryCreateDirectroryOfFile(path);
-            StreamWriter writer = (new FileInfo(path)).CreateText();
+            StreamWriter writer = new FileInfo(path).CreateText();
             string message = What();
-            writer.WriteAsync(message);
+            writer.Write(message);
         }
 
         public virtual IADModel Load(string path)
@@ -679,8 +694,16 @@ namespace AD.BASE
     {
         #region attribute
 
-        private HashSet<object> AD__Objects = new HashSet<object>();
-        private ADMessageRecord AD__MessageRecord = null;
+        private HashSet<object> AD__Objects = new HashSet<object>() { new ADMessageRecord() };
+        private ADMessageRecord _m_AD__MessageRecord = null;
+        private ADMessageRecord AD__MessageRecord
+        {
+            get
+            {
+                _m_AD__MessageRecord ??= GetModel<ADMessageRecord>();
+                return _m_AD__MessageRecord;
+            }
+        }
         private static IADArchitecture __ADinstance = null;
         public static T instance
         {
@@ -715,7 +738,7 @@ namespace AD.BASE
 
         public virtual void SaveRecord()
         {
-            GetModel<ADMessageRecord>()?.Save(Path.Combine(Application.persistentDataPath, "AD", "LogRecord", DateTime.Now.Ticks.ToString()));
+            AD__MessageRecord?.Save(Path.Combine(Application.persistentDataPath, "AD", this.GetType().Name, DateTime.Now.Ticks.ToString()) + ".AD.log");
         }
 
         public abstract IBaseMap ToMap();
@@ -724,9 +747,7 @@ namespace AD.BASE
 
         public virtual void Init()
         {
-            AD__MessageRecord = new ADMessageRecord();
-            RegisterModel<ADMessageRecord>(MessageRecord);
-            Debug.Log(this.GetType().FullName + " is register");
+
         }
 
         private IADArchitecture Register<_T>(_T _object) where _T : new()
@@ -734,7 +755,7 @@ namespace AD.BASE
             var key = typeof(T);
             AD__Objects.RemoveWhere(T => T == null || T.GetType().Equals(typeof(_T)));
             AD__Objects.Add(_object);
-            Debug.Log(_object.GetType().FullName + " is register");
+            AddMessage(_object.GetType().FullName + " is register");
             return instance;
         }
 
@@ -857,7 +878,8 @@ namespace AD.BASE
 
         public virtual IADArchitecture AddMessage(string message)
         {
-            AD__MessageRecord.Add(new ADMessage(message));
+            AD__MessageRecord?.Add(new ADMessage(message));
+            Debug.Log(message);
             return instance;
         }
 
@@ -1400,7 +1422,7 @@ namespace AD.BASE
 
         protected ADBaseInvokableCall(object target, MethodInfo function)
         {
-            if ((object)function == null)
+            if (function is null)
             {
                 throw new ArgumentNullException("function");
             }
@@ -1422,7 +1444,7 @@ namespace AD.BASE
 
         protected static void ThrowOnInvalidArg<T>(object arg)
         {
-            if (arg != null && !(arg is T))
+            if (arg != null && arg is not T)
             {
                 throw new ArgumentException(string.Format("Passed argument 'args[0]' is of the wrong type. Type:{0} Expected:{1}", arg.GetType(), typeof(T)));
             }
@@ -1436,8 +1458,7 @@ namespace AD.BASE
                 return true;
             }
 
-            object @object = target as object;
-            if ((object)@object != null)
+            if (target is object @object)
             {
                 return @object != null;
             }
@@ -1820,7 +1841,7 @@ namespace AD.BASE
         public override void Invoke(params object[] args)
         {
             if (args.Length != 1) Debug.LogWarning("you try to input some error args");
-            T0 a0 = (args[0] is T0) ? ((T0)args[0]) : default;
+            T0 a0 = (args[0] is T0 t0) ? t0 : default;
             Invoke(a0);
         }
     }
@@ -1897,8 +1918,8 @@ namespace AD.BASE
         public override void Invoke(params object[] args)
         {
             if (args.Length != 2) Debug.LogWarning("you try to input some error args");
-            T0 a0 = (args[0] is T0) ? ((T0)args[0]) : default;
-            T1 a1 = (args[1] is T1) ? ((T1)args[1]) : default;
+            T0 a0 = (args[0] is T0 t0) ? t0 : default;
+            T1 a1 = (args[1] is T1 t1) ? t1 : default;
             Invoke(a0, a1);
         }
     }
@@ -1976,9 +1997,9 @@ namespace AD.BASE
         public override void Invoke(params object[] args)
         {
             if (args.Length != 3) Debug.LogWarning("you try to input some error args");
-            T0 a0 = (args[0] is T0) ? ((T0)args[0]) : default;
-            T1 a1 = (args[1] is T1) ? ((T1)args[1]) : default;
-            T2 a2 = (args[2] is T2) ? ((T2)args[2]) : default;
+            T0 a0 = (args[0] is T0 t0) ? t0 : default;
+            T1 a1 = (args[1] is T1 t1) ? t1 : default;
+            T2 a2 = (args[2] is T2 t2) ? t2 : default;
             Invoke(a0, a1, a2);
         }
     }
@@ -2057,10 +2078,10 @@ namespace AD.BASE
         public override void Invoke(params object[] args)
         {
             if (args.Length != 4) Debug.LogWarning("you try to input some error args");
-            T0 a0 = (args[0] is T0) ? ((T0)args[0]) : default;
-            T1 a1 = (args[1] is T1) ? ((T1)args[1]) : default;
-            T2 a2 = (args[2] is T2) ? ((T2)args[2]) : default;
-            T3 a3 = (args[3] is T3) ? ((T3)args[3]) : default;
+            T0 a0 = (args[0] is T0 t0) ? t0 : default;
+            T1 a1 = (args[1] is T1 t1) ? t1 : default;
+            T2 a2 = (args[2] is T2 t2) ? t2 : default;
+            T3 a3 = (args[3] is T3 t3) ? t3 : default;
             Invoke(a0, a1, a2, a3);
         }
     }
@@ -2238,15 +2259,15 @@ namespace AD.BASE
 
         public List<int> IndexArrayOnSet()
         {
-            return (_m_set == null) ? null : _m_set.InvokeArray;
+            return _m_set?.InvokeArray;
         }
         public List<int> IndexArrayOnSetSame()
         {
-            return (_m_set_same == null) ? null : _m_set_same.InvokeArray;
+            return _m_set_same?.InvokeArray;
         }
         public List<int> IndexArrayOnGet()
         {
-            return (_m_get == null) ? null : _m_get.InvokeArray;
+            return _m_get?.InvokeArray;
         }
 
         public bool Equals(Property<T> _Right)

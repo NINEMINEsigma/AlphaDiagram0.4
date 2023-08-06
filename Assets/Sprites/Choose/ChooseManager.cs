@@ -23,6 +23,12 @@ namespace AD.ProjectTwilight.Choose
                 SinglePlayerAsset model = GetSystem<ChooseSystem>().model.models[i];
                 InitModelListViewItem(ListView.GenerateItem(), model, i);
             }
+
+            OnSceneEnd.AddListener(()=>
+            {
+                ChooseApp.instance.SaveRecord();
+                ChooseApp.Destory();
+            });
         }
         [SerializeField] AD.UI.ListView ListView;
          

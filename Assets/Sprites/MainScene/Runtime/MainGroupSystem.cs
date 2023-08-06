@@ -75,4 +75,21 @@ namespace AD.ProjectTwilight.MainScene
         }
     }
 
+    public class AddCurrentIndox : ADCommand
+    {
+        public AddCurrentIndox() { }
+
+        public AddCurrentIndox(int addal)
+        {
+            this.addal = addal;
+        }
+
+        int addal;
+
+        public override void OnExecute()
+        {
+            Architecture.GetSystem<MainGroupSystem>().AddCurrent(addal);
+        }
+    }
+
 }

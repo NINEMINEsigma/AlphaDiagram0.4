@@ -21,6 +21,8 @@ namespace AD.ProjectTwilight.MainScene
 
         public ReadOnlyBindProprety<List<CharacterSourcePair.DifferenceBuff>> PictureDifferences = new();
         public ReadOnlyBindProprety<List<int>> Appearance = new();
+        [SerializeField]private int RecordKeyIndex = 0, RecordStep = 0;
+        [SerializeField]private bool RecordActiveValue = false;
 
         public void Init(List<CharacterSourcePair.DifferenceBuff> PictureDifferences, List<int> Appearance)
         {
@@ -45,18 +47,28 @@ namespace AD.ProjectTwilight.MainScene
             UpdatePictureDifferences(current);
         }
 
+        public static readonly bool DefualtAppearance = true;
+
         private bool TestIsNeedAppearance(int current)
         {
-            bool currentState = true;
-            for (int i = 0, e = Appearance.Get().Count; i < e; i++)
+            if (Appearance.Get().Count == 0) return DefualtAppearance;
+            if (RecordStep == current) return RecordActiveValue;
+            if (RecordKeyIndex >= Appearance.Get().Count || RecordKeyIndex < 0) return DefualtAppearance;
+            else if (RecordStep < current && Appearance.Get()[RecordKeyIndex] == current)
             {
-                if (Appearance.Get()[i] >= current)
-                {
-                    return currentState;
-                }
-                currentState = !currentState;
+                RecordActiveValue = !RecordActiveValue;
+                RecordStep = current;
+                RecordKeyIndex++;
+                if (RecordKeyIndex >= Appearance.Get().Count) return DefualtAppearance;
             }
-            return currentState;
+            else if (RecordStep > current && Appearance.Get()[RecordKeyIndex] == current)
+            {
+                RecordActiveValue = !RecordActiveValue;
+                RecordStep = current;
+                RecordKeyIndex--;
+                if (RecordKeyIndex < 0) return DefualtAppearance;
+            }
+            return RecordActiveValue;
         }
     }
 }

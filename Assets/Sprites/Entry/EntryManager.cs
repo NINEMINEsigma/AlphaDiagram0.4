@@ -54,6 +54,11 @@ namespace AD.ProjectTwilight.Entry
             var bloom = GetComponent<Volume>();
             bloom.weight = 0;
             audioSource.CurrentSourcePair.LineDrawer = new DrawLine(DrawCanvas.transform as RectTransform);
+
+            OnSceneEnd.AddListener(()=> {
+                EntryApp.instance.SaveRecord();
+                EntryApp.Destory(); 
+                });
         }
 
         [SerializeField] Canvas DrawCanvas;

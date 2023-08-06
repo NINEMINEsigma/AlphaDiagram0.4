@@ -17,25 +17,33 @@ namespace AD.ProjectTwilight.Entry
 
         public override void Init()
         {
-            this
-                .RegisterSystem<EntrySystem>();
+            RegisterSystem<EntrySystem>();
+            RegisterCommand<EntrySceneOnEnd>();
+        } 
+    }
+
+    public class SetTargetSceneName : ADCommand
+    {
+        public SetTargetSceneName() => throw new ADException("you cannt use this function to create command");
+
+        public SetTargetSceneName(string target)
+        {
+            this.target = target;
         }
 
-        public static string TargetSceneName
-        {
-            get
-            {
-                return instance.GetController<EntryManager>().TargetSceneName;
-            }
-            set
-            {
-                instance.GetController<EntryManager>().TargetSceneName = value;
-            }
-        }
+        string target;
 
-        public static void OnEnd()
+        public override void OnExecute()
         {
-            instance.GetController<EntryManager>().OnEnd();
+            Architecture.GetController<EntryManager>().TargetSceneName = target;
+        }
+    }
+
+    public class EntrySceneOnEnd : ADCommand
+    {
+        public override void OnExecute()
+        {
+            Architecture.GetController<EntryManager>().OnEnd();
         }
     }
 }

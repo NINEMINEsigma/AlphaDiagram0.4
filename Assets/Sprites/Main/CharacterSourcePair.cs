@@ -13,6 +13,8 @@ namespace AD.ProjectTwilight.MainScene
     public class CharacterMessage
     {
         public string keyName;
+        //出现时机
+        public int Appearance;
         public int GUID;
         public int MUID;
         public string message;
@@ -126,7 +128,9 @@ namespace AD.ProjectTwilight.MainScene
         private static bool MakePair(CharacterSourcePair target, int arg0, int arg1, int arg2, string arg3, out CharacterSourcePair pair)
         {
             bool check = target == default;
+#pragma warning disable UNT0011 // ScriptableObject instance creation
             pair = (check) ? new CharacterSourcePair() : target;
+#pragma warning restore UNT0011 // ScriptableObject instance creation
             switch (arg2)
             {
                 case 0:

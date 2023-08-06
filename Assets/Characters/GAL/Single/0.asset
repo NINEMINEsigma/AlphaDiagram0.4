@@ -26,10 +26,12 @@ MonoBehaviour:
   SourcePairs: []
   charts:
   - keyName: 0
+    Appearance: 0
     GUID: 0
     MUID: 0
     message: "\u5929\u6C14\u5F88\u70ED\r"
   - keyName: 0
+    Appearance: 2
     GUID: 0
     MUID: 0
     message: "\u53BB\u4E70\u74F6\u6C7D\u6C34\u5427"

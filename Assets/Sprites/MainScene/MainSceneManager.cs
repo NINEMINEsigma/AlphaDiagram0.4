@@ -1,21 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using AD.BASE;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AD.ProjectTwilight.MainScene
 {
     public class MainSceneManager : AD.SceneBaseController
     {
-        [Header("Assets")]
-        [SerializeField] List<Image> Images = new List<Image>();
-
         private void Start()
         {
             MainApp.instance.RegisterController(this);
-
-            SceneSingleAssets.CoroutineWorker.StartCoroutine(BGInit());
         }
 
         public override void Init()
@@ -23,6 +16,8 @@ namespace AD.ProjectTwilight.MainScene
             base.Init();
 
             RegisterCommand<NeedAddCurrentIndexWhenAutoMode>();
+
+            OnSceneEnd.AddListener(() => { MainApp.instance.SaveRecord(); MainApp.Destory(); });
         }
 
         public void BackToEntry()
@@ -38,6 +33,7 @@ namespace AD.ProjectTwilight.MainScene
         {
             if (isOpenAuto) StopCoroutine(nameof(ChangeAutoModeClock));
             else StartCoroutine(ChangeAutoModeClock());
+            isOpenAuto = !isOpenAuto;
         }
 
         IEnumerator ChangeAutoModeClock()
@@ -53,19 +49,15 @@ namespace AD.ProjectTwilight.MainScene
         }
 
         public void JumpIntoHistory()
-        {
-            Architecture.GetController<HistoryPanel>().SetActive();
+        { 
+            SendCommand<ActiveHistoryPanel>();
         }
 
-        private IEnumerator BGInit()
+        public void Skip()
         {
-            foreach (var image in Images) image.gameObject.SetActive(true);
-            for (float t = 0; t < 1; t += UnityEngine.Time.deltaTime)
-            {
-                foreach (var image in Images) image.color = new Color(image.color.r, image.color.g, image.color.b, 1 - t);
-                yield return new WaitForEndOfFrame();
-            }
-            foreach (var image in Images) image.gameObject.SetActive(false);
+            isOpenAuto = false;
+            StopCoroutine(nameof(ChangeAutoModeClock));
+            Architecture.SendImmediatelyCommand<AddCurrentIndox>(new(1));
         }
     }
 }
