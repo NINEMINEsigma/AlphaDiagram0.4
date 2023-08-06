@@ -1,5 +1,6 @@
 using System.Collections;
 using AD.BASE;
+using AD.ProjectTwilight.Source;
 using UnityEngine;
 
 namespace AD.ProjectTwilight.MainScene
@@ -17,7 +18,7 @@ namespace AD.ProjectTwilight.MainScene
 
             RegisterCommand<NeedAddCurrentIndexWhenAutoMode>();
 
-            OnSceneEnd.AddListener(() => { MainApp.instance.SaveRecord(); MainApp.Destory(); });
+            OnSceneEnd.AddListener(() => { PTApp.instance.UnRegister<CurrentData>(); MainApp.instance.SaveRecord(); MainApp.Destory(); });
         }
 
         public void BackToEntry()

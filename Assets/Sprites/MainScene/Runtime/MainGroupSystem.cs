@@ -36,8 +36,11 @@ namespace AD.ProjectTwilight.MainScene
         public override void Init()
         {
             SourcePairs.Clear();
-            foreach (var data in SourceAsset) 
-                SourcePairs.Add(data as CharacterSourcePair); 
+            var CurrentData = Architecture.As<MainApp>().CurrentData;
+            CurrentData.Load();
+            SourceAsset = CurrentData.AssetBundle.LoadAsset(CurrentData.current.Branch) as CharacterSourcePairs;
+            foreach (var data in SourceAsset)
+                SourcePairs.Add(data as CharacterSourcePair);
             RegisterController(characterGroup);
             RegisterController(soundGroup);
             RegisterController(chartBoxGroup);

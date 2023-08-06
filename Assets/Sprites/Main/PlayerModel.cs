@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using AD.BASE;
+using AD.Utility;
 using UnityEngine;
 
 namespace AD.ProjectTwilight.Source
@@ -19,16 +20,33 @@ namespace AD.ProjectTwilight.Source
 
     public class CurrentData : AD.BASE.ADModel
     {
+        private const string ABPath = "twilight.ab";
         public SinglePlayerAsset current = null;
+
+        ~CurrentData()
+        {
+            AssetBundle.Unload(true);
+        }
+
+        public AssetBundle AssetBundle;
 
         public override void Init()
         {
 
         }
 
-        public override IADModel Load(string path)
+        public override IADModel Load(string path = "")
         {
-            throw new NotImplementedException();
+#if UNITY_EDITOR
+            AssetBundle = (Path.Combine(Application.streamingAssetsPath, "AB") + "/" + ABPath).LoadAssetBundle();
+#elif UNITY_WINDOW
+            AssetBundle = (Path.Combine(Application.streamingAssetsPath, "AB") + "/" + ABPath).LoadAssetBundle();
+#elif UNITY_ANDROID
+        //安卓平台
+#elif UNITY_IOS
+        //苹果平台
+#endif
+            return this;
         }
 
         public override void Save(string path)

@@ -264,7 +264,22 @@ namespace AD.BASE
             foreach (var it in files)
                 if (_Right(it.Name)) return it;
             return null;
-        } 
+        }
+         
+        public static AssetBundle LoadAssetBundle(string path)
+        { 
+            return AssetBundle.LoadFromFile(path); ;
+        }
+
+        public static AssetBundle LoadAssetBundle(string path, params string[] targetsName)
+        {
+            AssetBundle asset = AssetBundle.LoadFromFile(path);
+            foreach (var item in targetsName)
+            {
+                asset.LoadAsset(item);
+            }
+            return asset;
+        }
 
     }
 }

@@ -1,4 +1,5 @@
 using AD.BASE;
+using AD.ProjectTwilight.Source;
 
 namespace AD.ProjectTwilight.MainScene
 {
@@ -16,11 +17,12 @@ namespace AD.ProjectTwilight.MainScene
 
         public override void Init()
         {
-            this
-                .RegisterSystem<MainSceneSystem>();
+            RegisterSystem<MainSceneSystem>(); 
         }
 
         public float AudoDelayTime = 3.5f;
+
+        public CurrentData CurrentData=>PTApp.instance.GetModel<CurrentData>();
 
     }
 }

@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 3006056185
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 367d83a1cb0896d9a79c67f5739bc3d8
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: c21d61fe394c58399df3c6fb5c7c99b3
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Plugins/QFramework/Toolkits/UIKit/Tests/LoadImagePrefabTest/Art/a.png
+Dependencies: []

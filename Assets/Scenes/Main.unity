@@ -886,7 +886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcff5a20a2cb3c48861c1ea7e277378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SourceAsset: {fileID: 11400000, guid: 7103e4203219bac4b85321d051285b4a, type: 2}
+  SourceAsset: {fileID: 0}
   SourcePairs: []
   characterGroup: {fileID: 1356525534}
   chartBoxGroup: {fileID: 269852768}

@@ -924,6 +924,37 @@ namespace AD.BASE
         #endregion
     }
 
+    public interface ISubPagesArchitecture : IEnumerable<IADArchitecture>
+    {
+        Dictionary<Type, IADArchitecture> SubArchitectures { get; }
+        IADArchitecture this[Type type] { get; }
+    }
+
+    public abstract class TopArchitecture<T,_Entry,_MainPage,_EndPage,_SubPages> 
+        : ADArchitecture<T> 
+        where T : TopArchitecture<T, _Entry, _MainPage, _EndPage, _SubPages>, new()
+        where _Entry : IADArchitecture
+        where _MainPage : IADArchitecture
+        where _EndPage : IADArchitecture
+        where _SubPages : ISubPagesArchitecture
+    {
+        public abstract _Entry EntryArchitecture { get; }
+        public abstract _MainPage MainArchitecture { get; }
+        public abstract _EndPage EndArchitecture { get; }
+        public abstract _SubPages SubArchitectures { get; }
+
+        public IADArchitecture this[Type type]
+        {
+            get
+            {
+                if (type == typeof(_Entry)) return EntryArchitecture;
+                else if (type == typeof(_MainPage)) return MainArchitecture;
+                else if (type == typeof(_EndPage)) return EndArchitecture;
+                else return SubArchitectures[type]; 
+            }
+        }
+    }
+
     #endregion
 
     #region Event from Unity & ExtAD
