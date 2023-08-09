@@ -1,4 +1,5 @@
 using System;
+using AD.BASE;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ namespace AD.UI
         [SerializeField] private UnityEngine.UI.Image handle = null;
         [SerializeField] private UnityEngine.UI.Image fill = null;
 
-        public float value { get { return transformer(source.value); } } 
+        public float value { get { return transformer(source.value); } }
+        public SliderProperty ValueProperty { get; private set; }
 
         public Sprite backgroundView 
         { 
@@ -49,7 +51,8 @@ namespace AD.UI
 
         public Slider()
         {
-            ElementArea = "Slider"; 
+            ElementArea = "Slider";
+            ValueProperty = new(this);
         }
 
         protected void Start()
@@ -205,5 +208,25 @@ namespace AD.UI
 
         #endregion
 
+    }
+
+    public class BindSliderAsset : AD.BASE.Property<float>.PropertyAsset
+    {
+        public BindSliderAsset(Slider source)
+        {
+            this.source = source;
+        }
+
+        Slider source;
+
+        public override float value { get => source.value; set => source.source.value = value; }
+    }
+
+    public class SliderProperty : AD.BASE.BindProperty<float>
+    {
+        public SliderProperty(Slider source)
+        {
+            SetPropertyAsset(new BindSliderAsset(source));
+        }
     }
 }

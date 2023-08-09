@@ -179,7 +179,7 @@ namespace AD.UI
                 WhenSampling();
             if (_m_LineRenderer != null && (!Sampling || !DrawingLine))
                 _m_LineRenderer.gameObject.SetActive(false);
-            if (IsPlay && !IsDelayToStart)
+            if (IsPlay)
                 WhenPlaying();
             if (IsDelayToStart)
                 WhenDelayCounting();

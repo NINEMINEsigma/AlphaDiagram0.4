@@ -1,4 +1,5 @@
 using System;
+using AD.BASE;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace AD.UI
         public Text()
         {
             ElementArea = "Text";
+            TextProperty = new(this);
+            ValueProperty = new(this);
         }
 
         protected void Start()
@@ -76,5 +79,55 @@ namespace AD.UI
             return text;
         }
 
+        public TextProperty TextProperty { get; private set; }
+        public TextValueProperty ValueProperty { get; private set; }
+
+        public Text SetText(string text)
+        {
+            this.text = text;
+            return this;
+        }
+
     }
+
+    public class BindTextAsset:AD.BASE.Property<string>.PropertyAsset
+    {
+        public BindTextAsset(Text source)
+        {
+            this.source = source;
+        }
+
+        Text source;
+
+        public override string value { get => source.text; set => source.text = value; }
+    }
+
+    public class BindTextValueAsset : AD.BASE.Property<float>.PropertyAsset
+    {
+        public BindTextValueAsset(Text source)
+        {
+            this.source = source;
+        }
+
+        Text source;
+
+        public override float value { get => float.Parse(source.text); set => source.text = value.ToString(); }
+    }
+
+    public class TextProperty:AD.BASE.BindProperty<string>
+    {
+        public TextProperty(Text source)
+        {
+            SetPropertyAsset(new BindTextAsset(source));
+        } 
+    }
+
+    public class TextValueProperty : AD.BASE.BindProperty<float>
+    {
+        public TextValueProperty(Text source)
+        {
+            SetPropertyAsset(new BindTextValueAsset(source));
+        } 
+    }
+
 }

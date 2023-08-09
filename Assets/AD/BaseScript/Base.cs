@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -669,10 +671,9 @@ namespace AD.BASE
 
         public virtual void Save(string path)
         {
-            AD.BASE.FileC.TryCreateDirectroryOfFile(path);
-            StreamWriter writer = new FileInfo(path).CreateText();
+            AD.BASE.FileC.TryCreateDirectroryOfFile(path); 
             string message = What();
-            writer.Write(message);
+            File.WriteAllText(path, message, Encoding.UTF8);
         }
 
         public virtual IADModel Load(string path)
@@ -2158,7 +2159,7 @@ namespace AD.BASE
 
     public class Property<T>
     {
-        internal class PropertyAsset
+        public class PropertyAsset
         {
             public PropertyAsset()
             {
@@ -2169,7 +2170,7 @@ namespace AD.BASE
             }
 
             public ADOrderlyEvent<T> OnDestory = null;
-            public T value = default;
+            public virtual T value { get; set; } = default;
         }
 
         internal ADOrderlyEvent _m_get = null;
@@ -2342,6 +2343,11 @@ namespace AD.BASE
             }
         }
 
+        protected void SetPropertyAsset(Property<T>.PropertyAsset asset)
+        {
+            _m_value._m_data = asset;
+        }
+
         #region Func
 
         public AbstractBindProperty<T> Init()
@@ -2481,6 +2487,20 @@ namespace AD.BASE
     public class BindProperty<T> : AbstractBindProperty<T>, IPropertyHasGet<T>, IPropertyHasSet<T>
     {
         public AbstractBindProperty<T> Property => this;
+
+        public BindPropertyJustGet<T> BindJustGet()
+        {
+            BindPropertyJustGet<T> get = new BindPropertyJustGet<T>();
+            get.TrackThisShared(this);
+            return get;
+        }
+
+        public BindPropertyJustSet<T> BindJustSet()
+        {
+            BindPropertyJustSet<T> get = new BindPropertyJustSet<T>();
+            get.TrackThisShared(this);
+            return get;
+        }
     }
 
     public class BindPropertyJustGet<T> : AbstractBindProperty<T>, IPropertyHasGet<T>

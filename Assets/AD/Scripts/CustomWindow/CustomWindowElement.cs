@@ -10,6 +10,25 @@ namespace AD.UI
     {
         public Dictionary<string, RectTransform> Childs = new Dictionary<string, RectTransform>();
 
+        public RectTransform this[int index]
+        {
+            get
+            {
+                int i = 0;
+                foreach (var child in Childs) 
+                    if (i++ == index) return child.Value; 
+                return null;
+            }
+        }
+
+        public RectTransform this[string key]
+        {
+            get
+            {
+                return Childs[key];
+            }
+        }
+
         private RectTransform _rectTransform;
         public RectTransform rectTransform
         {
@@ -30,7 +49,11 @@ namespace AD.UI
         }
 
         public Vector2 capacity => new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y - TopLine.sizeDelta.y);
+#if UNITY_EDITOR
+        public Vector2 size;
+#else
         public Vector2 size { get; private set; }
+#endif
         [SerializeField] private Vector4 _Padding = Vector4.zero;
         public Vector4 Padding
         {
@@ -61,11 +84,12 @@ namespace AD.UI
             }
             Childs.Clear();
             rectTransform.localPosition = Vector3.zero;
-            rectTransform.sizeDelta = new Vector2(300, 100);
-            size = new Vector2(capacity.x, 0);
+            SetRect(new Vector2(300, 0));
+            size = Vector2.zero;
             Padding = Vector4.zero;
             isCanBackPool = true;
             Title.text = "";
+            MaxHightInThisLine = 0;
             return this;
         }
 
@@ -117,41 +141,73 @@ namespace AD.UI
             return this;
         }
 
-        #region  Refresh
+        #region Refresh
+
+        private float MaxHightInThisLine = 0;
 
         public void RefreshAllChild()
         {
             if (isCanRefresh)
+            {
+                size = Vector2.zero;
                 foreach (var item in Childs)
                 {
                     RefreshWithNeedSpace(item.Value);
                 }
+            }
         }
 
         private void RefreshWithNeedSpace(float x, float y, RectTransform rect)
         {
             if (!isCanRefresh) return;
-            if (capacity.x < x + Padding[0] + Padding[2])
-            {
-                SetRect(new Vector2(x + Padding[0] + Padding[2], size.y)); 
-                RefreshAllChild();
-                RefreshWithNeedSpace(x, y, rect);
-                return;
-            }
-            if (capacity.x > size.x + x + Padding[0] + Padding[2])
-            {
-                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, size.x + Padding[0], rect.rect.width);
-                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.rect.height);
-                size = new Vector2(size.x + x, size.y);
-            }
+            HowRefreshWithNeedSpace(x, y, rect);
+        }
+
+        private void HowRefreshWithNeedSpace(float x, float y, RectTransform rect)
+        {
+            if (IsNeedExpandCapacityX(x)) WhenCapacityXIsAdequate(x, y, rect);
+            else WhenNeedExpandCapacityX(x, y, rect);
+        }
+
+        protected virtual bool IsNeedExpandCapacityX(float x)
+        {
+            return capacity.x >= x + Padding[0] + Padding[2];
+        }
+
+        protected virtual void WhenNeedExpandCapacityX(float x, float y, RectTransform rect)
+        {
+            SetRect(new Vector2(x + Padding[0] + Padding[2], size.y));
+            RefreshAllChild();
+            RefreshWithNeedSpace(x, y, rect);
+        }
+
+        private void WhenCapacityXIsAdequate(float x, float y, RectTransform rect)
+        {
+            float MaxX = size.x + x + Padding[0] + Padding[2], MaxY = size.y + y + Padding[1] + Padding[3];
+            if (capacity.x >= MaxX)
+                WhenCapacityXEnoughToPushNewChildOnThisLine(x, y, rect, MaxY);
             else
-            {
-                if (capacity.y < size.y + y + Padding[1] + Padding[3]) 
-                    SetRect(new Vector2(size.x , size.y + y + Padding[1] + Padding[3]));
-                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, Padding[0], rect.rect.width);
-                rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.rect.height);
-                size = new Vector2(x, size.y + y);
-            }
+                WhenCapacityXNotEnoughToPushNewChildOnThisLine(x, y, rect, MaxY);
+        }
+
+        protected virtual void WhenCapacityXNotEnoughToPushNewChildOnThisLine(float x, float y, RectTransform rect, float MaxY)
+        { 
+            size = new Vector2(x, size.y + MaxHightInThisLine);
+            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, Padding[0], rect.sizeDelta.x);
+            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.sizeDelta.y);
+            MaxHightInThisLine = y;
+            if (capacity.y <= size.y + MaxHightInThisLine + Padding[1] + Padding[3])
+                SetRect(new Vector2(capacity.x, size.y + MaxHightInThisLine + Padding[1] + Padding[3]));
+        }
+
+        protected virtual void WhenCapacityXEnoughToPushNewChildOnThisLine(float x,float y, RectTransform rect, float MaxY)
+        {
+            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, size.x + Padding[0], rect.sizeDelta.x);
+            rect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, size.y + Padding[1], rect.sizeDelta.y);
+            size = new Vector2(size.x + x, size.y);
+            if (y > MaxHightInThisLine) MaxHightInThisLine = y;
+            if (capacity.y <= MaxY)
+                SetRect(new Vector2(capacity.x, MaxY));
         }
 
         private void RefreshWithNeedSpace(RectTransform rect)

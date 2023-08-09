@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace AD.UI
 {
@@ -114,7 +115,8 @@ namespace AD.UI
 
         public AD.UI.Button SetTitle(string title)
         {
-            this.title.text = title;
+            if (this.title != null)
+                this.title.text = title;
             return this;
         }
 
@@ -122,5 +124,19 @@ namespace AD.UI
         {
             this.SetTitle(title);
         }
+
+        public AD.UI.Button SetView(Sprite image)
+        {
+            if(this.TryGetComponent<ViewController>(out var viewC))
+            {
+                viewC.CurrentImage = image;
+            }
+            else if(this.TryGetComponent<Image>(out var imageC))
+            {
+                imageC.sprite = image;
+            } 
+            return this;
+        }
+
     }
 }

@@ -1,7 +1,9 @@
 using System;
+using AD.BASE;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace AD.UI
 {
@@ -11,6 +13,7 @@ namespace AD.UI
         public InputField()
         {
             ElementArea = "InputField";
+            TextProperty = new(this);
         }
 
         protected void Start()
@@ -73,14 +76,28 @@ namespace AD.UI
             }
         }
 
-        public string input
+        public BindPropertyJustSet<string> Input
         {
-            set { source.text = value; }
+            get
+            {
+                return TextProperty.BindJustSet();
+            }
         }
-        public string output
+        public BindPropertyJustGet<string> Output
         {
-            get { return source.text; }
+            get
+            {
+                return TextProperty.BindJustGet();
+            }
         }
+        public InputFieldValueProperty ValueProperty
+        {
+            get
+            {
+                return new InputFieldValueProperty(this);
+            }
+        }
+        public InputFieldProperty TextProperty { get; private set; }
         public string text
         {
             get { return source.text; }
@@ -119,5 +136,45 @@ namespace AD.UI
             else if (type == PressType.OnEnd) source.onEndEdit.RemoveAllListeners();
         }
 
+    }
+
+    public class BindInputFieldAsset : AD.BASE.Property<string>.PropertyAsset
+    {
+        public BindInputFieldAsset(InputField source)
+        {
+            this.source = source;
+        }
+
+        InputField source;
+
+        public override string value { get => source.text; set => source.text = value; }
+    }
+
+    public class BindInputFieldValueAsset : AD.BASE.Property<float>.PropertyAsset
+    {
+        public BindInputFieldValueAsset(InputField source)
+        {
+            this.source = source;
+        }
+
+        InputField source;
+
+        public override float value { get => float.Parse(source.text); set => source.text = value.ToString(); }
+    }
+
+    public class InputFieldProperty : AD.BASE.BindProperty<string>
+    {
+        public InputFieldProperty(InputField source)
+        {
+            SetPropertyAsset(new BindInputFieldAsset(source));
+        }
+    }
+
+    public class InputFieldValueProperty : AD.BASE.BindProperty<float>
+    {
+        public InputFieldValueProperty(InputField source)
+        {
+            SetPropertyAsset(new BindInputFieldValueAsset(source));
+        }
     }
 }
