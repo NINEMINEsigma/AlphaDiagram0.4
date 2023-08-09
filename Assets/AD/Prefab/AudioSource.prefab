@@ -145,6 +145,7 @@ MonoBehaviour:
   _Mixer: {fileID: 0}
   LoopAtAll: 0
   Sampling: 0
+  _m_LineRenderer: {fileID: 0}
   LineRendererPrefab: {fileID: 4262952743692840906, guid: c7c605c249fa3354993de8af5df1af12, type: 3}
   DrawingLine: 0
   SpectrumCount: 2

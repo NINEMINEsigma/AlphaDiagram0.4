@@ -21,7 +21,7 @@ namespace AD.ProjectTwilight.Entry
             for (int i = 0; i < vextcount; i++)
             {
                 keyframes[i].time = i / (float)(vextcount - 1);
-                keyframes[i].value = Mathf.Clamp(source.bands[i], 0.01f, 100);
+                keyframes[i].value = Mathf.Clamp(source.bands[i], 10, 1000);
             }
             m_curve.keys = keyframes;
             renderer.widthCurve = m_curve;
