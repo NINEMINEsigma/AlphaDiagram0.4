@@ -10,7 +10,7 @@ public class AssetBuldle : Editor
     {
         string path = Path.Combine(Application.streamingAssetsPath, "AB");
         FileC.TryCreateDirectroryOfFile(path + "/XX.X");
-        BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.Android);
+        BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.None, BuildTarget.Android);
         UnityEngine.Debug.Log("Android Finish!");
     }
 
@@ -22,7 +22,7 @@ public class AssetBuldle : Editor
         {
             Directory.CreateDirectory(dirName);
         }
-        BuildPipeline.BuildAssetBundles(dirName, BuildAssetBundleOptions.CollectDependencies, BuildTarget.iOS);
+        BuildPipeline.BuildAssetBundles(dirName, BuildAssetBundleOptions.None, BuildTarget.iOS);
         UnityEngine.Debug.Log("IOS Finish!");
 
     }

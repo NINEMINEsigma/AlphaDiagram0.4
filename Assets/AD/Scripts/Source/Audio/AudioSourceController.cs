@@ -53,6 +53,7 @@ namespace AD.UI
         private float CurrentClock = 0;
         private float delay = 0; 
         private bool IsDelayToStart = false;
+        private bool IsNowPlaying = false;
 
         public SourcePair CurrentSourcePair
         {
@@ -179,9 +180,9 @@ namespace AD.UI
                 WhenSampling();
             if (_m_LineRenderer != null && (!Sampling || !DrawingLine))
                 _m_LineRenderer.gameObject.SetActive(false);
-            if (IsPlay)
+            if (IsNowPlaying || IsDelayToStart)
                 WhenPlaying();
-            if (IsDelayToStart)
+            if (IsNowPlaying || IsDelayToStart)
                 WhenDelayCounting();
 
             void WhenSampling()
@@ -336,6 +337,7 @@ namespace AD.UI
                 return;
             }
             if (SourcePairs.Count == 0) return;
+            IsNowPlaying = true;
             Source.Play();
         }
         public void Stop()
@@ -344,11 +346,13 @@ namespace AD.UI
             Source.Stop();
             delay = 0;
             IsDelayToStart = false;
+            IsNowPlaying = false;
             CurrentClock = 0;
         }
         public void Pause()
         {
             IsPause = true;
+            IsNowPlaying = false;
             Source.Pause();
             return;
         }

@@ -25,13 +25,16 @@ public class ASCEditor : Editor
     private /*Gameobject*/SerializedProperty LineRendererPrefab;
 
     private /*SpectrumLength*/SerializedProperty SpectrumCount;
-    private /*float[]*/SerializedProperty samples;
     private /*uint*/SerializedProperty BandCount;
     private /*BufferDecreasingType*/SerializedProperty decreasingType;
     private /*float*/SerializedProperty decreasing;
     private /*float*/SerializedProperty DecreaseAcceleration;
     private /*BufferIncreasingType*/SerializedProperty increasingType;
     private /*float*/SerializedProperty increasing;
+
+    private /*float[]*/SerializedProperty samples;
+    private /*float[]*/SerializedProperty bands;
+    private /*float[]*/SerializedProperty normalizedBands; 
 
     private void OnEnable()
     {
@@ -49,13 +52,16 @@ public class ASCEditor : Editor
         Sampling = serializedObject.FindProperty("Sampling");
 
         SpectrumCount = serializedObject.FindProperty("SpectrumCount");
-        samples = serializedObject.FindProperty("samples");
         BandCount = serializedObject.FindProperty("BandCount");
         decreasingType = serializedObject.FindProperty("decreasingType");
         decreasing = serializedObject.FindProperty("decreasing");
         DecreaseAcceleration = serializedObject.FindProperty("DecreaseAcceleration");
         increasingType = serializedObject.FindProperty("increasingType");
         increasing = serializedObject.FindProperty("increasing");
+
+        samples = serializedObject.FindProperty("samples");
+        bands = serializedObject.FindProperty("bands");
+        normalizedBands = serializedObject.FindProperty("normalizedBands");
     }
 
     public override void OnInspectorGUI()
@@ -118,13 +124,18 @@ public class ASCEditor : Editor
         {
             EditorGUILayout.PropertyField(DrawingLine);
             EditorGUILayout.PropertyField(SpectrumCount);
-            EditorGUILayout.PropertyField(samples);
             EditorGUILayout.PropertyField(BandCount);
             EditorGUILayout.PropertyField(decreasingType);
             EditorGUILayout.PropertyField(decreasing);
             EditorGUILayout.PropertyField(DecreaseAcceleration);
             EditorGUILayout.PropertyField(increasingType);
             EditorGUILayout.PropertyField(increasing);
+
+            EditorGUILayout.Space(20);
+
+            EditorGUILayout.PropertyField(samples);
+            EditorGUILayout.PropertyField(bands);
+            EditorGUILayout.PropertyField(normalizedBands);
         }
 
 

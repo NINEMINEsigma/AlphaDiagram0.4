@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AD.BASE;
 using UnityEngine;
 
 namespace AD.Utility
@@ -30,5 +31,15 @@ namespace AD.Utility
         {
             return self.Sum() / (float)(self.Length);
         }
+
+        public static float Max(this float[] self)
+        {
+            if (self.Length == 0) throw new ADException("this array is no value");
+            float max = self[0];
+            foreach (var value in self) 
+                if(value > max) max = value;
+            return max;
+        }
+
     }
 }
