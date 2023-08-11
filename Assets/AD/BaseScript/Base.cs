@@ -1724,7 +1724,7 @@ namespace AD.BASE
     public abstract class ADBaseOrderlyEvent
     {
         public abstract ADBaseInvokableCall[] GetAllListener();
-        public abstract void RemoveAllListener();
+        public abstract void RemoveAllListeners();
         protected abstract MethodInfo FindMethod_Impl(string name, Type targetObjType);
         public abstract void Invoke(params object[] args);
     }
@@ -1754,7 +1754,7 @@ namespace AD.BASE
             }
         }
 
-        public override void RemoveAllListener()
+        public override void RemoveAllListeners()
         {
             InvokeArray = null;
             _m_Delegates = null;
@@ -1827,7 +1827,7 @@ namespace AD.BASE
             }
         }
 
-        public override void RemoveAllListener()
+        public override void RemoveAllListeners()
         {
             InvokeArray = null;
             _m_Delegates = null;
@@ -1903,7 +1903,7 @@ namespace AD.BASE
             }
         }
 
-        public override void RemoveAllListener()
+        public override void RemoveAllListeners()
         {
             InvokeArray = null;
             _m_Delegates = null;
@@ -1981,7 +1981,7 @@ namespace AD.BASE
             }
         }
 
-        public override void RemoveAllListener()
+        public override void RemoveAllListeners()
         {
             InvokeArray = null;
             _m_Delegates = null;
@@ -2061,7 +2061,7 @@ namespace AD.BASE
             }
         }
 
-        public override void RemoveAllListener()
+        public override void RemoveAllListeners()
         {
             InvokeArray = null;
             _m_Delegates = null;

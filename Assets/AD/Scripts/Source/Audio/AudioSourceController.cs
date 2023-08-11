@@ -180,9 +180,9 @@ namespace AD.UI
                 WhenSampling();
             if (_m_LineRenderer != null && (!Sampling || !DrawingLine))
                 _m_LineRenderer.gameObject.SetActive(false);
-            if (IsNowPlaying || IsDelayToStart)
+            if (IsNowPlaying)
                 WhenPlaying();
-            if (IsNowPlaying || IsDelayToStart)
+            if (IsNowPlaying && IsDelayToStart)
                 WhenDelayCounting();
 
             void WhenSampling()
@@ -238,7 +238,7 @@ namespace AD.UI
             }
 
             void WhenDelayCounting()
-            { 
+            {
                 WhenNeedUpdataDelay();
                 if (delay <= 0)
                 {
@@ -331,22 +331,22 @@ namespace AD.UI
         public void Play()
         {
             IsPause = false;
+            IsNowPlaying = true;
             if (delay > 0)
             {
                 IsDelayToStart = true;
                 return;
             }
             if (SourcePairs.Count == 0) return;
-            IsNowPlaying = true;
             Source.Play();
         }
         public void Stop()
         {
             IsPause = false;
+            IsNowPlaying = false;
             Source.Stop();
             delay = 0;
             IsDelayToStart = false;
-            IsNowPlaying = false;
             CurrentClock = 0;
         }
         public void Pause()

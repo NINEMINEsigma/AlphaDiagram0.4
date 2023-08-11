@@ -13,7 +13,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem.Controls;
 using AD.UI;
-using static Unity.VisualScripting.Member;
 
 namespace AD
 {
@@ -22,7 +21,7 @@ namespace AD
         public RegisterInfo(List<ButtonControl> buttons, UnityAction action, PressType type)
         {
             this.buttons = buttons;
-            this.action = action;
+            this._action = action;
             this.type = type;
         }
 
@@ -55,11 +54,26 @@ namespace AD
         }
 
         private List<ButtonControl> buttons = new List<ButtonControl>();
-        private UnityEngine.Events.UnityAction action;
-        private PressType type;
+        public UnityAction _action;
+        public UnityAction action
+        {
+            get => _action;
+            set
+            {
+                if (state) TryRegister();
+                Debug.LogWarning("you try to reset this mul-button's action,make sure you want to do this");
+                _action = value;
+            }
+        }
+        public PressType type { get; protected set; }
     }
 
-    public class MulHitControl : ButtonControl
+    public interface IMulHitControl
+    {
+        bool WasPressedThisFrame();
+    }
+
+    public class MulHitSameControl : ButtonControl, IMulHitControl
     {
         public bool WasPressedThisFrame()
         {
@@ -76,7 +90,7 @@ namespace AD
             return false;
         }
 
-        public MulHitControl(int targetHitCounter, ButtonControl targetButton)
+        public MulHitSameControl(int targetHitCounter, ButtonControl targetButton)
         {
             TargetHitCount = targetHitCounter;
             TargetButton = targetButton;
@@ -103,6 +117,45 @@ namespace AD
         }
     }
 
+    public class MulHitSomeControl : ButtonControl, IMulHitControl
+    {
+        public bool WasPressedThisFrame()
+        {
+            bool isHit = false;
+            foreach (var button in TargetButtons)
+            {
+                if (button.wasReleasedThisFrame)
+                {
+                    isLock = isHit = false;
+                    break;
+                }
+                if (button.wasPressedThisFrame) isHit = true;
+            }
+            bool result = isHit && !isLock;
+            isLock = isHit;
+            return result;
+        }
+
+        public MulHitSomeControl(List<ButtonControl> targetButtons)
+        {
+            TargetButtons = targetButtons;
+        }
+
+        public bool isLock { get; private set; }
+
+        public List<ButtonControl> TargetButtons = null;
+
+        public override string ToString()
+        {
+            string str = "";
+            foreach (var button in TargetButtons)
+            {
+                str += button.shortDisplayName;
+            }
+            return TargetButtons.ToString() + "(MulHit " + str + ")";
+        }
+    }
+
     public enum PressType
     {
         JustPressed,
@@ -110,8 +163,11 @@ namespace AD
         ThisFrameReleased
     }
 
+    [ExecuteAlways]
     public class ADGlobalSystem : MonoBehaviour
-    {
+    { 
+        #region Attribute
+
         public static ADGlobalSystem _m_instance = null;
         public static ADGlobalSystem instance
         {
@@ -126,188 +182,15 @@ namespace AD
             }
         }
 
+        public bool IsNeedExcepion = true;
+        public readonly uint MaxRecordItemCount = 10000;
+        public static bool IsKeepException => instance.IsNeedExcepion;
+
         public ADUI _Toggle, _Slider, _Text, _Button,_RawImage,_InputField;
         public PropertyModule _VirtualJoystick;
         public ViewController _Image;
         public AudioSourceController _AudioSource;
         public CustomWindowElement _CustomWindowElement;
-
-        public bool IsKeepObject = true;
-
-        #region InputSystem
-
-        public Dictionary<List<ButtonControl>, Dictionary<PressType, UnityEvent>> multipleInputController
-            = new Dictionary<List<ButtonControl>, Dictionary<PressType, UnityEvent>>();
-
-        private List<MulHitControl> mulHitControls = new List<MulHitControl>();
-
-        private static void ReleaseThisFrameUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> key)
-        {
-            try
-            {
-                if (key.Key.All((P) => (!P.GetType().Equals(typeof(MulHitControl)) && P.wasReleasedThisFrame)))
-                {
-                    key.Value.TryGetValue(PressType.ThisFrameReleased, out var events);
-                    events?.Invoke();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                AddError("ReleaseThisFrameUpdate(keys) keys=" + key.ToString() + " Exception:" + ex.StackTrace);
-            }
-        }
-        private static void PressThisFrameUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> key)
-        {
-            try
-            {
-                if (key.Key.All((P) => (P.GetType().Equals(typeof(MulHitControl)) ? (P as MulHitControl).WasPressedThisFrame() : P.wasReleasedThisFrame)))
-                {
-                    key.Value.TryGetValue(PressType.ThisFramePressed, out var events);
-                    events?.Invoke();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                AddError("PressThisFrameUpdate(key) key=" + key.ToString() + " Exception:" + ex.StackTrace);
-            }
-        }
-        private static void PressButtonUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> key)
-        {
-            try
-            {
-                if (key.Key.All((P) => (!P.GetType().Equals(typeof(MulHitControl)) && P.isPressed)))
-                {
-                    key.Value.TryGetValue(PressType.JustPressed, out var events);
-                    events?.Invoke();
-                }
-            }
-            catch (System.Exception ex)
-            {
-                AddError("PressButtonUpdate(keys) keys=" + key.ToString() + " Exception:" + ex.StackTrace);
-            }
-        }
-
-        public static RegisterInfo AddListener(ButtonControl key, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
-            if (pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)))
-            {
-                List<ButtonControl> currentList = new List<ButtonControl> { key };
-                UnityEvent currentEv = new UnityEvent();
-                currentEv.AddListener(action);
-
-                instance.multipleInputController.Add(currentList, new Dictionary<PressType, UnityEvent> { { type, currentEv } });
-
-                AddMessage(key.ToString() + "-based event was established");
-
-                instance._IsOnValidate = true;
-                return new RegisterInfo(currentList, action, type);
-            }
-            else
-            {
-                if (!pair.Value.ContainsKey(type)) pair.Value.Add(type, new UnityEvent());
-                pair.Value[type].AddListener(action);
-                instance._IsOnValidate = true;
-                return new RegisterInfo(pair.Key, action, type);
-            }
-        }
-        public static RegisterInfo AddListener(List<ButtonControl> keys, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
-
-            if (pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)))
-            {
-                UnityEvent currentEv = new UnityEvent();
-                currentEv.AddListener(action);
-
-                if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
-                {
-                    List<ButtonControl> ckeys = new List<ButtonControl> { new MulHitControl(keys.Count, keys[0]) };
-                    instance.mulHitControls.Add(ckeys[0] as MulHitControl);
-
-                    instance.multipleInputController.Add(ckeys, new Dictionary<PressType, UnityEvent> { { type, currentEv } });
-
-                    AddMessage(new MulHitControl(keys.Count, keys[0]).ToString() + "-based event was established");
-                }
-                else
-                {
-                    instance.multipleInputController.Add(keys, new Dictionary<PressType, UnityEvent> { { type, currentEv } });
-
-                    AddMessage(keys.ToString() + "-based event was established");
-                }
-
-                instance._IsOnValidate = true;
-                return new RegisterInfo(keys, action, type);
-            }
-            else
-            {
-                if (!pair.Value.ContainsKey(type)) pair.Value.Add(type, new UnityEvent());
-                pair.Value[type].AddListener(action);
-                instance._IsOnValidate = true;
-                return new RegisterInfo(pair.Key, action, type);
-            }
-
-        }
-        public static void RemoveListener(ButtonControl key, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
-            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)) && pair.Value.ContainsKey(type))
-            {
-                pair.Value[type].RemoveListener(action);
-            }
-            instance._IsOnValidate = true; 
-        }
-        public static void RemoveListener(List<ButtonControl> keys, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
-            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)) && pair.Value.ContainsKey(type))
-            {
-                pair.Value[type].RemoveListener(action);
-            }
-            if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
-            {
-                var temp = instance.mulHitControls.Find((P) => P.TargetButton == keys[0]);
-                RemoveListener(temp, action, type);
-                instance.mulHitControls.Remove(temp);
-            }
-            instance._IsOnValidate = true; 
-        }
-        public static void RemoveAllListeners(ButtonControl key, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
-            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)) && pair.Value.ContainsKey(type))
-            {
-                pair.Value[type].RemoveAllListeners();
-            }
-            instance._IsOnValidate = true; 
-        }
-        public static void RemoveAllListeners(List<ButtonControl> keys, PressType type = PressType.JustPressed)
-        {
-            KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>> pair
-                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
-            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, UnityEvent>>)) && pair.Value.ContainsKey(type))
-            {
-                pair.Value[type].RemoveAllListeners();
-            }
-            if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
-            {
-                var temp = instance.mulHitControls.Find((P) => P.TargetButton == keys[0]);
-                RemoveAllListeners(temp, type);
-                instance.mulHitControls.Remove(temp);
-            }
-            instance._IsOnValidate = true; 
-        }
-        public static void RemoveAllButtonListeners()
-        {
-            instance.multipleInputController = new Dictionary<List<ButtonControl>, Dictionary<PressType, UnityEvent>>(); 
-        }
-
-        #endregion
 
 #if UNITY_EDITOR
         [MenuItem("GameObject/AD/GlobalSystem", false, 10)]
@@ -326,20 +209,207 @@ namespace AD
         }
 #endif
 
-        #region MonoFunction
+        #endregion
 
-        private void Awake()
+        #region InputSystem
+
+        public Dictionary<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> multipleInputController
+        { get; private set; } = new();
+
+        public List<MulHitSameControl> mulHitControls { get; private set; } = new();
+
+        private static void ReleaseThisFrameUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> key)
         {
-            if (_m_instance != null) Destroy(this);
-            else
+            try
             {
-                _m_instance = this;
-                AddMessage(gameObject.name + " is register ADGlobalSystem", "Build");
+                if (key.Key.All((P) => (!P.GetType().Equals(typeof(MulHitSameControl)) && P.wasReleasedThisFrame)))
+                {
+                    key.Value.TryGetValue(PressType.ThisFrameReleased, out var events);
+                    events?.Invoke();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                AddError("ReleaseThisFrameUpdate(keys) keys=" + key.ToString() + " Exception:" + ex.StackTrace);
+            }
+        }
+        private static void PressThisFrameUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> key)
+        {
+            try
+            {
+                if (key.Key.All((P) => P is IMulHitControl IMul ? IMul.WasPressedThisFrame() : P.wasReleasedThisFrame))
+                {
+                    key.Value.TryGetValue(PressType.ThisFramePressed, out var events);
+                    events?.Invoke();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                AddError("PressThisFrameUpdate(key) key=" + key.ToString() + " Exception:" + ex.StackTrace);
+            }
+        }
+        private static void PressButtonUpdate(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> key)
+        {
+            try
+            {
+                if (key.Key.All((P) => (!P.GetType().Equals(typeof(MulHitSameControl)) && P.isPressed)))
+                {
+                    key.Value.TryGetValue(PressType.JustPressed, out var events);
+                    events?.Invoke();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                AddError("PressButtonUpdate(keys) keys=" + key.ToString() + " Exception:" + ex.StackTrace);
             }
         }
 
+        public static RegisterInfo AddListener(ButtonControl key, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
+            if (pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)))
+            {
+                List<ButtonControl> currentList = new List<ButtonControl> { key };
+                ADOrderlyEvent currentEv = new();
+                currentEv.AddListener(action);
+
+                instance.multipleInputController.Add(currentList, new Dictionary<PressType, ADOrderlyEvent> { { type, currentEv } });
+
+                AddMessage(key.ToString() + "-based event was established");
+
+                instance._IsOnValidate = true;
+                return new RegisterInfo(currentList, action, type);
+            }
+            else
+            {
+                if (!pair.Value.ContainsKey(type)) pair.Value.Add(type, new());
+                pair.Value[type].AddListener(action);
+                instance._IsOnValidate = true;
+                return new RegisterInfo(pair.Key, action, type);
+            }
+        }
+        public static RegisterInfo AddListener(List<ButtonControl> keys, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
+
+            if (pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)))
+            {
+                ADOrderlyEvent currentEv = new();
+                currentEv.AddListener(action);
+                instance._IsOnValidate = true;
+
+                if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
+                {
+                    List<ButtonControl> ckeys = new List<ButtonControl> { new MulHitSameControl(keys.Count, keys[0]) };
+                    instance.mulHitControls.Add(ckeys[0] as MulHitSameControl);
+
+                    instance.multipleInputController.Add(ckeys, new Dictionary<PressType, ADOrderlyEvent> { { type, currentEv } });
+
+                    AddMessage(new MulHitSameControl(keys.Count, keys[0]).ToString() + "-based event was established");
+
+                    return new RegisterInfo(ckeys, action, type);
+                }
+                else
+                {
+                    instance.multipleInputController.Add(keys, new Dictionary<PressType, ADOrderlyEvent> { { type, currentEv } });
+
+                    AddMessage(keys.ToString() + "-based event was established"); 
+                    return new RegisterInfo(keys, action, type);
+                } 
+            }
+            else
+            {
+                if (!pair.Value.ContainsKey(type)) pair.Value.Add(type, new());
+                pair.Value[type].AddListener(action);
+                instance._IsOnValidate = true;
+                return new RegisterInfo(pair.Key, action, type);
+            }
+        }
+        public static void RemoveListener(ButtonControl key, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
+            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)) && pair.Value.ContainsKey(type))
+            {
+                pair.Value[type].RemoveListener(action);
+            }
+            instance._IsOnValidate = true; 
+        }
+        public static void RemoveListener(List<ButtonControl> keys, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
+            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)) && pair.Value.ContainsKey(type))
+            {
+                pair.Value[type].RemoveListener(action);
+            }
+            if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
+            {
+                var temp = instance.mulHitControls.Find((P) => P.TargetButton == keys[0]);
+                RemoveListener(temp, action, type);
+                instance.mulHitControls.Remove(temp);
+            }
+            instance._IsOnValidate = true; 
+        }
+        public static void RemoveAllListeners(ButtonControl key, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key[0].Equals(key) && P.Key.Count == 1; });
+            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)) && pair.Value.ContainsKey(type))
+            {
+                pair.Value[type].RemoveAllListeners();
+            }
+            instance._IsOnValidate = true; 
+        }
+        public static void RemoveAllListeners(List<ButtonControl> keys, PressType type = PressType.JustPressed)
+        {
+            KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>> pair
+                = instance.multipleInputController.FirstOrDefault((P) => { return P.Key.Intersect(keys).ToList().Count == keys.Count; });
+            if (!pair.Equals(default(KeyValuePair<List<ButtonControl>, Dictionary<PressType, ADOrderlyEvent>>)) && pair.Value.ContainsKey(type))
+            {
+                pair.Value[type].RemoveAllListeners();
+            }
+            if (keys.FindAll((P) => P == keys[0]).Count == keys.Count)
+            {
+                var temp = instance.mulHitControls.Find((P) => P.TargetButton == keys[0]);
+                RemoveAllListeners(temp, type);
+                instance.mulHitControls.Remove(temp);
+            }
+            instance._IsOnValidate = true; 
+        }
+        public static void RemoveAllButtonListeners()
+        {
+            instance.multipleInputController = new();
+            instance.mulHitControls = new();
+        }
+
+        /// <summary>
+        /// 设置快捷组合键的MulButton所对应的事件组唯一且无法清除，唯一方法是使用RegisterInfo操作
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static RegisterInfo AddShortcutKeyCombinations(List<ButtonControl> keys,UnityEngine.Events.UnityAction action)
+        {
+            List<ButtonControl> buttons = new List<ButtonControl> { new MulHitSomeControl(keys) };
+            ADOrderlyEvent currentEv = new();
+            Dictionary<PressType, ADOrderlyEvent> currentDic = new();
+            currentDic[PressType.ThisFramePressed] = currentEv;
+            currentEv.AddListener(action);
+            instance.multipleInputController[buttons] = currentDic;
+            return new RegisterInfo(buttons, action, PressType.ThisFramePressed);
+        }
+
+        #endregion
+
+        #region MonoFunction 
+
         private void Update()
         {
+            if (_m_instance != null && _m_instance != this) DestroyImmediate(this);
+            else _m_instance = this;
             foreach (var key in mulHitControls) key.Update();
             foreach (var key in multipleInputController)
             {
@@ -347,10 +417,7 @@ namespace AD
                 PressThisFrameUpdate(key);
                 ReleaseThisFrameUpdate(key);
             }
-            if (record.Count > 10000)
-            {
-                SaveRecord();
-            }
+            if (record.Count > MaxRecordItemCount) SaveRecord();
         }
 
         public bool _IsOnValidate = false;
@@ -362,12 +429,12 @@ namespace AD
 
         public void OnApplicationQuit()
         {
-            if (!IsKeepObject) SaveRecord();
+            SaveRecord();
         }
 
         private void OnDestroy()
         {
-            if(!IsKeepObject) _m_instance = null;
+            _m_instance = null;
         }
 
         #endregion
@@ -637,6 +704,8 @@ namespace AD
 
         #region UtilityRecord
 
+        public string RecordPath  = "null";
+
         public List<UtilityPackage> record = new List<UtilityPackage>();
 
         public static void AddMessage(string message, string state = "")
@@ -689,14 +758,12 @@ namespace AD
 
                 Output((RecordPath == "null") ? (Path.Combine(
                         Application.persistentDataPath,
-                        "ADRecordlog",
+                        "ADGlobalSystemLog",
                         DateTime.Now.Hour.ToString() + "H" +
                         DateTime.Now.Minute.ToString() + "M" +
                         DateTime.Now.Second.ToString() + "S" + ".AD.log")) : (RecordPath), allMessage);
             }
         }
-
-        public static bool IsKeepException = true;
 
         public static T Error<T>(string message, Exception ex, T result) where T : class, new()
         {
@@ -741,7 +808,6 @@ namespace AD
             AddMessage(func.ToString());
         }
 
-        public string RecordPath { get; set; } = "null";
 
         #endregion
     }
@@ -778,7 +844,7 @@ namespace AD
 
         List<string> buttons = new List<string>();
 
-        private SerializedProperty _Toggle, _Slider, _Text, _Button, _RawImage, _InputField;
+        /*private SerializedProperty _Toggle, _Slider, _Text, _Button, _RawImage, _InputField;
         private SerializedProperty _VirtualJoystick;
         private SerializedProperty _Image;
         private SerializedProperty _AudioSource;
@@ -786,7 +852,7 @@ namespace AD
 
         private SerializedProperty _IsKeepObject;
 
-        SerializedProperty record = null;
+        SerializedProperty record = null;*/
 
         private void OnEnable()
         {
@@ -802,7 +868,7 @@ namespace AD
             }
             that._IsOnValidate = false;
 
-            _Toggle = serializedObject.FindProperty("_Toggle");
+            /*_Toggle = serializedObject.FindProperty("_Toggle");
             _Slider = serializedObject.FindProperty("_Slider");
             _Text = serializedObject.FindProperty("_Text");
             _Button = serializedObject.FindProperty("_Button");
@@ -816,7 +882,7 @@ namespace AD
 
             record = serializedObject.FindProperty("record");
 
-            _IsKeepObject = serializedObject.FindProperty("IsKeepObject");
+            _IsKeepObject = serializedObject.FindProperty("IsKeepObject");*/
         }
 
         public override void OnInspectorGUI()
@@ -834,10 +900,12 @@ namespace AD
                 that._IsOnValidate = false;
             }
 
+            base.OnInspectorGUI();
+
             serializedObject.Update();
 
+            /*
             EditorGUILayout.PropertyField(_IsKeepObject);
-
             if (Application.isEditor)
             { 
                 EditorGUILayout.Space(25);
@@ -853,12 +921,20 @@ namespace AD
                 EditorGUILayout.PropertyField(_AudioSource);
                 EditorGUILayout.PropertyField(_CustomWindowElement);
             }
+            */
+            UnityEngine.Object @object = null;
+
+            EditorGUI.BeginChangeCheck();
+            ADGlobalSystem temp_cat = null;
+            GUIContent gUIContent = new GUIContent("Instance");
+            temp_cat = EditorGUILayout.ObjectField(gUIContent, ADGlobalSystem._m_instance, typeof(ADGlobalSystem), @object) as ADGlobalSystem;
+            if (EditorGUI.EndChangeCheck()) ADGlobalSystem._m_instance = temp_cat;
 
             if (Application.isPlaying)
             {
-                EditorGUILayout.Space(25);
+                /*EditorGUILayout.Space(25);
 
-                EditorGUILayout.PropertyField(record);
+                EditorGUILayout.PropertyField(record);*/
 
                 EditorGUILayout.Space(25);
 
@@ -870,19 +946,6 @@ namespace AD
                     that.SaveRecord();
                 }
             }
-
-            UnityEngine.Object @object = null;
-
-            EditorGUI.BeginChangeCheck();
-            ADGlobalSystem temp_cat = null;
-            GUIContent gUIContent = new GUIContent("Instance");
-            temp_cat = EditorGUILayout.ObjectField(gUIContent, ADGlobalSystem._m_instance as UnityEngine.Object, typeof(ADGlobalSystem), @object) as ADGlobalSystem;
-            if (EditorGUI.EndChangeCheck()) ADGlobalSystem._m_instance = temp_cat;
-
-            EditorGUI.BeginChangeCheck();
-            GUIContent bUIContent = new GUIContent("IsKeepException");
-            bool __IsKeepException = EditorGUILayout.Toggle(bUIContent, ADGlobalSystem.IsKeepException);
-            if (EditorGUI.EndChangeCheck()) ADGlobalSystem.IsKeepException = __IsKeepException;
 
             serializedObject.ApplyModifiedProperties();
         }
