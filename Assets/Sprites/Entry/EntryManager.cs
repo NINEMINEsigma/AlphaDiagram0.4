@@ -21,7 +21,7 @@ namespace AD.ProjectTwilight.Entry
             for (int i = 0; i < vextcount; i++)
             {
                 keyframes[i].time = i / (float)(vextcount - 1);
-                keyframes[i].value = Mathf.Clamp(source.bands[i], 10, 1000);
+                keyframes[i].value = Mathf.Clamp(source.bands[i], 0.01f, 100);
             }
             m_curve.keys = keyframes;
             renderer.widthCurve = m_curve;
@@ -54,6 +54,8 @@ namespace AD.ProjectTwilight.Entry
             var bloom = GetComponent<Volume>();
             bloom.weight = 0;
             audioSource.CurrentSourcePair.LineDrawer = new DrawLine(DrawCanvas.transform as RectTransform);
+            audioSource.Refresh();
+            audioSource.Play();
 
             OnSceneEnd.AddListener(()=> {
                 EntryApp.instance.SaveRecord();

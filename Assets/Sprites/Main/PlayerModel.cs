@@ -60,7 +60,7 @@ namespace AD.ProjectTwilight.Source
     {
         public static string DataPath => Path.Combine(Application.persistentDataPath, "data", "player") + "/";
 
-        public static string GetPath(string fileName) => DataPath + fileName + ".model";
+        public static string GetPath(string fileName) => DataPath + fileName + ".adm";
 
         public override void Init()
         {
@@ -95,18 +95,7 @@ namespace AD.ProjectTwilight.Source
             }
             else
             {
-                CurrentData current = new CurrentData()
-                {
-                    current = new SinglePlayerAsset()
-                    {
-                        PlayerName = "观者",
-                        Chapter = "New Start",
-                        Branch = "New Start",
-                        step = 0,
-                        index = 0,
-                        FileName = "defualt"
-                    }
-                };
+                CurrentData current = new CurrentData() { current = GenerateDefualt() };
                 ConfirmModel(current);
                 models.Add(current.current);
                 ADGlobalSystem.Output(GetPath("defualt"), current.current);
@@ -114,19 +103,27 @@ namespace AD.ProjectTwilight.Source
             return this;
         }
 
+        public static SinglePlayerAsset GenerateDefualt()
+        {
+            return new SinglePlayerAsset()
+            {
+                PlayerName = "观者",
+                Chapter = "New Start",
+                Branch = "New Start",
+                step = 0,
+                index = 0,
+                FileName = "defualt"
+            };
+        }
+
         public override void Save(string fileName = "")
         {
-            bool isHasDefualt = false;
-            foreach (var model in models)
+            for (int i = 0; i < models.Count; i++)
             {
-                if (model.FileName == "defualt")
-                {
-                    if (isHasDefualt)
-                    {
-                        model.FileName = model.index.ToString();
-                    }
-                    else isHasDefualt = true;
-                }
+                SinglePlayerAsset model = models[i];
+                model.index = i;
+                if (model.FileName != "defualt")
+                    model.FileName = i.ToString();
                 ADGlobalSystem.Output<SinglePlayerAsset>(GetPath(model.FileName), model);
             }
         }

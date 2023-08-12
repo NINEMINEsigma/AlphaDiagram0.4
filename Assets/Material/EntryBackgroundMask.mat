@@ -27,8 +27,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColorMask: 16
-    - _Contrast: 0
-    - _Distance: 0.15
+    - _Contrast: 10
+    - _Distance: 0
     - _DistanceKey: 0.01
     - _Saturation: 1
     - _Stencil: 0

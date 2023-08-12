@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AD.BASE;
+using AD.ProjectTwilight.Source;
 using UnityEngine;
 
 namespace AD.ProjectTwilight.MainScene
@@ -33,17 +34,24 @@ namespace AD.ProjectTwilight.MainScene
             MainApp.instance.RegisterSystem(this);
         }
 
-        public override void Init()
+        public void SourceAssetInit(out CurrentData CurrentData)
         {
             SourcePairs.Clear();
-            var CurrentData = Architecture.As<MainApp>().CurrentData;
-            CurrentData.Load();
+            CurrentData = Architecture.As<MainApp>().CurrentData;
+            CurrentData.Load(); 
+        }
+
+        public override void Init()
+        {
+            SourceAssetInit(out CurrentData CurrentData);
             SourceAsset = CurrentData.AssetBundle.LoadAsset(CurrentData.current.Branch) as CharacterSourcePairs;
             foreach (var data in SourceAsset)
-                SourcePairs.Add(data as CharacterSourcePair);
+                SourcePairs.Add(data as CharacterSourcePair); 
             RegisterController(characterGroup);
             RegisterController(soundGroup);
             RegisterController(chartBoxGroup);
+            currentIndex = CurrentData.current.step;
+            Refresh();
         }
 
         public void SetCurrent(int newCurrent)
