@@ -2635,7 +2635,24 @@ namespace AD.BASE
         public static T As<T>(this object self) where T : class
         {
             return self as T;
+        } 
+
+        public static bool Is<T>(this object self,out T result) where T : class
+        {
+            result = null;
+            if (self is T r)
+            {
+                result = r;
+                return true;
+            }
+            else return false; 
         }
+
+        public static bool IsAssignableFromOrSubClass(this Type self,Type target)
+        {
+            return self.IsAssignableFrom(target)||self.IsSubclassOf(target);
+        }
+
     }
 
     #endregion
