@@ -2635,7 +2635,30 @@ namespace AD.BASE
         public static T As<T>(this object self) where T : class
         {
             return self as T;
-        } 
+        }
+
+        public static bool As<T>(this object self,out T result) where T : class
+        {
+            if (self != null)
+            {
+                result = self as T;
+                return result != null;
+            }
+            else
+            {
+                result = null;
+                return false;
+            } 
+        }
+
+        public static bool Convertible<T>(this object self) where T : class
+        {
+            if (self != null)
+            {
+                return self as T != null;
+            }
+            else return false;
+        }
 
         public static bool Is<T>(this object self,out T result) where T : class
         {

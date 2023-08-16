@@ -581,12 +581,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4994205417326616024}
-  - component: {fileID: 4994205417326616027}
   - component: {fileID: 7771118446552276518}
+  - component: {fileID: 4994205417326616027}
   m_Layer: 5
   m_Name: ListView
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 2800000, guid: 76f0068f1aa70bf4cbd8d3ed60ea5dc5, type: 3}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -612,14 +612,6 @@ RectTransform:
   m_AnchoredPosition: {x: 70, y: 0}
   m_SizeDelta: {x: -180, y: -24}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4994205417326616027
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4994205417326616025}
-  m_CullTransparentMesh: 0
 --- !u!114 &7771118446552276518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -635,11 +627,18 @@ MonoBehaviour:
   Selected: 0
   ElementArea: PropertyModule
   _Scroll: {fileID: 4994205415834291398}
-  SubPage: {fileID: 4994205416245690048}
   _List: {fileID: 4994205416245690050}
   _Title: {fileID: 4994205416468584610}
   Prefab: {fileID: 0}
   index: 0
+--- !u!222 &4994205417326616027
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4994205417326616025}
+  m_CullTransparentMesh: 0
 --- !u!1 &4994205417334539624
 GameObject:
   m_ObjectHideFlags: 0

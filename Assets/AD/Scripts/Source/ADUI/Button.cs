@@ -12,8 +12,20 @@ namespace AD.UI
     [AddComponentMenu("UI/AD/Button", 100)]
     public class Button : ADUI, IPointerClickHandler, IButton
     {
+        public enum ButtonAnimatorMode
+        {
+            BOOL,
+            STRING
+        }
+
+        [Header("Animator")]
         public Animator animator = null;
+        public ButtonAnimatorMode ChooseMode= ButtonAnimatorMode.BOOL;
+        public string AnimatorBoolString = "IsClick";
+        public string AnimatorONString = "In", AnimatorOFFString = "Out";
+        [Header("Event")]
         public ADEvent OnClick = new ADEvent(), OnRelease = new ADEvent();
+        [Header("Setting")]
         private bool _IsClick = false;
         public bool IsClick
         {
@@ -23,12 +35,22 @@ namespace AD.UI
             }
             set
             {
-                if (animator != null && IsKeepState) animator.SetBool("IsClick", value);
+                if (animator != null && IsKeepState)
+                    switch (ChooseMode)
+                    {
+                        case ButtonAnimatorMode.BOOL:
+                            animator.SetBool(AnimatorBoolString, value);
+                            break;
+                        case ButtonAnimatorMode.STRING:
+                            animator.Play(value ? AnimatorONString : AnimatorOFFString);
+                            break;
+                    }
                 _IsClick = value && IsKeepState;
                 if (value) OnClick.Invoke();
                 else OnRelease.Invoke();
             }
         }
+        [Tooltip("false时不会触发任何动画也不会保持按下的状态")]
         public bool IsKeepState = false;
         public TMP_Text title;
 

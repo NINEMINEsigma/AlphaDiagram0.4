@@ -2600,8 +2600,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 910742168}
-  - component: {fileID: 910742170}
   - component: {fileID: 910742169}
+  - component: {fileID: 910742170}
   - component: {fileID: 910742171}
   m_Layer: 0
   m_Name: AudioSource
@@ -5544,7 +5544,6 @@ MonoBehaviour:
   _Button: {fileID: 1498806284698747971, guid: 6be8b892649722f46b1c22cd647f573b, type: 3}
   _RawImage: {fileID: 3866729093808359234, guid: ea9da0ac8b1e9764fb91a892e0737e7a, type: 3}
   _InputField: {fileID: 5191791341152653597, guid: 27a92f1ef5bc9c94a97ea07b6509e3d8, type: 3}
-  _VirtualJoystick: {fileID: 9145189818668447401, guid: 59c9be2ba94220f499cc90ef816cfd96, type: 3}
   _Image: {fileID: 350532603337223207, guid: 8c9f0d46552aa6847b18cd92b5ed7b71, type: 3}
   _AudioSource: {fileID: 1273201300325413191, guid: 711c6dbbd6f2fc043895cdc8329b55a9, type: 3}
   _CustomWindowElement: {fileID: 74856100616418833, guid: 312f31ed2782b8f48b2b5e85ef045aa2, type: 3}

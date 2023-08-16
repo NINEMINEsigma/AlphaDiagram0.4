@@ -314,13 +314,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9145189818668447406}
+  - component: {fileID: 9145189818668447401}
   - component: {fileID: 9145189818668447403}
   - component: {fileID: 9145189818668447400}
-  - component: {fileID: 9145189818668447401}
   m_Layer: 5
   m_Name: VirtualJoystick
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 2800000, guid: 76f0068f1aa70bf4cbd8d3ed60ea5dc5, type: 3}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -347,6 +347,39 @@ RectTransform:
   m_AnchoredPosition: {x: -51.98, y: -32.735}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &9145189818668447401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9145189818668447407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e003ed4e78d8a940a90cb7ee646adc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Selected: 0
+  ElementArea: VirtualJoystick
+  TargetCamera: {fileID: 0}
+  MineVirtualJoystick: {fileID: 9145189818668447400}
+  Background: {fileID: 9145189817963987066}
+  Fill: {fileID: 9145189818004093314}
+  JoyStick: {fileID: 9145189818022079001}
+  Value: {x: 0, y: 0, z: 0}
+  CatchValue: {x: 0, y: 0, z: 0}
+  OnDragEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  IsDrag: 0
+  DateValue: 180
+  GlobalAngle: 0
 --- !u!222 &9145189818668447403
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -385,35 +418,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9145189818668447401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9145189818668447407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e003ed4e78d8a940a90cb7ee646adc7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Selected: 0
-  ElementArea: VirtualJoystick
-  Childs: []
-  Parent: {fileID: 0}
-  TargetCamera: {fileID: 0}
-  MineVirtualJoystick: {fileID: 9145189818668447400}
-  Background: {fileID: 9145189817963987066}
-  Fill: {fileID: 9145189818004093314}
-  JoyStick: {fileID: 9145189818022079001}
-  Value: {x: 0, y: 0, z: 0}
-  OnDragEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  OnStart:
-    m_PersistentCalls:
-      m_Calls: []
-  OnEnd:
-    m_PersistentCalls:
-      m_Calls: []
-  DateValue: 180

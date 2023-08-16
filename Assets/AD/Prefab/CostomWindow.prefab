@@ -9,14 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 74856100616418836}
+  - component: {fileID: 74856100616418833}
   - component: {fileID: 74856100616418838}
   - component: {fileID: 74856100616418839}
-  - component: {fileID: 74856100616418833}
   - component: {fileID: 74856100616418832}
   m_Layer: 5
   m_Name: CostomWindow
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 2800000, guid: 76f0068f1aa70bf4cbd8d3ed60ea5dc5, type: 3}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -42,6 +42,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &74856100616418833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74856100616418837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c97652864c87a4246a9f0fb221388f0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: {x: 0, y: 0}
+  _Padding: {x: 0, y: 0, z: 0, w: 0}
+  isCanBackPool: 1
+  SubPage: {fileID: 74856100949534831}
+  TopLine: {fileID: 74856102319944895}
+  Title: {fileID: 74856101785471358}
+  OnEsc:
+    m_PersistentCalls:
+      m_Calls: []
+  topOnClick: 1
 --- !u!222 &74856100616418838
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -80,27 +102,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &74856100616418833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 74856100616418837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c97652864c87a4246a9f0fb221388f0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Padding: {x: 0, y: 0, z: 0, w: 0}
-  isCanBackPool: 1
-  SubPage: {fileID: 74856100949534831}
-  TopLine: {fileID: 74856102319944895}
-  Title: {fileID: 74856101785471358}
-  OnEsc:
-    m_PersistentCalls:
-      m_Calls: []
-  topOnClick: 1
 --- !u!114 &74856100616418832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,6 +426,10 @@ MonoBehaviour:
   Selected: 0
   ElementArea: Button
   animator: {fileID: 74856101198179884}
+  ChooseMode: 0
+  AnimatorBoolString: IsClick
+  AnimatorONString: In
+  AnimatorOFFString: Out
   OnClick:
     m_PersistentCalls:
       m_Calls:

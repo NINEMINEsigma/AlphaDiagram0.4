@@ -187,7 +187,6 @@ namespace AD
         public static bool IsKeepException => instance.IsNeedExcepion;
 
         public ADUI _Toggle, _Slider, _Text, _Button,_RawImage,_InputField;
-        public PropertyModule _VirtualJoystick;
         public ViewController _Image;
         public AudioSourceController _AudioSource;
         public CustomWindowElement _CustomWindowElement;
@@ -395,8 +394,10 @@ namespace AD
         {
             List<ButtonControl> buttons = new List<ButtonControl> { new MulHitSomeControl(keys) };
             ADOrderlyEvent currentEv = new();
-            Dictionary<PressType, ADOrderlyEvent> currentDic = new();
-            currentDic[PressType.ThisFramePressed] = currentEv;
+            Dictionary<PressType, ADOrderlyEvent> currentDic = new()
+            {
+                [PressType.ThisFramePressed] = currentEv
+            };
             currentEv.AddListener(action);
             instance.multipleInputController[buttons] = currentDic;
             return new RegisterInfo(buttons, action, PressType.ThisFramePressed);

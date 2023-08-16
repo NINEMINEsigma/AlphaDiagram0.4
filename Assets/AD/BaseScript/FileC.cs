@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace AD.BASE
 {
@@ -280,6 +282,94 @@ namespace AD.BASE
             }
             return asset;
         }
+
+
+        public static bool BreakpointResume(this ICanBreakpointResume self, string loadPath, string savePath, double loadedBytes, UnityAction<string> callback)
+        {
+            if (self.As<MonoBehaviour>(out var result))
+            {
+                result.StartCoroutine(BreakpointResume(result, loadPath, savePath, loadedBytes, callback));
+                return true;
+            }
+            else return false;
+        }
+
+        /// <summary>
+        /// 分段，断点下载文件
+        /// </summary>
+        /// <param name="loadPath">下载地址</param>
+        /// <param name="savePath">保存路径</param>
+        /// <returns></returns>
+        public static IEnumerator BreakpointResume(MonoBehaviour sendObject, string loadPath, string savePath, double loadedBytes, UnityAction<string> callback)
+        {
+            //UnityWebRequest 经配置可传输 HTTP HEAD 请求的 UnityWebRequest。
+            UnityWebRequest headRequest = UnityWebRequest.Head(loadPath);
+            //开始与远程服务器通信。
+            yield return headRequest.SendWebRequest();
+
+            if (!string.IsNullOrEmpty(headRequest.error))
+            {
+                callback(headRequest.error + ":cannt found the file");
+                yield break;
+            }
+            //获取文件总大小
+            ulong totalLength = ulong.Parse(headRequest.GetResponseHeader("Content-Length"));
+            Debug.Log("获取大小" + totalLength);
+            headRequest.Dispose();
+            UnityWebRequest Request = UnityWebRequest.Get(loadPath);
+            //append设置为true文件写入方式为接续写入，不覆盖原文件。
+            Request.downloadHandler = new DownloadHandlerFile(savePath, true);
+            //创建文件
+            FileInfo file = new FileInfo(savePath);
+            //当前下载的文件长度
+            ulong fileLength = (ulong)file.Length;
+
+            //请求网络数据从第fileLength到最后的字节；
+            Request.SetRequestHeader("Range", "bytes=" + fileLength + "-");
+
+            if (!string.IsNullOrEmpty(headRequest.error))
+            {
+                callback(headRequest.error + ":failed");
+                yield break;
+            }
+            if (fileLength < totalLength)
+            {
+                Request.SendWebRequest();
+                while (!Request.isDone)
+                {
+                    double progress = (Request.downloadedBytes + fileLength) / (double)totalLength;
+                    callback((progress * 100 + 0.01f).ToString("f2") + "%");
+                    // Debug.Log("下载量" + Request.downloadedBytes);
+                    //超过一定的字节关闭现在的协程，开启新的协程，将资源分段下载
+                    if (Request.downloadedBytes >= loadedBytes)
+                    {
+                        sendObject.StopCoroutine("BreakpointResume");
+
+                        //如果 UnityWebRequest 在进行中，就停止。
+                        Request.Abort();
+                        if (!string.IsNullOrEmpty(headRequest.error))
+                        {
+                            callback(headRequest.error + ":failed");
+                            yield break;
+                        }
+                        yield return sendObject.StartCoroutine(BreakpointResume(sendObject, loadPath, savePath, loadedBytes, callback));
+                    }
+                    yield return null;
+                }
+            }
+            if (string.IsNullOrEmpty(Request.error))
+            {
+                Debug.Log("下载成功" + savePath);
+                callback("succeed");
+            }
+            //表示不再使用此 UnityWebRequest，并且应清理它使用的所有资源。
+            Request.Dispose();
+        }
+
+    }
+
+    public interface ICanBreakpointResume
+    {
 
     }
 }

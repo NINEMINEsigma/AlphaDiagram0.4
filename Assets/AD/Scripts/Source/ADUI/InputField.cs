@@ -71,7 +71,7 @@ namespace AD.UI
         {
             get
             {
-                _source ??= GetComponent<TMP_InputField>();
+                if (_source == null) _source = GetComponent<TMP_InputField>();
                 return _source;
             }
         }

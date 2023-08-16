@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 namespace AD.Utility
@@ -24,5 +23,10 @@ namespace AD.Utility
         {
             return new Color(self.r, self.g, self.b, value);
         } 
+
+        public static Color LerpTo(this Color self,Color _Right, float value)
+        {
+            return Color.Lerp(self, _Right, value);
+        }
     }
 }
