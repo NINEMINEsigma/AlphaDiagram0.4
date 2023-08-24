@@ -175,8 +175,13 @@ namespace AD
             {
                 if (_m_instance == null)
                 {
+                    var cat = GameObject.FindObjectsOfType(typeof(ADGlobalSystem));
+                    if (cat.Length > 0) _m_instance = cat[0] as ADGlobalSystem;
+                }
+                if (_m_instance == null)
+                {
                     _m_instance = new GameObject().AddComponent<ADGlobalSystem>();
-                    _m_instance.name = "GlobalSystem"; 
+                    _m_instance.name = "GlobalSystem";
                 }
                 return _m_instance;
             }
@@ -236,7 +241,7 @@ namespace AD
         {
             try
             {
-                if (key.Key.All((P) => P is IMulHitControl IMul ? IMul.WasPressedThisFrame() : P.wasReleasedThisFrame))
+                if (key.Key.All((P) => P is IMulHitControl IMul ? IMul.WasPressedThisFrame() : P.wasPressedThisFrame))
                 {
                     key.Value.TryGetValue(PressType.ThisFramePressed, out var events);
                     events?.Invoke();
@@ -407,10 +412,16 @@ namespace AD
 
         #region MonoFunction 
 
-        private void Update()
+        private void Awake()
         {
             if (_m_instance != null && _m_instance != this) DestroyImmediate(this);
             else _m_instance = this;
+        }
+
+        private void Update()
+        {
+            if (_m_instance != null && _m_instance != this) DestroyImmediate(this);
+            else if (_m_instance == null) _m_instance = this;
             foreach (var key in mulHitControls) key.Update();
             foreach (var key in multipleInputController)
             {
@@ -421,7 +432,7 @@ namespace AD
             if (record.Count > MaxRecordItemCount) SaveRecord();
         }
 
-        public bool _IsOnValidate = false;
+        [HideInInspector]public bool _IsOnValidate = false;
 
         private void OnValidate()
         {
