@@ -753,6 +753,17 @@ namespace AD
             if (state == "Error") Debug.LogError(cMessage.ObtainResult()); 
         }
 
+        public static void ThrowLogicError(string message, string state = "LogicError")
+        {
+            if (instance.record.Count > 0 && instance.record[^1].message == message && instance.record[^1].state == state)
+            {
+                instance.record[^1].times++;
+            }
+            UtilityPackage cMessage = new UtilityPackage(message, state);
+            instance.record.Add(cMessage);
+            throw new ADException("[Problems that should not occur]" + message);
+        }
+
         public string ObtainResultAndClean()
         {
             string result = "<Result>" + DateTime.Now.ToString() + "\n";

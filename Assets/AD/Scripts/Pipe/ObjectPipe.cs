@@ -370,7 +370,7 @@ namespace AD.Utility.Pipe
         }
     }
 
-    internal class PipeFunc : IPipeLineStep
+    public class PipeFunc : IPipeLineStep
     {
         public PipeFunc(Func<object, object> step, Type _INPUT, Type _OUTPUT)
         {

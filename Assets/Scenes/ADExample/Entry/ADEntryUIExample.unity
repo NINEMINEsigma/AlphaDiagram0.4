@@ -219,7 +219,6 @@ MonoBehaviour:
   _Button: {fileID: 1498806284698747971, guid: 6be8b892649722f46b1c22cd647f573b, type: 3}
   _RawImage: {fileID: 3866729093808359234, guid: ea9da0ac8b1e9764fb91a892e0737e7a, type: 3}
   _InputField: {fileID: 5191791341152653597, guid: 27a92f1ef5bc9c94a97ea07b6509e3d8, type: 3}
-  _VirtualJoystick: {fileID: 9145189818668447401, guid: 59c9be2ba94220f499cc90ef816cfd96, type: 3}
   _Image: {fileID: 350532603337223207, guid: 8c9f0d46552aa6847b18cd92b5ed7b71, type: 3}
   _AudioSource: {fileID: 1273201300325413191, guid: 711c6dbbd6f2fc043895cdc8329b55a9, type: 3}
   _CustomWindowElement: {fileID: 74856100616418833, guid: 312f31ed2782b8f48b2b5e85ef045aa2, type: 3}
@@ -2286,15 +2285,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f200b5c74987f94ea85f6de05a300df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mCanvasInitializer:
-    EADObjects: []
-  TargetSceneName: 
-  OnSceneStart:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSceneEnd:
-    m_PersistentCalls:
-      m_Calls: []
   AudioC: {fileID: 428731969}
   TCanvas: {fileID: 107554677}
   ButtomUI: {fileID: 1384266452}
@@ -5528,14 +5518,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 59395062, guid: 973e85bb86aa0b4478ef84df1cc2e853, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3d3f575454863be41b91df501a5466e7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

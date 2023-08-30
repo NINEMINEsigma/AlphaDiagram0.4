@@ -75,6 +75,7 @@ namespace AD.UI
 
     static public class RectTransformExtension
     {
+        //左上，左下，右下，右上
         public static Vector3[] GetRect(this RectTransform rect)
         {
             Vector3[] corners = new Vector3[4];
