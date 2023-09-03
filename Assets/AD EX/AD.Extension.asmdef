@@ -1,0 +1,16 @@
+{
+    "name": "ADEX",
+    "rootNamespace": "",
+    "references": [
+        "GUID:360a11ffdc7f4874097b8f0c77845437"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

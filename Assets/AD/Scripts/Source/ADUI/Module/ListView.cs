@@ -1,4 +1,4 @@
-using Lean.Pool;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +12,9 @@ namespace AD.UI
 
     public class ListView : PropertyModule
     {
+        public static readonly string ListViewDefaultPerfabSpawnKey = "ListViewDefault";
+        public static string LVDPSK => ListViewDefaultPerfabSpawnKey;
+
         [Header("ListView")]
         [SerializeField] private ScrollRect _Scroll;
         [SerializeField] private VerticalLayoutGroup _List;
@@ -37,14 +40,14 @@ namespace AD.UI
         public ListViewItem GenerateItem()
         {
             if (Prefab == null) return null;
-            GameObject item  = LeanPool.Spawn(Prefab.gameObject);
+            GameObject item  = Spawn(ListViewDefaultPerfabSpawnKey, Prefab.gameObject);
             this[index++] = item;
             return item.GetComponent<ListViewItem>().Init();
         }
 
         protected override void LetChildDestroy(GameObject child)
         {
-            LeanPool.Despawn(child);
+            Despawn(ListViewDefaultPerfabSpawnKey, child);
         }
 
         protected override void LetChildAdd(GameObject child)

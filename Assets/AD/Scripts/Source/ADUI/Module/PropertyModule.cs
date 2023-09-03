@@ -33,7 +33,7 @@ namespace AD.UI
                     _GridLayoutGroup = HowGetOrAddGridLayoutGroup();
                     _GridLayoutGroup.enabled = true;
                 }
-                return _IsNeedLayoutGourp; 
+                return _IsNeedLayoutGourp;
             }
             set
             {
@@ -55,14 +55,14 @@ namespace AD.UI
             }
             set
             {
-                Add(index,value);
+                Add(index, value);
             }
         }
 
         public void Add(int key, GameObject child)
         {
-            if (Childs.ContainsKey(key)) 
-                LetChildDestroy(Childs[key]); 
+            if (Childs.ContainsKey(key))
+                LetChildDestroy(Childs[key]);
             if (child != null)
             {
                 Childs[key] = child;
@@ -92,5 +92,51 @@ namespace AD.UI
             GameObject.Destroy(result.Value);
         }
 
+        private Dictionary<string, Queue<GameObject>> Pool = new();
+
+        protected virtual GameObject Spawn(string key, GameObject perfab)
+        {
+            if (Pool.ContainsKey(key))
+            {
+                if (Pool[key].Count == 0)
+                    return EmptyAdd(key, perfab);
+                else
+                {
+                    var cat = Pool[key].Dequeue();
+                    cat.SetActive(true);
+                    return cat;
+                }
+            }
+            else
+            {
+                return EmptyAdd(key, perfab);
+            }
+
+            GameObject EmptyAdd(string key, GameObject perfab)
+            {
+                Pool.Add(key, new());
+                return GameObject.Instantiate(perfab);
+            }
+        }
+
+        protected virtual GameObject Spawn(string key, GameObject perfab,Transform parent)
+        {
+            GameObject target = Spawn(key, perfab);
+            target.transform.SetParent(parent);
+            return target;
+        }
+
+        protected virtual void Despawn(string key, GameObject target)
+        {
+            if (Pool.ContainsKey(key))
+            {
+                Pool[key].Enqueue(target);
+                target.SetActive(false);
+            }
+            else
+            {
+                Debug.LogAssertion("A GameoObject is not regist but try despawn", this);
+            }
+        } 
     }
 }

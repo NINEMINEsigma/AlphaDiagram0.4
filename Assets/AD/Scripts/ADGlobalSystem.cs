@@ -165,7 +165,7 @@ namespace AD
 
     [ExecuteAlways]
     public class ADGlobalSystem : MonoBehaviour
-    { 
+    {
         #region Attribute
 
         public static ADGlobalSystem _m_instance = null;
@@ -191,7 +191,7 @@ namespace AD
         public readonly uint MaxRecordItemCount = 10000;
         public static bool IsKeepException => instance.IsNeedExcepion;
 
-        public ADUI _Toggle, _Slider, _Text, _Button,_RawImage,_InputField;
+        public ADUI _Toggle, _Slider, _Text, _Button, _RawImage, _InputField;
         public ViewController _Image;
         public AudioSourceController _AudioSource;
         public CustomWindowElement _CustomWindowElement;
@@ -319,9 +319,9 @@ namespace AD
                 {
                     instance.multipleInputController.Add(keys, new Dictionary<PressType, ADOrderlyEvent> { { type, currentEv } });
 
-                    AddMessage(keys.ToString() + "-based event was established"); 
+                    AddMessage(keys.ToString() + "-based event was established");
                     return new RegisterInfo(keys, action, type);
-                } 
+                }
             }
             else
             {
@@ -339,7 +339,7 @@ namespace AD
             {
                 pair.Value[type].RemoveListener(action);
             }
-            instance._IsOnValidate = true; 
+            instance._IsOnValidate = true;
         }
         public static void RemoveListener(List<ButtonControl> keys, UnityEngine.Events.UnityAction action, PressType type = PressType.JustPressed)
         {
@@ -355,7 +355,7 @@ namespace AD
                 RemoveListener(temp, action, type);
                 instance.mulHitControls.Remove(temp);
             }
-            instance._IsOnValidate = true; 
+            instance._IsOnValidate = true;
         }
         public static void RemoveAllListeners(ButtonControl key, PressType type = PressType.JustPressed)
         {
@@ -365,7 +365,7 @@ namespace AD
             {
                 pair.Value[type].RemoveAllListeners();
             }
-            instance._IsOnValidate = true; 
+            instance._IsOnValidate = true;
         }
         public static void RemoveAllListeners(List<ButtonControl> keys, PressType type = PressType.JustPressed)
         {
@@ -381,7 +381,7 @@ namespace AD
                 RemoveAllListeners(temp, type);
                 instance.mulHitControls.Remove(temp);
             }
-            instance._IsOnValidate = true; 
+            instance._IsOnValidate = true;
         }
         public static void RemoveAllButtonListeners()
         {
@@ -395,7 +395,7 @@ namespace AD
         /// <param name="keys"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static RegisterInfo AddShortcutKeyCombinations(List<ButtonControl> keys,UnityEngine.Events.UnityAction action)
+        public static RegisterInfo AddShortcutKeyCombinations(List<ButtonControl> keys, UnityEngine.Events.UnityAction action)
         {
             List<ButtonControl> buttons = new List<ButtonControl> { new MulHitSomeControl(keys) };
             ADOrderlyEvent currentEv = new();
@@ -432,12 +432,12 @@ namespace AD
             if (record.Count > MaxRecordItemCount) SaveRecord();
         }
 
-        [HideInInspector]public bool _IsOnValidate = false;
+        [HideInInspector] public bool _IsOnValidate = false;
 
         private void OnValidate()
         {
             _IsOnValidate = true;
-        } 
+        }
 
         public void OnApplicationQuit()
         {
@@ -469,10 +469,12 @@ namespace AD
             {
                 File.WriteAllText(filePath, obj.ToString(), Encoding.UTF8);
             }
+#if EASY3
             else if (obj.GetType().GetAttribute<EaseSave3Attribute>() != null)
             {
                 ES3.Save(filePath.Split('.')[^1], obj, filePath);
             }
+#endif // EASY3
             else if (obj.GetType().GetAttribute<SerializableAttribute>() != null)
             {
                 File.WriteAllText(filePath, JsonConvert.SerializeObject(obj), Encoding.UTF8);
@@ -533,6 +535,7 @@ namespace AD
                     return false;
                 }
             }
+#if EASY3
             else if (typeof(T).GetAttribute<EaseSave3Attribute>() != null)
             {
                 try
@@ -547,6 +550,7 @@ namespace AD
                     return false;
                 }
             }
+#endif // ESAY3
             else if (typeof(T).GetAttribute<SerializableAttribute>() != null)
             {
                 try
@@ -582,24 +586,58 @@ namespace AD
         }
 
         public static bool Deserialize<T>(string source, out object obj)
-        {
-            try
+        { 
+            if (typeof(T).IsPrimitive)
             {
-                obj = JsonConvert.DeserializeObject<T>(source);
-                if (obj != null) return true;
-                else return false;
+                try
+                {
+                    obj = typeof(T).GetMethod("Parse").Invoke(source, null);
+                    return true;
+                }
+                catch
+                {
+                    obj = default(T);
+                    return false;
+                }
             }
-            catch
+            else if (typeof(T).GetAttribute<SerializableAttribute>() != null)
             {
-                obj = default(T);
-                return false;
+                try
+                {
+                    obj = JsonConvert.DeserializeObject<T>(source);
+                    if (obj != null) return true;
+                    else return false;
+                }
+                catch
+                {
+                    obj = default(T);
+                    return false;
+                }
+            }
+            else
+            {
+                try
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        obj = formatter.Deserialize(ms);
+                    }
+                    if (obj != null) return true;
+                    else return false;
+                }
+                catch
+                {
+                    obj = default(T);
+                    return false;
+                }
             }
         }
 
         public static bool Serialize<T>(T obj, out string str)
         {
 #if UNITY_EDITOR
-            if(typeof(T).GetAttribute<SerializableAttribute>() == null)
+            if (typeof(T).GetAttribute<SerializableAttribute>() == null)
             {
                 Debug.LogWarning("this type is not use SerializableAttribute but you now is try to serialize it");
             }
@@ -716,7 +754,7 @@ namespace AD
 
         #region UtilityRecord
 
-        public string RecordPath  = "null";
+        public string RecordPath = "null";
 
         public List<UtilityPackage> record = new List<UtilityPackage>();
 
@@ -750,7 +788,7 @@ namespace AD
             }
             UtilityPackage cMessage = new UtilityPackage(message, state);
             instance.record.Add(cMessage);
-            if (state == "Error") Debug.LogError(cMessage.ObtainResult()); 
+            if (state == "Error") Debug.LogError(cMessage.ObtainResult());
         }
 
         public static void ThrowLogicError(string message, string state = "LogicError")
@@ -817,7 +855,7 @@ namespace AD
         public static void TrackError(string message, System.Exception ex)
         {
             //utility.AddError("\nMessage: " + message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace);
-            Error<object>("\nMessage: " + message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace, ex); 
+            Error<object>("\nMessage: " + message + "\nError: " + ex.Message + "\nStackTrace: " + ex.StackTrace, ex);
         }
 
         public static T FinalCheck<T>(T result, string message = "you obtain a null object")
@@ -836,7 +874,7 @@ namespace AD
     }
 
     public static class MethodBaseExtension
-    { 
+    {
         public static MethodBase TrackError(this MethodBase method, System.Exception ex)
         {
             var att = method.GetAttribute<ADAttribute>();
@@ -988,10 +1026,12 @@ namespace AD
         public System.Type type = null;
     }
 
+#if EASY3
     [AttributeUsage(AttributeTargets.Class)]
     public class EaseSave3Attribute : Attribute
     {
     }
+#endif // EASY3
 
     [Serializable]
     public class UtilityPackage
