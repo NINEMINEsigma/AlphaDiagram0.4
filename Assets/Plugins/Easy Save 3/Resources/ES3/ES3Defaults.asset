@@ -42,6 +42,8 @@ MonoBehaviour:
     - QFramework.CoreKit
     - ResKit
     - UIKit
+    - UniRx
+    - UniRx.Examples
     showAdvancedSettings: 1
   addMgrToSceneAutomatically: 1
   autoUpdateReferences: 1

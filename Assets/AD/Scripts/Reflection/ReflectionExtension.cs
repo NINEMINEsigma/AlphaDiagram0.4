@@ -100,9 +100,13 @@ namespace AD.Utility
         {
             string[] callingName = callingStr.Split('.');
             TypeResult[] currentStack = new TypeResult[callingName.Length + 1];
-            try
+            for (int i = 0,e= callingName.Length + 1; i < e; i++)
             {
-                currentStack[0].Init(self.GetType(), self);
+                currentStack[i] = new();
+            }
+            try
+            { 
+                currentStack[0].Init(self.GetType(), self); 
                 for (int i = 0, e = callingName.Length; i < e; i++)
                 {
                     TypeResult current = currentStack[i], next = currentStack[i + 1];
@@ -142,8 +146,9 @@ namespace AD.Utility
             {
                 currentArgs = GetCurrentArgsWhenNeedArgs(self, i, currentCallingName, a_s, b_s);
             }
-            MethodBase method = 
-                current.GetType().GetMethod(currentCallingName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static) 
+            string ccn = currentCallingName[..(a_s - 1)];
+            MethodBase method =
+                current.target.GetType().GetMethod(ccn, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static) 
                 ?? throw new ADException("Parse Error : Method");
             currentTarget = method.Invoke(current.target, currentArgs);
             return currentTarget;
@@ -163,6 +168,10 @@ namespace AD.Utility
         {
             string[] callingName = callingStr.Split('.');
             TypeResult[] currentStack = new TypeResult[callingName.Length + 1];
+            for (int i = 0, e = callingName.Length + 1; i < e; i++)
+            {
+                currentStack[i] = new();
+            }
             try
             {
                 currentStack[0].Init(self.GetType(), self);
