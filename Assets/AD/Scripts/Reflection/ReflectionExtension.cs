@@ -256,5 +256,15 @@ namespace AD.Utility
             }
             return type;
         }
+
+        public static object CreateInstance(this Type type)
+        {
+            return Activator.CreateInstance(type);
+        }
+
+        public static T CreateInstance<T>(this Type type)
+        {
+            return (T)Activator.CreateInstance(type);
+        }
     }
 }

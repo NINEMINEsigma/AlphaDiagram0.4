@@ -106,9 +106,9 @@ namespace AD.UI
             ElementArea = "ModernUIButton";
         }
 
-        protected void Start()
+        protected override void Start()
         {
-            AD.UI.ADUI.Initialize(this);
+            base.Start();
 
             if (animationSolution == AnimationSolution.SCRIPT)
             {
@@ -131,11 +131,6 @@ namespace AD.UI
                 rippleParent.SetActive(false);
             else if (useRipple == false && rippleParent != null)
                 Destroy(rippleParent);
-        }
-
-        protected void OnDestroy()
-        {
-            AD.UI.ADUI.Destory(this);
         }
 
         public ModernUIButton SetTitle(string title)

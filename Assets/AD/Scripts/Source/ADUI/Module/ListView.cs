@@ -1,4 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using AD.Utility;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -58,6 +61,17 @@ namespace AD.UI
         public GameObject FindItem(int index)
         {
             return this[index];
+        }
+
+        public void Clear()
+        {
+            List<int> indexs = new();
+            indexs.AddRange(from KeyValuePair<int, GameObject> item in Childs
+                            select item.Key);
+            foreach (int index in indexs)
+            {
+                Remove(index);
+            }
         }
 
     }

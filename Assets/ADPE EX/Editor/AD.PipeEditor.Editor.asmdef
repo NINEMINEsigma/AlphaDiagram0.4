@@ -1,0 +1,19 @@
+{
+    "name": "ADPipeEditor Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e29ce7ead4f96de42a9804bc74b7b2e9",
+        "GUID:360a11ffdc7f4874097b8f0c77845437"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

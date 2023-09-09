@@ -18,6 +18,15 @@ namespace AD.UI
             ElementArea = "PropertyModule";
         }
 
+        protected virtual void Start()
+        {
+            ADUI.Initialize(this); 
+        }
+        protected virtual void OnDestroy()
+        {
+            ADUI.Destory(this);
+        }
+
         private bool _IsNeedLayoutGourp = false;
         protected virtual GridLayoutGroup HowGetOrAddGridLayoutGroup()
         {
@@ -82,6 +91,8 @@ namespace AD.UI
 
         public void Remove(int index)
         {
+            if (Childs.ContainsKey(index))
+                LetChildDestroy(Childs[index]);
             Childs.Remove(index);
         }
 
@@ -96,16 +107,11 @@ namespace AD.UI
 
         protected virtual GameObject Spawn(string key, GameObject perfab)
         {
-            if (Pool.ContainsKey(key))
+            if (Pool.ContainsKey(key) && Pool[key].Count != 0)
             {
-                if (Pool[key].Count == 0)
-                    return EmptyAdd(key, perfab);
-                else
-                {
-                    var cat = Pool[key].Dequeue();
-                    cat.SetActive(true);
-                    return cat;
-                }
+                var cat = Pool[key].Dequeue();
+                cat.SetActive(true);
+                return cat;
             }
             else
             {
@@ -114,7 +120,7 @@ namespace AD.UI
 
             GameObject EmptyAdd(string key, GameObject perfab)
             {
-                Pool.Add(key, new());
+                Pool.TryAdd(key, new());
                 return GameObject.Instantiate(perfab);
             }
         }

@@ -864,6 +864,12 @@ namespace AD
             return result;
         }
 
+        public static T FinalCheckWithThrow<T>(T result, string message = "you obtain a null object")
+        {
+            if (result == null) throw new ADException(message);
+            return result;
+        }
+
         public static void FunctionalRecord<T>(T func)
         {
             AddMessage(func.ToString());

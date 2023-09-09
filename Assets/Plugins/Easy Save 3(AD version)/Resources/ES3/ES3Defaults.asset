@@ -31,7 +31,8 @@ MonoBehaviour:
     serializationDepthLimit: 64
     assemblyNames:
     - AD 0.4
-    - ADEX
+    - ADPipeEditor
+    - ADPipeEditor Editor
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
     - AudioKit

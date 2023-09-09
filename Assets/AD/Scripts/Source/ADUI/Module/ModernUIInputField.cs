@@ -36,18 +36,13 @@ namespace AD.UI
             ElementArea = "ModernUIInputField";
         }
 
-        protected void Start()
+        protected override void Start()
         {
-            AD.UI.ADUI.Initialize(this);  
+            base.Start();
 
             Source.source.onSelect.AddListener(delegate { AnimateIn(); });
             Source.source.onEndEdit.AddListener(delegate { AnimateOut(); });
             UpdateState();
-        }
-
-        protected void OnDestroy()
-        {
-            AD.UI.ADUI.Destory(this);
         }
 
         public ModernUIInputField SetTitle(string title)

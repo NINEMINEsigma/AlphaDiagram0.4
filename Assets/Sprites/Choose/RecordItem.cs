@@ -19,8 +19,9 @@ namespace AD.ProjectTwilight.Choose
             }
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
             IsNeedLayoutGourp = true;
         }
 

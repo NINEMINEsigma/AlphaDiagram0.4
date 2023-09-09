@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AD.BASE;
@@ -20,6 +21,15 @@ namespace AD.Utility
             foreach (var item in self)
                 if (item.As<P>(out var result)) return result;
             return null;
+        }
+
+        public static List<T> GetSubList<T>(this IEnumerable<T> self,Predicate<T> predicate)
+        { 
+            List<T> result = new();
+            result.AddRange(from T item in self
+                            where predicate(item)
+                            select item);
+            return result;
         }
 
     }

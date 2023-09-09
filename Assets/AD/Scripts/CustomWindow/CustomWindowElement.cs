@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using AD.BASE;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.Events;
+using Unity.VisualScripting;
 
 namespace AD.UI
 {
-    [RequireComponent(typeof(AD.UI.ViewController))]
-    public class CustomWindowElement : MonoBehaviour,IDragHandler,IBeginDragHandler
+    [RequireComponent(typeof(ViewController))]
+    public class CustomWindowElement : MonoBehaviour
     {
-        public Dictionary<string, RectTransform> Childs = new Dictionary<string, RectTransform>();
+        public Dictionary<string, RectTransform> Childs = new();
 
         public RectTransform this[int index]
         {
@@ -49,11 +50,7 @@ namespace AD.UI
         }
 
         public Vector2 capacity => new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y - TopLine.sizeDelta.y);
-#if UNITY_EDITOR
-        public Vector2 size;
-#else
-        public Vector2 size { get; private set; }
-#endif
+        private Vector2 size;
         [SerializeField] private Vector4 _Padding = Vector4.zero;
         public Vector4 Padding
         {
@@ -69,14 +66,21 @@ namespace AD.UI
         }
 
         [HideInInspector] public bool isCanBackPool = true;
-        private bool isCanRefresh = true;
+        protected bool isCanRefresh = true;
+        protected virtual bool isSubPageUsingOtherSetting => false;
+
+        public bool isCanDrag
+        {
+            get => _DragBehaviour.isCanDrag;
+            set => _DragBehaviour.isCanDrag = value;
+        }
 
         [SerializeField] private RectTransform SubPage, TopLine;
         [SerializeField] private AD.UI.Text Title;
 
         public ADEvent OnEsc = new ADEvent();
 
-        public CustomWindowElement Init()
+        public virtual CustomWindowElement Init()
         {
             foreach (var item in Childs)
             {
@@ -84,12 +88,15 @@ namespace AD.UI
             }
             Childs.Clear();
             rectTransform.localPosition = Vector3.zero;
-            SetRect(new Vector2(300, 0));
+            if (!isSubPageUsingOtherSetting)
+                SetRect(new Vector2(300, 0));
             size = Vector2.zero;
             Padding = Vector4.zero;
             isCanBackPool = true;
             Title.text = "";
             MaxHightInThisLine = 0;
+            _DragBehaviour = this.GetOrAddComponent<DragBehaviour>();
+            _DragBehaviour.Init(rectTransform);
             return this;
         }
 
@@ -97,9 +104,10 @@ namespace AD.UI
         {
             if (!isCanBackPool) return;
             OnEsc.Invoke();
-            Init();
-            CustomWindowGenerator.Despawn(this);
+            HowBackPool.Invoke(this);
         }
+
+        public UnityAction<CustomWindowElement> HowBackPool;
 
         public CustomWindowElement MoveTo(Vector3 pos)
         {
@@ -123,6 +131,20 @@ namespace AD.UI
                 rectTransform.sizeDelta = Rect + new Vector2(0, TopLine.sizeDelta.y);
             }
             catch(System.Exception ex)
+            {
+                Debug.LogAssertion(ex);
+            }
+            return this;
+        }
+
+        public CustomWindowElement SetRectIgnoreTopLine(Vector2 Rect)
+        {
+            if (!isCanRefresh) return this;
+            try
+            {
+                rectTransform.sizeDelta = Rect;
+            }
+            catch (System.Exception ex)
             {
                 Debug.LogAssertion(ex);
             }
@@ -365,49 +387,7 @@ namespace AD.UI
 
         #region Drag
 
-        public bool topOnClick = true;
-
-        private Vector2 originalLocalPointerPosition;
-        private Vector3 originalPanelLocalPosition;
-
-        private RectTransform DragObjectInternal => rectTransform;
-
-        private RectTransform DragAreaInternal => transform.parent.transform as RectTransform;
-
-        public void OnBeginDrag(PointerEventData data)
-        {
-            originalPanelLocalPosition = DragObjectInternal.localPosition;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(DragAreaInternal, data.position, data.pressEventCamera, out originalLocalPointerPosition);
-            gameObject.transform.SetAsLastSibling();
-
-            if (topOnClick == true)
-                DragObjectInternal.SetAsLastSibling();
-        }
-
-        public void OnDrag(PointerEventData data)
-        {
-            Vector2 localPointerPosition;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(DragAreaInternal, data.position, data.pressEventCamera, out localPointerPosition))
-            {
-                Vector3 offsetToOriginal = localPointerPosition - originalLocalPointerPosition;
-                DragObjectInternal.localPosition = originalPanelLocalPosition + offsetToOriginal;
-            }
-
-            ClampToArea();
-        }
-
-        private void ClampToArea()
-        {
-            Vector3 pos = DragObjectInternal.localPosition;
-
-            Vector3 minPosition = DragAreaInternal.rect.min - DragObjectInternal.rect.min;
-            Vector3 maxPosition = DragAreaInternal.rect.max - DragObjectInternal.rect.max;
-
-            pos.x = Mathf.Clamp(DragObjectInternal.localPosition.x, minPosition.x, maxPosition.x);
-            pos.y = Mathf.Clamp(DragObjectInternal.localPosition.y, minPosition.y, maxPosition.y);
-
-            DragObjectInternal.localPosition = pos;
-        }
+        public DragBehaviour _DragBehaviour;
 
         #endregion
 

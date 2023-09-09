@@ -34,9 +34,9 @@ namespace AD.UI
             OnStart = new ADEvent<PointerEventData>(),
             OnEnd = new ADEvent<PointerEventData>();
 
-        private void Start()
+        protected override void Start()
         {
-            AD.UI.ADUI.Initialize(this);
+            base.Start();
 
             MineVirtualJoystick.SetColor_A(0);
             Background.SetColor_A(0);
@@ -50,11 +50,6 @@ namespace AD.UI
         public VirtualJoystick()
         {
             ElementArea = "VirtualJoystick";
-        }
-
-        private void OnDestroy()
-        {
-            AD.UI.ADUI.Destory(this);
         }
 
         [SerializeField] private bool IsDrag = false;

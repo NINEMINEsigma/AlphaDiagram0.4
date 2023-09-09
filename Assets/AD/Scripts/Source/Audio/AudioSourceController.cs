@@ -270,6 +270,7 @@ namespace AD.UI
             m_curve.keys = keyframes;
             _m_LineRenderer.widthCurve = m_curve;
         }
+
 #if UNITY_EDITOR
         [MenuItem("GameObject/AD/AudioSource", false, 10)]
         private static void ADD(UnityEditor.MenuCommand menuCommand)
