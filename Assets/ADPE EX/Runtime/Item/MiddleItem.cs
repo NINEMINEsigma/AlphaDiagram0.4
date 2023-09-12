@@ -92,14 +92,10 @@ namespace AD.Experimental.Runtime.PipeEx
         public int ArgIndexAtNext = 0;
     }
 
-    public class MiddleItem : AD.UI.ADUI, IPointerClickHandler,ICanvasRaycastFilter
+    [RequireComponent(typeof(DragBehaviour))]
+    public class MiddleItem : MonoBehaviour
     {
         public static readonly int MiddleItemOperatorLayer = 500;
-
-        public MiddleItem()
-        {
-            ElementArea = "MiddleItem";
-        }
 
         public PipeStep PipeStepPerproty;
         public Text TypeText, MethodInfo;
@@ -113,6 +109,7 @@ namespace AD.Experimental.Runtime.PipeEx
         [SerializeField] private MiddleItem[] ArgLinkings;
         public List<NextMiddleItemLeft> Nexts = new();
 
+        private BehaviourContext behaviourContext;
         private DragBehaviour _dragBehaviour;
 
         public static Dictionary<int, Dictionary<string, ADEvent>> OnLeftClickMenu = new();
@@ -129,15 +126,13 @@ namespace AD.Experimental.Runtime.PipeEx
             }
         }
 
-        public override void OnPointerEnter(PointerEventData eventData)
+        private void OnPointerEnter(PointerEventData eventData)
         {
-            base.OnPointerEnter(eventData);
             PipeLineArchitecture.instance.GetModel<CurrentMiddlePanelInfo>().Current = this;
         }
 
-        public override void OnPointerExit(PointerEventData eventData)
+        private void OnPointerExit(PointerEventData eventData)
         {
-            base.OnPointerExit(eventData);
             PipeLineArchitecture.instance.GetModel<CurrentMiddlePanelInfo>().Current = null;
         }
 
@@ -153,6 +148,20 @@ namespace AD.Experimental.Runtime.PipeEx
         {
             _dragBehaviour = this.GetOrAddComponent<DragBehaviour>();
             _dragBehaviour.Init(transform as RectTransform);
+            behaviourContext = _dragBehaviour.GetBehaviourContext();
+
+            behaviourContext.OnPointerEnterEvent ??= new();
+            behaviourContext.OnPointerExitEvent ??= new();
+            behaviourContext.OnPointerClickEvent ??= new();
+
+            behaviourContext.OnPointerEnterEvent.RemoveListener(this.OnPointerEnter);
+            behaviourContext.OnPointerExitEvent.RemoveListener(this.OnPointerExit);
+            behaviourContext.OnPointerClickEvent.RemoveListener(this.OnPointerClick);
+
+            behaviourContext.OnPointerEnterEvent.AddListener(this.OnPointerEnter);
+            behaviourContext.OnPointerExitEvent.AddListener(this.OnPointerExit);
+            behaviourContext.OnPointerClickEvent.AddListener(this.OnPointerClick);
+
             UpdateInfo();
             UpdateLine();
         }
@@ -251,14 +260,9 @@ namespace AD.Experimental.Runtime.PipeEx
             UpdateLine();
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        private void OnPointerClick(PointerEventData eventData)
         {
             LeftClick(eventData.pointerPressRaycast.worldPosition);
-        }
-
-        public bool IsRaycastLocationValid(Vector2 sp, Camera eventCamera)
-        {
-            return true;
         }
     }
 

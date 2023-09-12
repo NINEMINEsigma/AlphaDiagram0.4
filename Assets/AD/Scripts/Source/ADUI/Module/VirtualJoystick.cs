@@ -7,7 +7,7 @@ using AD.BASE;
 
 namespace AD.UI
 {
-    public class VirtualJoystick : PropertyModule, IDragHandler, IPointerDownHandler, IPointerUpHandler
+    public class VirtualJoystick : PropertyModule
     {
         [Header("VirtualJoystick")]
         public Camera TargetCamera;
@@ -45,6 +45,14 @@ namespace AD.UI
 
             var vertexs = MineVirtualJoystick.rectTransform.GetRect();
             MaxX = Vector3.Distance(vertexs[1], vertexs[2]);
+        }
+
+        public override void InitializeContext()
+        {
+            base.InitializeContext();
+            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, true, OnDrag);
+            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerDown);
+            Context.OnPointerUpEvent = InitializeContextSingleEvent(Context.OnPointerUpEvent, true, OnPointerUp);
         }
 
         public VirtualJoystick()

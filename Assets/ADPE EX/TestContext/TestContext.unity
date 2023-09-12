@@ -2516,7 +2516,7 @@ MonoBehaviour:
   TouchPanel: {fileID: 503198743}
   Mid_Panel: {fileID: 655650129}
   DefaultMiddleItemPerfab: {fileID: 6751362453331409425, guid: 5fcde422eda6864418b7c502a46d9341, type: 3}
-  WindowManagerPerfab: {fileID: 1435207346336048278, guid: 43771f653c009e0439543ac6f2eb22ee, type: 3}
+  WindowManagerPerfab: {fileID: 34508704694247293, guid: 43771f653c009e0439543ac6f2eb22ee, type: 3}
   HamburgerMenu: {fileID: 735977546}
   SinglePanelLinePerfab: {fileID: 6566506763934218840, guid: 8bc9c701a4694a346af804a1f01ab42b, type: 3}
   SinglePanel_Panel: {fileID: 1498592818}

@@ -1,12 +1,9 @@
-using System; 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -1729,6 +1726,7 @@ namespace AD.BASE
         public abstract void Invoke(params object[] args);
     }
 
+    [Serializable]
     public class ADOrderlyEvent : ADBaseOrderlyEvent
     {
         public List<int> InvokeArray = null;
@@ -1745,6 +1743,7 @@ namespace AD.BASE
 
         public void RemoveListener(UnityAction call)
         {
+            if (_m_Delegates == null) return;
             var cat = _m_Delegates.Find(T => T.Find(call.Target, call.Method));
             if (cat != null)
             {
@@ -1802,6 +1801,7 @@ namespace AD.BASE
         }
     }
 
+    [Serializable]
     public class ADOrderlyEvent<T0> : ADBaseOrderlyEvent
     {
         public List<int> InvokeArray = null;
@@ -1818,6 +1818,7 @@ namespace AD.BASE
 
         public void RemoveListener(UnityAction<T0> call)
         {
+            if (_m_Delegates == null) return;
             var cat = _m_Delegates.Find(T => T.Find(call.Target, call.Method));
             if (cat != null)
             {
@@ -1878,6 +1879,7 @@ namespace AD.BASE
         }
     }
 
+    [Serializable]
     public class ADOrderlyEvent<T0, T1> : ADBaseOrderlyEvent
     {
         public List<int> InvokeArray = null;
@@ -1894,6 +1896,7 @@ namespace AD.BASE
 
         public void RemoveListener(UnityAction<T0, T1> call)
         {
+            if (_m_Delegates == null) return;
             var cat = _m_Delegates.Find(T => T.Find(call.Target, call.Method));
             if (cat != null)
             {
@@ -1956,6 +1959,7 @@ namespace AD.BASE
         }
     }
 
+    [Serializable]
     public class ADOrderlyEvent<T0, T1, T2> : ADBaseOrderlyEvent
     {
         public List<int> InvokeArray = null;
@@ -1972,6 +1976,7 @@ namespace AD.BASE
 
         public void RemoveListener(UnityAction<T0, T1, T2> call)
         {
+            if (_m_Delegates == null) return;
             var cat = _m_Delegates.Find(T => T.Find(call.Target, call.Method));
             if (cat != null)
             {
@@ -2036,6 +2041,7 @@ namespace AD.BASE
         }
     }
 
+    [Serializable]
     public class ADOrderlyEvent<T0, T1, T2, T3> : ADBaseOrderlyEvent
     {
         public List<int> InvokeArray = null;
@@ -2052,6 +2058,7 @@ namespace AD.BASE
 
         public void RemoveListener(UnityAction<T0, T1, T2, T3> call)
         {
+            if (_m_Delegates == null) return;
             var cat = _m_Delegates.Find(T => T.Find(call.Target, call.Method));
             if (cat != null)
             {

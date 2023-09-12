@@ -2,14 +2,17 @@ using System;
 using AD.BASE;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
     [Serializable]
     [AddComponentMenu("UI/AD/Slider", 100)]
-    public class Slider : ADUI
+    public class Slider : ADUI, IPointerEnterHandler, IPointerExitHandler
     {
         #region Attribute
+
+        public override bool IsNeedContext => false;
 
         private UnityEngine.UI.Slider _source = null;
         public UnityEngine.UI.Slider source

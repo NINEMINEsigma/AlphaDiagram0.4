@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using AD.BASE;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using AD.Utility;
 
 namespace AD.UI
 {
-    public class TouchPanel : AD.UI.ADUI, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class TouchPanel : AD.UI.ADUI
     {
         public TouchPanel()
         {
@@ -36,6 +35,14 @@ namespace AD.UI
         protected virtual void OnDestroy()
         {
             ADUI.Destory(this);
+        }
+
+        public override void InitializeContext()
+        {
+            base.InitializeContext();
+            Context.OnBeginDragEvent = InitializeContextSingleEvent(Context.OnBeginDragEvent, true, OnBeginDrag);
+            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, true, OnDrag);
+            Context.OnEndDragEvent = InitializeContextSingleEvent(Context.OnEndDragEvent, true, OnEndDrag);
         }
 
         [SerializeField] private Vector2 _Drag = Vector2.zero;

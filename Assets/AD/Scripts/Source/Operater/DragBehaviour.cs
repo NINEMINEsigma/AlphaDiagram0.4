@@ -1,11 +1,28 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
-    public class DragBehaviour : MonoBehaviour, IDragHandler, IBeginDragHandler, ICanvasRaycastFilter
+    [RequireComponent(typeof(BehaviourContext))]
+    public class DragBehaviour : MonoBehaviour
     {
-        [HideInInspector]public bool isCanDrag = true;
+        [SerializeField] private BehaviourContext Context = null;
+        public BehaviourContext GetBehaviourContext()
+        {
+            Context ??= this.GetOrAddComponent<BehaviourContext>();
+            return Context;
+        }
+        public BehaviourContext DragBehaviourContext
+        {
+            get 
+            { 
+                Context ??= this.GetOrAddComponent<BehaviourContext>(); 
+                return Context; 
+            }
+        }
+
+        public bool isCanDrag = true;
 
         public void SetDragAble(bool isCanDrag)
         {
@@ -16,12 +33,30 @@ namespace AD.UI
         {
             this.DragObjectInternal = DragObjectInternal;
             this.DragAreaInternal = transform.parent.transform as RectTransform;
+
+            DragBehaviourContext.OnBeginDragEvent ??= new();
+            DragBehaviourContext.OnDragEvent ??= new();
+
+            DragBehaviourContext.OnBeginDragEvent.RemoveListener(this.OnBeginDrag);
+            DragBehaviourContext.OnBeginDragEvent.AddListener(this.OnBeginDrag);
+            DragBehaviourContext.OnDragEvent.RemoveListener(this.OnDrag);
+            DragBehaviourContext.OnDragEvent.AddListener(this.OnDrag);
+            DragBehaviourContext.locationValid = IsRaycastLocationValid;
         }
 
         public void Init(RectTransform DragObjectInternal, RectTransform DragAreaInternal)
         {
             this.DragObjectInternal = DragObjectInternal;
             this.DragAreaInternal = DragAreaInternal;
+
+            DragBehaviourContext.OnBeginDragEvent ??= new();
+            DragBehaviourContext.OnDragEvent ??= new();
+
+            DragBehaviourContext.OnBeginDragEvent.RemoveListener(this.OnBeginDrag);
+            DragBehaviourContext.OnBeginDragEvent.AddListener(this.OnBeginDrag);
+            DragBehaviourContext.OnDragEvent.RemoveListener(this.OnDrag);
+            DragBehaviourContext.OnDragEvent.AddListener(this.OnDrag);
+            DragBehaviourContext.locationValid = IsRaycastLocationValid;
         }
 
         public bool topOnClick = true;

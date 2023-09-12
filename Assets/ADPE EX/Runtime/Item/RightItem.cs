@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace AD.Experimental.Runtime.PipeEx
 {
-    public class RightItem : AD.UI.ListViewItem, IPointerClickHandler, IButton
+    public class RightItem : AD.UI.ListViewItem, IButton
     {
         static PipeLineArchitecture Architecture => PipeLineArchitecture.instance;
 
@@ -16,6 +16,12 @@ namespace AD.Experimental.Runtime.PipeEx
         public override ListViewItem Init()
         {
             return this;
+        }
+
+        public override void InitializeContext()
+        {
+            base.InitializeContext();
+            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, false, OnPointerClick);
         }
 
         public void OnPointerClickOther()

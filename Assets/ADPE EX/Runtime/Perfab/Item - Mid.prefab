@@ -238,6 +238,8 @@ GameObject:
   - component: {fileID: 6751362453331409427}
   - component: {fileID: 6751362453331409424}
   - component: {fileID: 6751362453331409425}
+  - component: {fileID: 3031750809322890124}
+  - component: {fileID: 984079461226073619}
   m_Layer: 0
   m_Name: Item - Mid
   m_TagString: Untagged
@@ -318,13 +320,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0518085fccb374bac8b563b392a172, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Selected: 0
-  ElementArea: MiddleItem
   TypeText: {fileID: 6751362454882362945}
   MethodInfo: {fileID: 6751362453160657561}
   LineRendererObjectPerfab: {fileID: 3097212122949410900, guid: ef9e98dc94e673b4bba6ec56375a53c6, type: 3}
   ArgLinkings: []
   Nexts: []
+--- !u!114 &3031750809322890124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6751362453331409431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e920162904ba944a1415f2afaa3977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &984079461226073619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6751362453331409431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c163c8a7285b54c4383a987f1d42065b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Context: {fileID: 3031750809322890124}
+  isCanDrag: 1
+  topOnClick: 1
 --- !u!1 &6751362454882362949
 GameObject:
   m_ObjectHideFlags: 0

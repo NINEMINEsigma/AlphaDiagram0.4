@@ -44,6 +44,9 @@ namespace AD.UI
     {
         #region Attribute
 
+        public bool IsNeedContext => false;
+        public BehaviourContext Context { get => null; }
+
         public string ElementName { get; set; } = "null";
         public int SerialNumber { get; set; } = 0;
 
@@ -806,6 +809,11 @@ namespace AD.UI
         public IADUI Obtain(string elementName)
         {
             return ADUI.Items.Find((P) => P.ElementName == elementName);
+        }
+
+        public void InitializeContext()
+        {
+            throw new NotImplementedException();
         }
     }
 

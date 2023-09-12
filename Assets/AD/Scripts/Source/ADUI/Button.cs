@@ -10,7 +10,7 @@ namespace AD.UI
 {
     [Serializable]
     [AddComponentMenu("UI/AD/Button", 100)]
-    public class Button : ADUI, IPointerClickHandler, IButton
+    public class Button : ADUI, IButton
     {
         public enum ButtonAnimatorMode
         {
@@ -59,14 +59,20 @@ namespace AD.UI
             ElementArea = "Button";
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
             AD.UI.ADUI.Initialize(this);
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             AD.UI.ADUI.Destory(this);
+        }
+
+        public override void InitializeContext()
+        {
+            base.InitializeContext();
+            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerClick);
         }
 
 #if UNITY_EDITOR

@@ -4,12 +4,15 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace AD.UI
 {
     [Serializable, RequireComponent(typeof(TMP_InputField))]
-    public class InputField : AD.UI.ADUI
+    public class InputField : AD.UI.ADUI, IPointerEnterHandler, IPointerExitHandler
     {
+        public override bool IsNeedContext => false;
+
         public InputField()
         {
             ElementArea = "InputField";

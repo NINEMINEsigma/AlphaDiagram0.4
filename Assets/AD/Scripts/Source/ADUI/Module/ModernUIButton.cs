@@ -55,7 +55,7 @@ namespace AD.UI
         }
     }
 
-    public class ModernUIButton : PropertyModule, IButton, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
+    public class ModernUIButton : PropertyModule, IButton
     {
         //[Header("Context")]
         public string buttonText = "Button";
@@ -131,6 +131,14 @@ namespace AD.UI
                 rippleParent.SetActive(false);
             else if (useRipple == false && rippleParent != null)
                 Destroy(rippleParent);
+        }
+
+        public override void InitializeContext()
+        {
+            base.InitializeContext();
+            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerDown);
+            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerEnter);
+            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, true, OnPointerExit);
         }
 
         public ModernUIButton SetTitle(string title)
