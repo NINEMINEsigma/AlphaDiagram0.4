@@ -22,7 +22,7 @@ namespace AD.Experimental.Runtime.PipeEx
         {
             Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerEnter) ;
             Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, true, OnPointerExit);
-            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, false);
+            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, false, OnPointerClick);
         }
 
         public void OnPointerClickOther()

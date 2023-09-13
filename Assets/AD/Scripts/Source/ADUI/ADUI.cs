@@ -108,7 +108,7 @@ namespace AD.UI
         public virtual void InitializeContext()
         {
             Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerEnter);
-            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerExit);
+            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, true, OnPointerExit);
         }
 
         public static ADOrderlyEvent<PointerEventData> InitializeContextSingleEvent(ADOrderlyEvent<PointerEventData> Event, bool isClear = true, params UnityAction<PointerEventData>[] calls)

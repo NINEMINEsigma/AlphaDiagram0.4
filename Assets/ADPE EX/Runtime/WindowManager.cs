@@ -11,6 +11,8 @@ namespace AD.Experimental.Runtime.PipeEx
 
         public RectTransform MiddleItemParentArea => rectTransform;
 
+        public AD.UI.TouchPanel TouchPanel;
+
         public string KeyName;
 
         public void Init(string keyName)
@@ -20,12 +22,17 @@ namespace AD.Experimental.Runtime.PipeEx
 
         public void SetThisOnTop()
         {
+            PipeLineArchitecture.instance.GetController<PipeLineManager>().TouchPanel = this.TouchPanel;
 
+            this.TouchPanel.TargetCamera = PipeLineArchitecture.instance.GetController<PipeLineManager>().MainCamera;
+
+            TouchPanel.OnEvent.AddListener(PipeLineArchitecture.instance.GetController<PipeLineManager>().MidDragAction);
+            TouchPanel.OnClickWhenCurrentWasPressRight.AddListener(PipeLineArchitecture.instance.GetController<PipeLineManager>().RightButtonClick);
         }
 
         public void SetThisButtom()
         {
-
+            TouchPanel.RemoveAllListeners();
         }
 
     }

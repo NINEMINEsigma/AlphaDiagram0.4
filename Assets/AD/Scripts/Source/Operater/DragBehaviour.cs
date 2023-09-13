@@ -107,7 +107,7 @@ namespace AD.UI
 
         public bool IsRaycastLocationValid(Vector2 sp, Camera eventCamera)
         {
-            return isCanDrag;
+            return isCanDrag || transform.childCount != 0;
         }
     }
 }

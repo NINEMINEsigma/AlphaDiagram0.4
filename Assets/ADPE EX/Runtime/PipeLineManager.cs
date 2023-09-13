@@ -8,6 +8,7 @@ using AD.Utility;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace AD.Experimental.Runtime.PipeEx
@@ -80,6 +81,15 @@ namespace AD.Experimental.Runtime.PipeEx
             RegisterModel<CurrentChoosingRightItem>();
             RegisterSystem<MiddleWindowGenerator>();
             RegisterSystem<SinglePanelGenerator>();
+
+            ADGlobalSystem.AddListener(Mouse.current.rightButton, () =>
+            {
+                if (!Contains<CurrentMiddlePanelInfo>()) return;
+                if (GetModel<CurrentMiddlePanelInfo>().Current == null) return;
+                var window = GetController<PipeLineManager>().OnMenuInit(MiddleItem.OnRightClickMenu);
+                window.rectTransform.position = GetModel<CurrentMiddlePanelInfo>().Current.transform.position - new Vector3(0, 0, -0.01f);
+            }, PressType.ThisFramePressed);
+
         }
 
         public void ToMap(out PipeLineArchitecture_BM BM)
@@ -173,10 +183,11 @@ namespace AD.Experimental.Runtime.PipeEx
 
     public class PipeLineManager : ADController
     {
+        public Camera MainCamera;
         public Canvas MainCanvas;
         [SerializeField] ListView LeftItemListView, RightItemListView;
         [SerializeField] InputField LeftFieldOfChooseDLL;
-        [SerializeField] TouchPanel TouchPanel;
+        public TouchPanel TouchPanel;
         [SerializeField] RectTransform Mid_Panel;
         [SerializeField] MiddleItem DefaultMiddleItemPerfab;
         [SerializeField] WindowManager WindowManagerPerfab;
@@ -219,13 +230,9 @@ namespace AD.Experimental.Runtime.PipeEx
 
             TryGenerateAllLeftItemOfASM();
 
-            TouchPanel.RemoveAllListeners();
-            TouchPanel.OnEvent.AddListener(MidDragAction);
-            TouchPanel.OnClickWhenCurrentWasPressRight.AddListener(RightButtonClick);
-
             GetSystem<MiddleWindowGenerator>().WindowPerfab = WindowManagerPerfab;
             GetSystem<MiddleWindowGenerator>().Parent = Mid_Panel;
-            GetSystem<MiddleWindowGenerator>().ObtainElement("New Project", DefaultMiddleItemPerfab);
+            GetSystem<MiddleWindowGenerator>().ObtainElement("New Project", DefaultMiddleItemPerfab).As<WindowManager>().SetThisOnTop();
 
             GetSystem<SinglePanelGenerator>().WindowPerfab = SinglePanelPerfab;
             GetSystem<SinglePanelGenerator>().Parent = SinglePanel_Panel;
@@ -550,7 +557,7 @@ namespace AD.Experimental.Runtime.PipeEx
         //T R B L
         private RectTransform[] Boundary = new RectTransform[4];
 
-        public Dictionary<int, Dictionary<string, ADEvent>> OnLeftClickMenu => MiddleItem.OnLeftClickMenu;
+        public Dictionary<int, Dictionary<string, ADEvent>> OnLeftClickMenu => MiddleItem.OnRightClickMenu;
 
         public void PosUpdate(Vector2 dragVec)
         {

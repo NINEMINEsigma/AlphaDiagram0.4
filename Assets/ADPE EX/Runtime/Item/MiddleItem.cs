@@ -92,7 +92,6 @@ namespace AD.Experimental.Runtime.PipeEx
         public int ArgIndexAtNext = 0;
     }
 
-    [RequireComponent(typeof(DragBehaviour))]
     public class MiddleItem : MonoBehaviour
     {
         public static readonly int MiddleItemOperatorLayer = 500;
@@ -112,7 +111,7 @@ namespace AD.Experimental.Runtime.PipeEx
         private BehaviourContext behaviourContext;
         private DragBehaviour _dragBehaviour;
 
-        public static Dictionary<int, Dictionary<string, ADEvent>> OnLeftClickMenu = new();
+        public static Dictionary<int, Dictionary<string, ADEvent>> OnRightClickMenu = new();
 
         public void ClearItemRef()
         {
@@ -128,20 +127,13 @@ namespace AD.Experimental.Runtime.PipeEx
 
         private void OnPointerEnter(PointerEventData eventData)
         {
+            Debug.Log("XX");
             PipeLineArchitecture.instance.GetModel<CurrentMiddlePanelInfo>().Current = this;
         }
 
         private void OnPointerExit(PointerEventData eventData)
         {
             PipeLineArchitecture.instance.GetModel<CurrentMiddlePanelInfo>().Current = null;
-        }
-
-        private void LeftClick(Vector3 vec)
-        {
-            var window = PipeLineArchitecture.instance.GetController<PipeLineManager>().OnMenuInit(OnLeftClickMenu);
-            var rects = window.rectTransform.GetRect();
-            Vector3 lt = rects[0], rb = rects[2];
-            window.rectTransform.position = new Vector3(vec.x + (rb.x - lt.x) * 0.5f, vec.y + (lt.y - rb.y) * 0.5f, vec.z - 0.01f);
         }
 
         public void Init()
@@ -152,15 +144,15 @@ namespace AD.Experimental.Runtime.PipeEx
 
             behaviourContext.OnPointerEnterEvent ??= new();
             behaviourContext.OnPointerExitEvent ??= new();
-            behaviourContext.OnPointerClickEvent ??= new();
+            //behaviourContext.OnPointerClickEvent ??= new();
 
             behaviourContext.OnPointerEnterEvent.RemoveListener(this.OnPointerEnter);
             behaviourContext.OnPointerExitEvent.RemoveListener(this.OnPointerExit);
-            behaviourContext.OnPointerClickEvent.RemoveListener(this.OnPointerClick);
+            //behaviourContext.OnPointerClickEvent.RemoveListener(this.OnPointerClick);
 
             behaviourContext.OnPointerEnterEvent.AddListener(this.OnPointerEnter);
             behaviourContext.OnPointerExitEvent.AddListener(this.OnPointerExit);
-            behaviourContext.OnPointerClickEvent.AddListener(this.OnPointerClick);
+            //behaviourContext.OnPointerClickEvent.AddListener(this.OnPointerClick);
 
             UpdateInfo();
             UpdateLine();
@@ -258,11 +250,6 @@ namespace AD.Experimental.Runtime.PipeEx
             this.Nexts.Remove(cat);
             GameObject.Destroy(cat.LineRendererObject.gameObject);
             UpdateLine();
-        }
-
-        private void OnPointerClick(PointerEventData eventData)
-        {
-            LeftClick(eventData.pointerPressRaycast.worldPosition);
         }
     }
 
