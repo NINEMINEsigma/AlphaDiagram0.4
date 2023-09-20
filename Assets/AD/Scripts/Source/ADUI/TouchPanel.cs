@@ -40,9 +40,9 @@ namespace AD.UI
         public override void InitializeContext()
         {
             base.InitializeContext();
-            Context.OnBeginDragEvent = InitializeContextSingleEvent(Context.OnBeginDragEvent, true, OnBeginDrag);
-            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, true, OnDrag);
-            Context.OnEndDragEvent = InitializeContextSingleEvent(Context.OnEndDragEvent, true, OnEndDrag);
+            Context.OnBeginDragEvent = InitializeContextSingleEvent(Context.OnBeginDragEvent, OnBeginDrag);
+            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, OnDrag);
+            Context.OnEndDragEvent = InitializeContextSingleEvent(Context.OnEndDragEvent, OnEndDrag);
         }
 
         [SerializeField] private Vector2 _Drag = Vector2.zero;

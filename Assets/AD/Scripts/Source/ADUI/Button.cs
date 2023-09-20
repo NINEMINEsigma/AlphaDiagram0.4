@@ -72,7 +72,7 @@ namespace AD.UI
         public override void InitializeContext()
         {
             base.InitializeContext();
-            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerClick);
+            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, OnPointerClick);
         }
 
 #if UNITY_EDITOR

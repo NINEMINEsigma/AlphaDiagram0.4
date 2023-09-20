@@ -6,14 +6,14 @@ using UnityEngine;
 namespace AD.Experimental.Performance
 {
     /// <summary>
-    /// Debug »æÖÆcameraµÄ ÊÓ¿Ú¡¢ÊÓ×¶ ºÍ FOV
+    /// Debug ç»˜åˆ¶cameraçš„ è§†å£ã€è§†é”¥ å’Œ FOV
     /// </summary>
     /// 
     [ExecuteInEditMode,RequireComponent(typeof( Camera))]
     public class ConeAllegation : MonoBehaviour
     {
-        public float _farDistance = 10;//Ô¶ÊÓ¿Ú¾àÀë
-        public float _nearDistance = 3;//½üÊÓ¿Ú¾àÀë
+        public float _farDistance = 10;//è¿œè§†å£è·ç¦»
+        public float _nearDistance = 3;//è¿‘è§†å£è·ç¦»
 
         private Camera _camera;
         private Camera TargetCamera
@@ -26,7 +26,7 @@ namespace AD.Experimental.Performance
         }
 
         /// <summary>
-        /// »æÖÆÍ¼ĞÎ
+        /// ç»˜åˆ¶å›¾å½¢
         /// </summary>
         void OnDrawGizmos()
         {
@@ -37,7 +37,7 @@ namespace AD.Experimental.Performance
         }
 
         /// <summary>
-        /// »æÖÆ½ÏÔ¶µÄÊÓ¿Ú
+        /// ç»˜åˆ¶è¾ƒè¿œçš„è§†å£
         /// </summary>
         void OnDrawFarView()
         {
@@ -50,7 +50,7 @@ namespace AD.Experimental.Performance
             Debug.DrawLine(corners[2], corners[0], Color.red); // LowerLeft -> UpperLeft
 
 
-            //ÖĞĞÄÏß
+            //ä¸­å¿ƒçº¿
             Vector3 vecStart = TargetCamera.transform.position;
             Vector3 vecEnd = vecStart;
             vecEnd += TargetCamera.transform.forward * _farDistance;
@@ -58,36 +58,36 @@ namespace AD.Experimental.Performance
         }
 
         /// <summary>
-        /// »æÖÆ½Ï½üµÄÊÓ¿Ú
+        /// ç»˜åˆ¶è¾ƒè¿‘çš„è§†å£
         /// </summary>
         void OnDrawNearView()
         {
             Vector3[] corners = GetCorners(_nearDistance);
 
             // for debugging
-            Debug.DrawLine(corners[0], corners[1], Color.green);//×óÉÏ-ÓÒÉÏ
-            Debug.DrawLine(corners[1], corners[3], Color.green);//ÓÒÉÏ-ÓÒÏÂ
-            Debug.DrawLine(corners[3], corners[2], Color.green);//ÓÒÏÂ-×óÏÂ
-            Debug.DrawLine(corners[2], corners[0], Color.green);//×óÏÂ-×óÉÏ
+            Debug.DrawLine(corners[0], corners[1], Color.green);//å·¦ä¸Š-å³ä¸Š
+            Debug.DrawLine(corners[1], corners[3], Color.green);//å³ä¸Š-å³ä¸‹
+            Debug.DrawLine(corners[3], corners[2], Color.green);//å³ä¸‹-å·¦ä¸‹
+            Debug.DrawLine(corners[2], corners[0], Color.green);//å·¦ä¸‹-å·¦ä¸Š
         }
 
         /// <summary>
-        /// »æÖÆ camera µÄ FOV
+        /// ç»˜åˆ¶ camera çš„ FOV
         /// </summary>
         void OnDrawFOV()
         {
-            float halfFOV = (_camera.fieldOfView * 0.5f) * Mathf.Deg2Rad;//Ò»°ëfov
-            float halfHeight = _farDistance * Mathf.Tan(halfFOV);//distance¾àÀëÎ»ÖÃ£¬Ïà»úÊÓ¿Ú¸ß¶ÈµÄÒ»°ë
+            float halfFOV = (_camera.fieldOfView * 0.5f) * Mathf.Deg2Rad;//ä¸€åŠfov
+            float halfHeight = _farDistance * Mathf.Tan(halfFOV);//distanceè·ç¦»ä½ç½®ï¼Œç›¸æœºè§†å£é«˜åº¦çš„ä¸€åŠ
 
-            //Æğµã
+            //èµ·ç‚¹
             Vector3 vecStart = TargetCamera.transform.position;
 
-            //ÉÏÖĞ
+            //ä¸Šä¸­
             Vector3 vecUpCenter = vecStart;
             vecUpCenter.y -= halfHeight;
             vecUpCenter.z += _farDistance;
 
-            //ÏÂÖĞ
+            //ä¸‹ä¸­
             Vector3 vecBottomCenter = vecStart;
             vecBottomCenter.y += halfHeight;
             vecBottomCenter.z += _farDistance;
@@ -97,7 +97,7 @@ namespace AD.Experimental.Performance
         }
 
         /// <summary>
-        /// »æÖÆ camera µÄÊÓ×¶ ±ßÑØ
+        /// ç»˜åˆ¶ camera çš„è§†é”¥ è¾¹æ²¿
         /// </summary>
         void OnDrawConeOfCameraVision()
         {
@@ -111,41 +111,41 @@ namespace AD.Experimental.Performance
             Debug.DrawLine(CameraTransform.position, corners[0], Color.green); // LowerLeft -> UpperLeft
         }
 
-        //»ñÈ¡Ïà»úÊÓ¿ÚËÄ¸ö½ÇµÄ×ø±ê
-        //²ÎÊı distance  ÊÓ¿Ú¾àÀë
+        //è·å–ç›¸æœºè§†å£å››ä¸ªè§’çš„åæ ‡
+        //å‚æ•° distance  è§†å£è·ç¦»
         Vector3[] GetCorners(float distance)
         {
             Vector3[] corners = new Vector3[4];
 
-            //fovÎª´¹Ö±ÊÓÒ°  Ë®Æ½fovÈ¡¾öÓÚÊÓ¿ÚµÄ¿í¸ß±È  ÒÔ¶ÈÎªµ¥Î»
+            //fovä¸ºå‚ç›´è§†é‡  æ°´å¹³fovå–å†³äºè§†å£çš„å®½é«˜æ¯”  ä»¥åº¦ä¸ºå•ä½
 
             var CameraTransform = TargetCamera.transform;
 
-            float halfFOV = (_camera.fieldOfView * 0.5f) * Mathf.Deg2Rad;//Ò»°ëfov
-            float aspect = _camera.aspect;//Ïà»úÊÓ¿Ú¿í¸ß±È
+            float halfFOV = (_camera.fieldOfView * 0.5f) * Mathf.Deg2Rad;//ä¸€åŠfov
+            float aspect = _camera.aspect;//ç›¸æœºè§†å£å®½é«˜æ¯”
 
-            float height = distance * Mathf.Tan(halfFOV);//distance¾àÀëÎ»ÖÃ£¬Ïà»úÊÓ¿Ú¸ß¶ÈµÄÒ»°ë
-            float width = height * aspect;//Ïà»úÊÓ¿Ú¿í¶ÈµÄÒ»°ë
+            float height = distance * Mathf.Tan(halfFOV);//distanceè·ç¦»ä½ç½®ï¼Œç›¸æœºè§†å£é«˜åº¦çš„ä¸€åŠ
+            float width = height * aspect;//ç›¸æœºè§†å£å®½åº¦çš„ä¸€åŠ
 
-            //×óÉÏ
-            corners[0] = CameraTransform.position - (CameraTransform.right * width);//Ïà»ú×ø±ê - ÊÓ¿Ú¿íµÄÒ»°ë
-            corners[0] += CameraTransform.up * height;//+ÊÓ¿Ú¸ßµÄÒ»°ë
-            corners[0] += CameraTransform.forward * distance;//+ÊÓ¿Ú¾àÀë
+            //å·¦ä¸Š
+            corners[0] = CameraTransform.position - (CameraTransform.right * width);//ç›¸æœºåæ ‡ - è§†å£å®½çš„ä¸€åŠ
+            corners[0] += CameraTransform.up * height;//+è§†å£é«˜çš„ä¸€åŠ
+            corners[0] += CameraTransform.forward * distance;//+è§†å£è·ç¦»
 
-            // ÓÒÉÏ
-            corners[1] = CameraTransform.position + (CameraTransform.right * width);//Ïà»ú×ø±ê + ÊÓ¿Ú¿íµÄÒ»°ë
-            corners[1] += CameraTransform.up * height;//+ÊÓ¿Ú¸ßµÄÒ»°ë
-            corners[1] += CameraTransform.forward * distance;//+ÊÓ¿Ú¾àÀë
+            // å³ä¸Š
+            corners[1] = CameraTransform.position + (CameraTransform.right * width);//ç›¸æœºåæ ‡ + è§†å£å®½çš„ä¸€åŠ
+            corners[1] += CameraTransform.up * height;//+è§†å£é«˜çš„ä¸€åŠ
+            corners[1] += CameraTransform.forward * distance;//+è§†å£è·ç¦»
 
-            // ×óÏÂ
-            corners[2] = CameraTransform.position - (CameraTransform.right * width);//Ïà»ú×ø±ê - ÊÓ¿Ú¿íµÄÒ»°ë
-            corners[2] -= CameraTransform.up * height;//-ÊÓ¿Ú¸ßµÄÒ»°ë
-            corners[2] += CameraTransform.forward * distance;//+ÊÓ¿Ú¾àÀë
+            // å·¦ä¸‹
+            corners[2] = CameraTransform.position - (CameraTransform.right * width);//ç›¸æœºåæ ‡ - è§†å£å®½çš„ä¸€åŠ
+            corners[2] -= CameraTransform.up * height;//-è§†å£é«˜çš„ä¸€åŠ
+            corners[2] += CameraTransform.forward * distance;//+è§†å£è·ç¦»
 
-            // ÓÒÏÂ
-            corners[3] = CameraTransform.position + (CameraTransform.right * width);//Ïà»ú×ø±ê + ÊÓ¿Ú¿íµÄÒ»°ë
-            corners[3] -= CameraTransform.up * height;//-ÊÓ¿Ú¸ßµÄÒ»°ë
-            corners[3] += CameraTransform.forward * distance;//+ÊÓ¿Ú¾àÀë
+            // å³ä¸‹
+            corners[3] = CameraTransform.position + (CameraTransform.right * width);//ç›¸æœºåæ ‡ + è§†å£å®½çš„ä¸€åŠ
+            corners[3] -= CameraTransform.up * height;//-è§†å£é«˜çš„ä¸€åŠ
+            corners[3] += CameraTransform.forward * distance;//+è§†å£è·ç¦»
 
             return corners;
         }
@@ -194,7 +194,7 @@ namespace AD.Experimental.Performance
 
             for (int i = 0, iMax = planes.Length; i < iMax; ++i)
             {
-                //ÅĞ¶ÏÒ»¸öµãÊÇ·ñÔÚÆ½ÃæµÄÕı·½ÏòÉÏ
+                //åˆ¤æ–­ä¸€ä¸ªç‚¹æ˜¯å¦åœ¨å¹³é¢çš„æ­£æ–¹å‘ä¸Š
                 if (!planes[i].GetSide(point))
                 {
                     return false;

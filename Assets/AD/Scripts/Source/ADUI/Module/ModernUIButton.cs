@@ -136,9 +136,9 @@ namespace AD.UI
         public override void InitializeContext()
         {
             base.InitializeContext();
-            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerDown);
-            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerEnter);
-            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, true, OnPointerExit);
+            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, OnPointerDown);
+            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, OnPointerEnter);
+            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, OnPointerExit);
         }
 
         public ModernUIButton SetTitle(string title)

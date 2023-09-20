@@ -50,9 +50,9 @@ namespace AD.UI
         public override void InitializeContext()
         {
             base.InitializeContext();
-            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, true, OnDrag);
-            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, true, OnPointerDown);
-            Context.OnPointerUpEvent = InitializeContextSingleEvent(Context.OnPointerUpEvent, true, OnPointerUp);
+            Context.OnDragEvent = InitializeContextSingleEvent(Context.OnDragEvent, OnDrag);
+            Context.OnPointerDownEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, OnPointerDown);
+            Context.OnPointerUpEvent = InitializeContextSingleEvent(Context.OnPointerUpEvent, OnPointerUp);
         }
 
         public VirtualJoystick()

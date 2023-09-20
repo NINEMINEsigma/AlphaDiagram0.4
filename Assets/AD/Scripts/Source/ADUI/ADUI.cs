@@ -107,15 +107,15 @@ namespace AD.UI
 
         public virtual void InitializeContext()
         {
-            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, true, OnPointerEnter);
-            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, true, OnPointerExit);
+            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, OnPointerEnter);
+            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, OnPointerExit);
         }
 
-        public static ADOrderlyEvent<PointerEventData> InitializeContextSingleEvent(ADOrderlyEvent<PointerEventData> Event, bool isClear = true, params UnityAction<PointerEventData>[] calls)
+        public static ADOrderlyEvent<PointerEventData> InitializeContextSingleEvent(ADOrderlyEvent<PointerEventData> Event, params UnityAction<PointerEventData>[] calls)
         {
             Event ??= new();
-            if (isClear)
-                Event.RemoveAllListeners();
+            foreach (var call in calls)
+                Event.RemoveListener(call);
             foreach (var call in calls)
                 Event.AddListener(call);
             return Event;
@@ -124,8 +124,8 @@ namespace AD.UI
         public static ADOrderlyEvent<BaseEventData> InitializeContextSingleEvent(ADOrderlyEvent<BaseEventData> Event, bool isClear = true, params UnityAction<BaseEventData>[] calls)
         {
             Event ??= new();
-            if (isClear)
-                Event.RemoveAllListeners();
+            foreach (var call in calls)
+                Event.RemoveListener(call);
             foreach (var call in calls)
                 Event.AddListener(call);
             return Event;
@@ -134,8 +134,8 @@ namespace AD.UI
         public static ADOrderlyEvent<AxisEventData> InitializeContextSingleEvent(ADOrderlyEvent<AxisEventData> Event, bool isClear = true, params UnityAction<AxisEventData>[] calls)
         {
             Event ??= new();
-            if (isClear)
-                Event.RemoveAllListeners();
+            foreach (var call in calls)
+                Event.RemoveListener(call);
             foreach (var call in calls)
                 Event.AddListener(call);
             return Event;

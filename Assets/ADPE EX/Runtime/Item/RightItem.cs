@@ -20,9 +20,9 @@ namespace AD.Experimental.Runtime.PipeEx
 
         public override void InitializeContext()
         {
-            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, false, OnPointerEnter);
-            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, false, OnPointerExit);
-            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, false, OnPointerClick);
+            Context.OnPointerEnterEvent = InitializeContextSingleEvent(Context.OnPointerEnterEvent, OnPointerEnter);
+            Context.OnPointerExitEvent = InitializeContextSingleEvent(Context.OnPointerExitEvent, OnPointerExit);
+            Context.OnPointerClickEvent = InitializeContextSingleEvent(Context.OnPointerClickEvent, OnPointerClick);
         }
 
         public void OnPointerClickOther()
